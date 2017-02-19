@@ -123,7 +123,7 @@
 		<!--- SQL TO SAVE TO DB --->
 	</cffunction>
 
-	<cffunction name="Get" access="private" output="false" hint="" >
+	<cffunction name="Load" access="private" output="false" hint="" >
 		<!--- SQL TO GET ALL THE DB DATA AND PUT IT IN THE PROPERTIES. USED BY INIT --->
 	</cffunction>
 
