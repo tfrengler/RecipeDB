@@ -1,27 +1,37 @@
 <cfprocessingdirective pageencoding="utf-8" />
 
-<cfset ORMReload() />
+<cfset Recipe = createObject("component", "Components.Recipe") />
 
-<!---<cfset Test = EntityLoad("Leden", {ID: 4917694}) />--->
+<cfset Test = Recipe.init(ID=4) />
 
-<cfset Test = EntityLoad("Leden", {DomeinCode: "REG3"}, false) />
-<cfset Test = ORMExecuteQuery("
-	FROM Leden L
-	WHERE L.DomeinCode = 'REG3'
-	AND L.Person.Voornaam = 'Ashima'
-") />
+<!--- <cfset Test.setDateTimeLastModified( Date=createODBCDateTime(now()) ) /> --->
 
-<cfdump var="#Test#" />
-
-<hr/>
-<!---
+<!--- <cfset Test.save() /> --->
 
 <cfoutput>
-	<cfloop array="#Test#" index="index" >
-		#index.GetID()#<br/>
-		#index.GetPerson().GetVoornaam()# #index.GetPerson().GetAchternaam()#<br/>
-		<hr/>
-	</cfloop>
+	#Test.getRecipeID()#<br/>
+	#Test.getDateCreated()#<br/>
+	#Test.getDateTimeLastModified()#<br/>
+	#Test.getCreatedByUser()#<br/>
+	#Test.getLastModifiedByUser()#<br/>
+	#arrayToList(Test.getComments())#<br/>
+	#Test.getIngredients()#<br/>
+	#Test.getDescription()#<br/>
+	#Test.getPicture()#<br/>
+	#Test.getInstructions()#<br/>
 </cfoutput>
 
---->
+<!--- <cftransaction>
+	<cfquery name="NewUser" datasource="test" >
+		INSERT INTO Users (
+			DateCreated,
+			DateLastLogin,
+			SessionID
+		)
+		VALUES (
+			<cfqueryparam sqltype="CF_SQL_DATE" value="#createODBCDate(now())#" />,
+			<cfqueryparam sqltype="CF_SQL_TIMESTAMP" value="#createODBCDateTime(now())#" />,
+			<cfqueryparam sqltype="CF_SQL_OTHER" value="#createUUID()#" />
+		)
+	</cfquery>
+</cftransaction> --->

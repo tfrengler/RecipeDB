@@ -3,7 +3,7 @@
 
 	<cfset THIS.name="RecipeDB">
 	<cfset THIS.applicationtimeout = CreateTimeSpan(0,0,1,0)>
-	<cfset THIS.clientmanagement = false>
+<!---	<cfset THIS.clientmanagement = false>
 	<cfset THIS.setclientcookies = false>
 	<cfset THIS.setdomaincookies = false>
 	<cfset THIS.sessionmanagement = false>
@@ -14,16 +14,16 @@
 		datasource="peoplexs_test",
 		searchenabled = true
 	} />
-	<cfset THIS.invokeImplicitAccessor = true />
+	<cfset THIS.invokeImplicitAccessor = true /> --->
 
 	<!--- MAPPINGS --->
 
-	<cfset this.directory = getDirectoryFromPath( getCurrentTemplatePath() ) />
-	<cfset this.mappings["/Objects"] = (this.directory & "Components/") />
+	<cfset this.root = getDirectoryFromPath( getCurrentTemplatePath() ) />
+	<cfset this.mappings["/Objects"] = (this.root & "Components/") />
 
 	<cffunction name="onApplicationStart" returnType="boolean" output="false">
 
-	<cfset createObject("Component", "Objects/Server").init() />
+		<!--- <cfset createObject("Component", "Objects/Server").init() /> --->
 
 		<cfreturn true />
 
