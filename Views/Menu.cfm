@@ -1,19 +1,19 @@
 <nav class="side-menu" id="side-menu" >
 
-	<div id="close-menu-button-wrapper" >
+	<div id="Close-Menu-Button-Wrapper" >
 		<div class="inline-block" >
-			<img id="close-menu-button" src="Assets/Pictures/Standard/menu-icon-close.png" class="img-responsive" />
+			<img id="Close-Menu-Button" src="../Assets/Pictures/Standard/menu-icon-close.png" class="img-responsive" />
 		</div>
 	</div>
 
-	<ul id="menu-options">
+	<ul id="Menu-Options">
 		<li><a href="#">Add recipe</a></li>
-		<li><a href="#">Find recipies</a></li>
-		<li><a href="#">Login</a></li>
+		<li><a href="#">Find recipes</a></li>
+		<li><a href="#">Logout</a></li>
 		<li><a href="#">Favorites</a></li>
 	</ul>
 </nav>
 
-<div id="main-screen-content">
-	<img id="open-menu-button" src="Assets/Pictures/Standard/menu-icon.png" class="img-responsive" />
+<div id="Main-Screen-Content">
+	<img id="Open-Menu-Button" src="../Assets/Pictures/Standard/menu-icon.png" class="img-responsive" />
 </div>

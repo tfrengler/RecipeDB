@@ -79,10 +79,10 @@ $(document).ready(function() {
 		RecipeDB.Recipe.SetPictureEditDimensions();
 	});
 
-	$("#close-menu-button").click(function() {
+	$("#Close-Menu-Button").click(function() {
 		RecipeDB.Menu.Hide();
 	});
-	$("#open-menu-button").click(function() {
+	$("#Open-Menu-Button").click(function() {
 		RecipeDB.Menu.Show();
 	});
 });

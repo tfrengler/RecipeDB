@@ -1,4 +1,4 @@
-/* General use */
+ /* General use */
 .inline-block {
 	display: inline-block;
 }
@@ -35,18 +35,28 @@
 	padding: 2px 2px 2px 2px;
 }
 
-.standard-button:hover {
+.standard-button:hover, .recipe-section-header:hover {
 	background-color: green;
 	color: white;
 	cursor: pointer;
 }
 
-.standard-olive-coloring {
+.olive-text-color {
+	color: #73AD21;
+}
+
+.olive-background-color {
 	background-color: #73AD21;
 	color: white;
 }
 
-.standard-button {
+.olive-text-color-center {
+	color: #73AD21;
+	text-align: center;
+}
+
+/* Recipe styles */
+.recipe-section-header {
 	border-style: solid;
 	border-width: 1px;
 	border-color: #73AD21;
@@ -58,8 +68,7 @@
 	margin-bottom: -1px;
 }
 
-/* Recipe styles */
-.recipe-body {
+.recipe-section-body {
 	border-style: solid;
 	border-width: 1px;
 	border-color: #73AD21;
@@ -74,11 +83,6 @@
 	border-color: green;
 	padding: 20px;
 	background-color: #f2f2f2;
-}
-
-.recipe-title {
-	text-align: center;
-	color: #73AD21;
 }
 
 .recipe-picture {
@@ -149,22 +153,47 @@
 	color: white;
 }
 
-#close-menu-button, #open-menu-button {
+#Close-Menu-Button, #Open-Menu-Button {
 	width: 4em;
 	padding: 0.5em;
 }
 
-#open-menu-button {
+#Open-Menu-Button {
 	position: fixed;
 	top: 0;
 	left: 0;
 	z-index: 90;
 }
 
-#close-menu-button:hover, #open-menu-button:hover, a {
+#Close-Menu-Button:hover, #Open-Menu-Button:hover, a {
 	cursor: pointer;
 }
 
-#close-menu-button-wrapper {
+#Close-Menu-Button-Wrapper {
 	text-align: right;
+}
+
+/* LOG-IN PAGE */
+
+#Login-Form {
+	margin-top: 5em;
+	max-width: 30em;
+	margin-bottom: 5em;
+}
+
+#Remember-Me {
+	margin-bottom: 2em;
+}
+
+#Login-Button {
+	font-size: 1.5em;
+}
+
+#Login-Header {
+	margin-bottom: 1em;
+	color: #73AD21;
+}
+
+#Help-Text {
+	max-width: 30em;
 }
