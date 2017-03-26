@@ -12,58 +12,111 @@
 	<cfset TimesLoggedIn = 0 />
 	<cfset BrowserLastUsed = "" />
 	<cfset Blocked = false />
+	<cfset IsStatic = true />
 
 	<!--- Getters --->
 
 	<cffunction name="getUserID" access="public" output="false" hint="" >
-			<cfreturn UserID />
+		<cfif IsStatic IS false >
+			<cfthrow message="Can't call method because this instance is already initialized with id: #getUserID()#" />
+		</cfif>
+
+		<cfreturn UserID />
 	</cffunction>
 
 	<cffunction name="getSessionID" access="public" output="false" hint="" >
-			<cfreturn SessionID />
+		<cfif IsStatic IS false >
+			<cfthrow message="Can't call method because this instance is already initialized with id: #getUserID()#" />
+		</cfif>
+
+		<cfreturn SessionID />
 	</cffunction>
 
 	<cffunction name="getDateCreated" access="public" output="false" hint="" >
-			<cfreturn DateCreated />
+		<cfif IsStatic IS false >
+			<cfthrow message="Can't call method because this instance is already initialized with id: #getUserID()#" />
+		</cfif>
+
+		<cfreturn DateCreated />
 	</cffunction>
 
 	<cffunction name="getDateTimeLastLogin" access="public" output="false" hint="" >
-			<cfreturn DateTimeLastLogin />
+		<cfif IsStatic IS false >
+			<cfthrow message="Can't call method because this instance is already initialized with id: #getUserID()#" />
+		</cfif>
+
+		<cfreturn DateTimeLastLogin />
 	</cffunction>
 
 	<cffunction name="getPassword" access="public" output="false" hint="" >
-			<cfreturn Password />
+		<cfif IsStatic IS false >
+			<cfthrow message="Can't call method because this instance is already initialized with id: #getUserID()#" />
+		</cfif>
+
+		<cfreturn Password />
 	</cffunction>
 
 	<cffunction name="getTempPassword" access="public" output="false" hint="" >
-			<cfreturn TempPassword />
+		<cfif IsStatic IS false >
+			<cfthrow message="Can't call method because this instance is already initialized with id: #getUserID()#" />
+		</cfif>
+
+		<cfreturn TempPassword />
 	</cffunction>
 
 	<cffunction name="getUserName" access="public" output="false" hint="" >
-			<cfreturn UserName />
+		<cfif IsStatic IS false >
+			<cfthrow message="Can't call method because this instance is already initialized with id: #getUserID()#" />
+		</cfif>
+
+		<cfreturn UserName />
 	</cffunction>
 
 	<cffunction name="getDisplayName" access="public" output="false" hint="" >
-			<cfreturn DisplayName />
+		<cfif IsStatic IS false >
+			<cfthrow message="Can't call method because this instance is already initialized with id: #getUserID()#" />
+		</cfif>
+
+		<cfreturn DisplayName />
 	</cffunction>
 
 	<cffunction name="getTimesLoggedIn" access="public" output="false" hint="" >
-			<cfreturn TimesLoggedIn />
+		<cfif IsStatic IS false >
+			<cfthrow message="Can't call method because this instance is already initialized with id: #getUserID()#" />
+		</cfif>
+
+		<cfreturn TimesLoggedIn />
 	</cffunction>
 
 	<cffunction name="getBrowserLastUsed" access="public" output="false" hint="" >
-			<cfreturn BrowserLastUsed />
+		<cfif IsStatic IS false >
+			<cfthrow message="Can't call method because this instance is already initialized with id: #getUserID()#" />
+		</cfif>
+
+		<cfreturn BrowserLastUsed />
 	</cffunction>
 
 	<cffunction name="getBlocked" access="public" output="false" hint="" >
-			<cfreturn Blocked />
+		<cfif IsStatic IS false >
+			<cfthrow message="Can't call method because this instance is already initialized with id: #getUserID()#" />
+		</cfif>
+
+		<cfreturn Blocked />
 	</cffunction>
 
 	<cffunction name="getTableName" access="public" output="false" hint="" >
+		<cfif IsStatic IS false >
+			<cfthrow message="Can't call method because this instance is already initialized with id: #getUserID()#" />
+		</cfif>
+
 		<cfreturn "Users" />
 	</cffunction> 
 
 	<cffunction name="getTableKey" access="public" output="false" hint="" >
+		<cfif IsStatic IS false >
+			<cfthrow message="Can't call method because this instance is already initialized with id: #getUserID()#" />
+		</cfif>
+
 		<cfreturn "UserID" />
 	</cffunction>
 
@@ -137,17 +190,17 @@
 
 	<!--- Methods --->
 
-	<cffunction name="doesUserExist" returntype="boolean" access="private" output="false" hint="" >
+	<cffunction name="exists" returntype="boolean" access="public" output="false" hint="" >
 		<cfargument name="ID" type="numeric" required="true" hint="" />
 
-		<cfset var UserExistenceCheck = queryNew("") />
-		<cfquery name="UserExistenceCheck" datasource="test" >
+		<cfset var ExistenceCheck = queryNew("") />
+		<cfquery name="ExistenceCheck" datasource="test" >
 			SELECT #getTableKey()#
 			FROM #getTableName()#
-			WHERE #getTableKey# = <cfqueryparam sqltype="CF_SQL_BIGINT" value="#arguments.ID#" />
+			WHERE #getTableKey()# = <cfqueryparam sqltype="BIGINT" value="#arguments.ID#" />
 		</cfquery>
 
-		<cfif UserExistenceCheck.RecordCount IS 1 >
+		<cfif ExistenceCheck.RecordCount IS 1 >
 			<cfreturn true />
 		</cfif>
 
@@ -156,7 +209,11 @@
 
 	<cffunction name="save" returntype="boolean" access="public" output="false" hint="Persists the current state of the user to the db" >
 
-		<cfif doesUserExist( ID=getUserID() ) IS false >
+		<cfif IsStatic >
+			<cfthrow message="Can't call this method because the instance is not initialized" />
+		</cfif>
+
+		<cfif exists( ID=getUserID() ) IS false >
 			<cfthrow message="You can't update a user that doesn't exist: #getUserID()#" />
 			<cfreturn false />
 		</cfif>
@@ -195,34 +252,42 @@
 		</cftransaction>
 	</cffunction>
 
-	<cffunction name="createNew" returntype="numeric" access="public" hint="Creates a new empty comment in the db, related to a recipe, and returns the ID of the new record" >
-		<cfargument name="UserID" required="true" type="numeric" />
-		<cfargument name="RecipeID" required="true" type="numeric" />
+	<cffunction name="create" returntype="Components.User" access="public" hint="Creates a new empty user in the db and returns an instance of this user" >
 
-		<cfset var CreateComment = queryNew("") />
-
-		<cfset RecipeID( ID=arguments.RecipeID ) />
-		<cfset UserID( ID=arguments.UserID ) />
-		<cfset DateTimeCreated( Date=createODBCTime(now()) ) />
-
-		<cfif getCommentID() GT 0 >
-			<cfthrow message="You can't call create() on an initialized comment: #getCommentID()#" />
+		<cfif IsStatic IS false >
+			<cfthrow message="Can't call method because this instance is already initialized with id: #getUserID()#" />
 		</cfif>
+
+		<cfset var CreateUser = queryNew("") />
+
+		<cfset setDateCreated( Date=createODBCdate(now()) ) />
 
 		<cftransaction action="begin" >
 			<cftry>
-				<cfquery name="CreateComment" datasource="test" >
+				<cfquery name="CreateUser" datasource="test" >
 					INSERT INTO #getTableName()# (
-						RecipeID,
-						CommentText,
-						UserID,
-						DateTimeCreated
+						SessionID,
+						DateCreated,
+						DateTimeLastLogin,
+						Password,
+						TempPassword,
+						UserName,
+						DisplayName,
+						TimesLoggedIn,
+						BrowserLastUsed,
+						Blocked
 					)
 					VALUES (
-						<cfqueryparam sqltype="BIGINT" value="#getRecipeID()#" />,
-						<cfqueryparam sqltype="LONGVARCHAR" value="#getCommentText()#" />,
-						<cfqueryparam sqltype="BIGINT" value="#getUserID()#" />,
-						<cfqueryparam sqltype="TIMESTAMP" value="#getDateTimeCreated()#" />,
+						<cfqueryparam sqltype="UUID" value="#getSessionID()#" />,
+						<cfqueryparam sqltype="DATE" value="#getDateCreated()#" />,
+						<cfqueryparam sqltype="TIMESTAMP" value="#getDateTimeLastLogin()#" />,
+						<cfqueryparam sqltype="LONGVARCHAR" value="#getPassword()#" />,
+						<cfqueryparam sqltype="LONGVARCHAR" value="#getTempPassword()#" />,
+						<cfqueryparam sqltype="LONGVARCHAR" value="#getUserName()#" />,
+						<cfqueryparam sqltype="LONGVARCHAR" value="#getDisplayName()#" />,
+						<cfqueryparam sqltype="INTEGER" value="#getTimesLoggedIn()#" />,
+						<cfqueryparam sqltype="LONGVARCHAR" value="#getBrowserLastUsed()#" />,
+						<cfqueryparam sqltype="BOOLEAN" value="#getBlocked()#" />
 					)
 					RETURNING #getTableKey()#; 
 				</cfquery>
@@ -237,44 +302,51 @@
 			</cftry>
 		</cftransaction>
 
-		<cfset setCommentID( Data=CreateComment.RecipeID ) />
-		<cfreturn CreateComment.RecipeID />
+		<cfset setUserID( ID=CreateUser[ getTableKey() ] ) />
+
+		<cfreturn this />
 	</cffunction>
 
 	<cffunction name="load" returntype="boolean" access="private" output="false" hint="Fills this objects instance with data from the db" >
 
-		<cfset var CommentData = queryNew("") />
+		<cfset var UserData = queryNew("") />
 
-		<cfquery name="CommentData" datasource="test" >
-			SELECT *
+		<cfquery name="UserData" datasource="test" >
+			SELECT SessionID, DateCreated, DateTimeLastLogin, Password, TempPassword, UserName, DisplayName, TimesLoggedIn, BrowserLastUsed, Blocked
 			FROM #getTableName()#
-			WHERE #getTableKey()# = <cfqueryparam sqltype="BIGINT" value="#getCommentID()#" />
+			WHERE #getTableKey()# = <cfqueryparam sqltype="BIGINT" value="#getUserID()#" />
 		</cfquery>
 
-		<cfif GetRecipeData.RecordCount GT 0 >
-			<cfset setCommentID( ID=CommentData.CommentID ) />
-			<cfset setRecipeID( ID=CommentData.RecipeID ) />
-			<cfset setCommentText( Data=CommentText ) />
-			<cfset setUserID( ID=CommentData.UserID ) />
-			<cfset setDateTimeCreated( Date=DateTimeCreated ) />
-
+		<cfif UserData.RecordCount GT 0 >
+			<cfset setSessionID( UUID=UserData.SessionID ) />
+			<cfset setDateCreated( Date=UserData.DateCreated ) />
+			<cfset setDateTimeLastLogin( Time=UserData.DateTimeLastLogin ) />
+			<cfset setPassword( Password=UserData.Password ) />
+			<cfset setTempPassword( Password=UserData.TempPassword ) />
+			<cfset setUserName( Name=UserData.UserName ) />
+			<cfset setDisplayName( Name=UserData.DisplayName ) />
+			<cfset setTimesLoggedIn( Count=UserData.TimesLoggedIn ) />
+			<cfset setBrowserLastUsed( UserAgentString=UserData.BrowserLastUsed ) />
+			<cfset setBlocked( Blocked=UserData.Blocked ) />
 		<cfelse>
-			<cfthrow message="Error when loading recipe data. There appears to be no recipe with this #getTableKey()#: #getCommentID()#" />
+			<cfthrow message="Error when loading user data. There appears to be no userdata with this #getTableKey()#: #getUserID()#" />
 			<cfreturn false />
 		</cfif>
 
 		<cfreturn true />
 	</cffunction>
 
-	<cffunction name="init" access="public" returntype="Components.Comment" output="false" hint="Constructor, returns an initialized comment." >
-		<cfargument name="ID" type="numeric" required="true" hint="" />
+	<cffunction name="init" access="public" returntype="Components.Users" output="false" hint="Constructor, returns an initialized user." >
+		<cfargument name="ID" type="numeric" required="true" hint="The UserID of the user you want to init this instance with" />
 
-		<cfif doesCommentExist( ID=arguments.ID ) IS false >
-			<cfthrow message="Error when initializing comment. No comment with this #getTableKey()# exists: #arguments.ID#" />
+		<cfif exists( ID=arguments.ID ) IS false >
+			<cfthrow message="Error when initializing user. No user with this #getTableKey()# exists: #arguments.ID#" />
 		</cfif>
 
-		<cfset setCommentID( ID=arguments.ID ) >
+		<cfset setUserID( ID=arguments.ID ) >
 		<cfset load() />
+
+		<cfset IsStatic = false />
 
 		<cfreturn this />
 	</cffunction>
