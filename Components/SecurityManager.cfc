@@ -20,14 +20,14 @@
 		<cfset var Password = arrayNew(1) />
 		<cfset var RandomPasswordValue = "" />
 
-		<cfloop from="1" to="8" >
+		<cfloop from="1" to="8" index="index" >
 			<cfset RandomPasswordValue = mid(
 				AllValidChars,
 				randRange(1, len(AllValidChars)),
 				1
 			) />
 
-			<cfset Password = arrayAppend(Password, RandomPasswordValue) />
+			<cfset arrayAppend(Password, RandomPasswordValue) />
 		</cfloop>
 
 		<cfset Password = arrayToList(Password, "") />

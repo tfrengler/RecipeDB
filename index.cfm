@@ -1,1 +1,1 @@
-<cflocation url="Views/Login.cfm" />
+<cflocation url="Views/Login.cfm" addtoken="false" />
