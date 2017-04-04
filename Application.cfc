@@ -1,15 +1,11 @@
 <cfcomponent output="false">
 <cfprocessingdirective pageencoding="utf-8" />
 
-	<cfset THIS.name="RecipeDB">
-	<cfset THIS.applicationtimeout = CreateTimeSpan(0,0,1,0)>
-<!---	<cfset THIS.clientmanagement = false>
-	<cfset THIS.setclientcookies = false>
-	<cfset THIS.setdomaincookies = false>
-	<cfset THIS.sessionmanagement = false>
-	<cfset THIS.sessiontimeout = CreateTimeSpan(0,0,1,0)>
-	<cfset THIS.loginstorage = "cookie">
-	<cfset THIS.invokeImplicitAccessor = true /> --->
+	<cfset this.name="RecipeDB" />
+	<cfset this.applicationtimeout = CreateTimeSpan(0,1,0,0) />
+	<cfset this.sessionmanagement = true />
+	<cfset this.sessiontimeout = CreateTimeSpan(0,0,30,0) />
+	<cfset this.loginstorage = "session" />
 
 	<!--- MAPPINGS --->
 
@@ -22,19 +18,31 @@
 
 	<cffunction name="onApplicationStart" returnType="boolean" output="false">
 
-		<!--- <cfset createObject("Component", "Objects/Server").init() /> --->
+		<cfset this.Settings.Datasource = "dev" />
 
 		<cfreturn true />
-
 	</cffunction>
 
-	<cffunction name="onRequestStart" returnType="boolean" output="false">
+	<cffunction name="onRequestStart" returnType="boolean" output="true">
+		<cfargument type="String" name="targetPage" required=true />
+
+		<cfif find("Login.cfm", arguments.targetPage) IS 0 AND isUserLoggedIn() IS false >
+
+			<cfset createObject("component", "Controllers.Users").doLogout(
+				Reason=1
+			) />
+		</cfif>
 
 		<cfreturn true />
 	</cffunction>
 
 	<cffunction name="onRequestEnd" returntype="boolean" output="false">
 		
+		<cfreturn true />
+	</cffunction>
+
+	<cffunction name="onSessionEnd" returntype="boolean" output="false">
+		<cfset createObject("component", "Controllers.Users").doLogout() />
 		<cfreturn true />
 	</cffunction>
 

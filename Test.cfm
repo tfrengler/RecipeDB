@@ -1,19 +1,18 @@
 <cfprocessingdirective pageencoding="utf-8" />
+<cfoutput>
 
-<cfset User = createObject("component", "Components.User") />
+<!--- <cfset User = createObject("component", "Models.User") />
 
-<cfset Test1 = createObject("component", "Components.User").init(
-	ID=3,
-	Datasource="dev") 
-/>
+<cfset Thomas = User.init(ID=4,Datasource="dev") />
 
-<cfset Test1.changePassword(
-	SecurityManager=createObject("component", "Components.SecurityManager")
+<cfset Thomas.changePassword(
+	Password="test",
+	SecurityManager=createObject("component", "Models.SecurityManager")
 ) />
 
-<cfdump var="#Test1.getPassword()#" />
-<cfdump var="#Test1.getTempPassword()#" />
+<cfset Thomas.save() /> --->
 
+</cfoutput>
 <!--- <cfset Test1.save() /> --->
 
 <!--- <cfset Test1.setUserName(Name="TestUser1") />
