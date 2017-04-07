@@ -16,13 +16,13 @@
 
 		<cfset UserID = StaticUser.getByUsername( 
 			Username=trim(arguments.Username),
-			Datasource="dev"
+			Datasource="#application.Settings.Datasource#"
 		) />
 
 		<cfif UserID GT 0 >
 			<cfset User = createObject("component", "Models.User").init(
 				ID=UserID,
-				Datasource="dev"
+				Datasource="#application.Settings.Datasource#"
 			) />
 		<cfelse>
 			<cfset ReturnData.Code = 1 />
@@ -33,31 +33,46 @@
 		<cfif User.validatePassword( Password=arguments.Password, SecurityManager=Security ) IS false >
 			<cfset ReturnData.Code = 2 />
 			<cfreturn ReturnData />
-			 <!--- Password is incorrect ---> 
+			<!--- Password is incorrect ---> 
+		</cfif>
+
+		<cfif User.getBlocked() IS 1 >
+			<cfset ReturnData.Code = 3 />
+			<cfreturn ReturnData />
+			 <!--- User account is blocked ---> 
 		</cfif>
 
 		<cflogin applicationtoken="RecipeDB" idletimeout="1800" >
-			<cfloginuser name="#User.getUserName()#" password="#User.getPassword()#" roles="User" >
+			<cfloginuser name="#User.getUserName()#" password="#User.getPassword()#" roles="User" />
 		</cflogin>
 
-		<cfset Session.User = User />
+		<cfset User.updateLoginStats(
+			UserAgentString=cgi.http_user_agent
+		) />
+		<cfset User.save() />
+
+		<cflock timeout="30" scope="Session" throwontimeout="true" >
+			<cfset session.CurrentUser = User />
+		</cflock>
 
 		<cfset ReturnData.Result = true />
 		<cfreturn ReturnData />
 	</cffunction>
 
-	<cffunction name="doLogout" access="public" returntype="boolean" output="false" hint="" >
-		<cfargument name="Reason" type="numeric" required="false" default="0" hint="The reason for hitting this function. 1 being session timeout or not logged in. 2 being user manually logged out" />
+	<cffunction name="doLogout" access="remote" returntype="struct" returnformat="JSON" output="false" hint="" >
+		<cfargument name="Reason" type="numeric" required="false" default="0" hint="The reason for logging out. 1 :session not existing. 2 :user manually logged out, and 3 :user is blocked." />
+
+		<cfset var ReturnData = {
+			Result: true,
+			Code: javacast("int", arguments.Reason)
+		} />
 
 		<cflogout>
 
-		<cfloop collection="#session#" index="CurrentSessionScopeKey" >
-			<cfset structDelete(session, CurrentSessionScopeKey) />
-		</cfloop>
+		<cfif arguments.Reason IS 1 >
+			<cflocation url="../Login.cfm?Reason=#arguments.Reason#" addtoken="false" />
+		</cfif>
 
-		<cflocation url="Login.cfm?Reason=#arguments.Reason#" addtoken="false" />
-
-		<cfreturn true />
+		<cfreturn ReturnData />
 	</cffunction>
-
 </cfcomponent>

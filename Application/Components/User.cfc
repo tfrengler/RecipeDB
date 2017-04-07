@@ -97,7 +97,7 @@
 
 	<cffunction name="onStatic" returntype="void" access="private" output="false" hint="" >
 		<cfif IsStatic >
-			<cfthrow message="Can't call this dynamic method because the instance is not initialized" />
+			<cfthrow message="Can't call this method because the instance is not initialized" />
 		</cfif>
 	</cffunction>
 
@@ -202,7 +202,7 @@
 		</cfif>
 	</cffunction>
 
-	<cffunction name="validatePassword" returntype="boolean" access="public" output="false" hint="" >
+	<cffunction name="validatePassword" returntype="boolean" access="public" output="false" hint="Checks the password you pass against the user's password" >
 		<cfargument name="SecurityManager" type="Models.SecurityManager" required="true" hint="A reference to an instance of the SecurityManager object" />
 		<cfargument name="Password" type="string" required="true" default="" hint="The password to validate, unhashed" />
 
@@ -233,16 +233,19 @@
 	</cffunction>
 
 	<cffunction name="updateLoginStats" returntype="void" access="public" output="false" hint="Updates the login count and datetime of last login. Should be called whenever the user successfully logs in." >
+		<cfargument name="UserAgentString" type="string" required="true" hint="The user agent string of the user logging in" />
+
 		<cfset onStatic() />
 
 		<cfset var CurrentLoginCount = getTimesLoggedIn() />
 		<cfset setTimesLoggedIn( Count=CurrentLoginCount+1 ) />
 
 		<cfset setDateTimeLastLogin( Time=createODBCDateTime(now()) ) />
+		<cfset setBrowserLastUsed( UserAgentString=arguments.UserAgentString ) />
 	</cffunction>
 
-	<cffunction name="exists" returntype="boolean" access="public" output="false" hint="Checks whether the object exists or not in the db" >
-		<cfargument name="ID" type="numeric" required="true" hint="" />
+	<cffunction name="exists" returntype="boolean" access="public" output="false" hint="Static method. Checks whether the object exists or not in the db" >
+		<cfargument name="ID" type="numeric" required="true" hint="ID of the user you want to check for" />
 
 		<cfset onInitialized() />
 
@@ -300,7 +303,7 @@
 		</cftransaction>
 	</cffunction>
 
-	<cffunction name="create" returntype="Models.User" access="public" hint="Creates a new empty user in the db and returns an instance of this user" >
+	<cffunction name="create" returntype="Models.User" access="public" hint="Static method. Creates a new empty user in the db and returns an instance of this user" >
 
 		<cfset onInitialized() />
 
@@ -379,9 +382,9 @@
 		<cfreturn true />
 	</cffunction>
 
-	<cffunction name="getData" returntype="any" access="public" output="false" hint="" >
-		<cfargument name="ColumnList" type="string" required="false" default="" hint="" />
-		<cfargument name="ID" type="numeric" required="false" default="0" hint="" />
+	<cffunction name="getData" returntype="any" access="public" output="false" hint="Static method. Fetch data from a specific user or multiple users." >
+		<cfargument name="ColumnList" type="string" required="false" default="" hint="List of columns you want to fetch data from." />
+		<cfargument name="ID" type="numeric" required="false" default="0" hint="ID of the user you want to fetch data for. If you leave this out you get all users." />
 		<cfargument name="Datasource" type="string" required="true" hint="The name of the datasource to use for queries." />
 
 		<cfset onInitialized() />
@@ -414,7 +417,7 @@
 		<cfreturn ObjectData />
 	</cffunction>
  
-	<cffunction name="getByUsername" returntype="numeric" access="public" output="false" hint="Search for a user by username and returns the ID. Returns 0 if nothing is found" >
+	<cffunction name="getByUsername" returntype="numeric" access="public" output="false" hint="Static method. Search for a user by username and returns the ID. Returns 0 if nothing is found" >
 		<cfargument name="Datasource" type="string" required="true" hint="The name of the datasource to use for queries." />
 		<cfargument name="Username" type="string" required="true" hint="The name of the user you're searching for" />
 

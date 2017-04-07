@@ -120,4 +120,14 @@
 
 		</div>
 	</div>
+
+	<script type="text/javascript">
+		$(document).ready(function() {
+			RecipeDB.Recipe.init();
+		});
+
+		$(document).resize(function() {
+			RecipeDB.Recipe.onResize();
+		});
+	</script>
 </body>

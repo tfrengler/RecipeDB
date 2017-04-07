@@ -10,13 +10,14 @@
 	<!--- MAPPINGS --->
 
 	<cfset this.root = getDirectoryFromPath( getCurrentTemplatePath() ) />
-	<cfset this.appdirectory = this.root & "Application\" /> 
-	
-	<cfset this.mappings["/Models"] = (this.appdirectory & "Components/") />
-	<cfset this.mappings["/Assets"] = (this.appdirectory & "Assets/") />
-	<cfset this.mappings["/Views"] = (this.appdirectory & "Views/") />
-	<cfset this.mappings["/Controllers"] = (this.appdirectory & "Controllers/") />
-	<cfset this.mappings["/Modules"] = (this.appdirectory & "Modules/") />
+	<cfset this.loginDirectory = ListDeleteAt(this.root, ListLen(this.root, "\"), "\") />
+
+	<cfset this.mappings["/Login"] = this.loginDirectory & "/" />
+	<cfset this.mappings["/Models"] = (this.root & "Components/") />
+	<cfset this.mappings["/Assets"] = (this.root & "Assets/") />
+	<cfset this.mappings["/Views"] = (this.root & "Views/") />
+	<cfset this.mappings["/Controllers"] = (this.root & "Controllers/") />
+	<cfset this.mappings["/Modules"] = (this.root & "Modules/") />
 
 	<cffunction name="onApplicationStart" returnType="boolean" output="false">
 		<cfset application.Settings.Datasource = "dev" />
@@ -25,11 +26,23 @@
 	</cffunction>
 
 	<cffunction name="onRequestStart" returnType="boolean" output="true">
+		<cfargument name="targetPage" type="string" required=true />
 
+		<cfif isUserLoggedIn() IS false >
+			<cfset createObject("component", "Login.LoginController").doLogout(
+				Reason=1
+			) />
+		</cfif>
+ 		
 		<cfreturn true />
 	</cffunction>
 
 	<cffunction name="onRequestEnd" returntype="boolean" output="false">
+		
+		<cfreturn true />
+	</cffunction>
+
+	<cffunction name="onSessionStart" returntype="boolean" output="false">
 		
 		<cfreturn true />
 	</cffunction>
@@ -41,4 +54,5 @@
 
 		<cfreturn true />
 	</cffunction>
+
 </cfcomponent>
