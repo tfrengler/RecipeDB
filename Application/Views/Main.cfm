@@ -1,4 +1,6 @@
-<!DOCTYPE html> 
+<cfprocessingdirective pageEncoding="utf-8" />
+
+<!DOCTYPE html>
 <html lang="en" >
 
 	<cfinclude template="../Modules/HTMLHead.cfm" />
@@ -6,8 +8,8 @@
 	<body>
 		<cfinclude template="Menu.cfm" />
 
-		<div id="Content" class="container-fluid" >
-			<cfdump var="#variables#" />
+		<div id="MainContent" class="container-fluid" >
+			<!--- <cfdump var="#variables#" />
 			<cfdump var="#session#" />
 			<cfdump var="isUserLoggedIn: #isUserLoggedIn()#" />
 			
@@ -17,7 +19,7 @@
 				WHERE UserID = #session.CurrentUser.getUserID()#
 			</cfquery>
 
-			<cfdump var="#user#" />
+			<cfdump var="#user#" /> --->
 		</div>
 	</body>
 </html>

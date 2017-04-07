@@ -1,17 +1,11 @@
 <cfprocessingdirective pageencoding="utf-8" />
 <cfoutput>
-	
-	<!--- <cfset currentDirectory = getDirectoryFromPath( getCurrentTemplatePath() ) />
-	<cfset parentDirectory = ListDeleteAt(currentDirectory, ListLen(currentDirectory, "\"), "\") />
-	#currentDirectory#<br/>
-	#parentDirectory# --->
 
-<!--- 	<cfset Test = createObject("component", "Models.User") />
+<cfset Test = createObject("component", "Models.User").init(ID=4,Datasource=application.settings.datasource) />
 
-	<cfdump var="#Test#" /> --->
+<cfdump var="#Test.getUsername()#" />
 
-	#isUserLoggedIn()#
-	<cflogout>
-	#isUserLoggedIn()#
+<cfset Test.setBlocked(Blocked=false) />
+<cfset Test.save() />
 
 </cfoutput>

@@ -215,3 +215,9 @@
 	margin-bottom: 1em;
 	border-radius: 4px;
 }
+
+/* USER SETTINGS PAGE */
+
+#UserSettings-Form {
+	max-width: 20em;
+}

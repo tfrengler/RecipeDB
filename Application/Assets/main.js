@@ -1,6 +1,8 @@
 "use strict";
 
-var RecipeDB = {};
+var RecipeDB = {
+	MainContentContainerID: "MainContent"
+};
 
 /* RECIPE VIEW */
 
@@ -69,7 +71,8 @@ RecipeDB.Menu = {
 	MenuOptionsID :"menu-options",
 	CloseButtonID: "Close-Menu-Button",
 	OpenButtonID: "Open-Menu-Button",
-	LogoutOptionID: "Logout"
+	LogoutOptionID: "Logout",
+	UserSettingsOptionID: "UserSettings"
 };
 
 RecipeDB.Menu.SetMenuDimensions = function() {
@@ -108,6 +111,10 @@ RecipeDB.Menu.init = function() {
 	$("#" + this.LogoutOptionID).click(function() {
 		RecipeDB.Menu.Logout();
 	});
+
+	$("#" + this.UserSettingsOptionID).click(function() {
+		RecipeDB.Menu.UserSettings();
+	});
 };
 
 RecipeDB.Menu.Logout = function() {
@@ -128,6 +135,29 @@ RecipeDB.Menu.Logout = function() {
 		// 	RecipeDB.Menu.OnLogoutError(ResponseData);
 		// }
 	});
+};
+
+RecipeDB.Menu.UserSettings = function() {
+	$.ajax({
+		type: "post",
+		url: "../Controllers/UserController.cfc",
+		data: {
+			method: "UserSettings"
+		},
+		dataType: "html",
+
+		success: function(ResponseData) {
+			RecipeDB.Menu.OnGetUserSettingsComplete(ResponseData);
+		}
+		//,
+		// error: function(ResponseData) {
+		// 	RecipeDB.Menu.OnLogoutError(ResponseData);
+		// }
+	});
+};
+
+RecipeDB.Menu.OnGetUserSettingsComplete = function(AjaxResponse) {
+	$("#" + RecipeDB.MainContentContainerID).html(AjaxResponse);
 };
 
 RecipeDB.Menu.OnLogoutComplete = function(AjaxResponse) {
@@ -227,6 +257,21 @@ RecipeDB.LoginPage.init = function() {
 	$('#Login-Button').click(function() {
 		RecipeDB.LoginPage.attemptLogin();
 	});
+};
+
+/* USER SETTINGS */
+
+RecipeDB.UserSettings = {
+	DisplayNameBoxID: "DisplayName",
+	UsernameBoxID: "Username",
+	PasswordBoxID: "SecretKey",
+	AccountCreationDateBoxID: "AccountCreationDate",
+	LoginCountBoxID: "TimesLoggedIn",
+	BrowserLastUsedBoxID: "BrowserLastUsed"
+};
+
+RecipeDB.UserSettings.init = function() {
+
 };
 
 /* UTILITIES */

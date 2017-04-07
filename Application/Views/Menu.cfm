@@ -10,7 +10,7 @@
 		<li><a href="#">Add recipe</a></li>
 		<li><a href="#">Find recipes</a></li>
 		<li><a id="Logout" href="#">Logout</a></li>
-		<li><a href="#">My settings</a></li>
+		<li><a id="UserSettings" href="#">My settings</a></li>
 		<li><a href="#">Statistics</a></li>
 		<li><a href="#">Favorites</a></li>
 	</ul>

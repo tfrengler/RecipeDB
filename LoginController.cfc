@@ -59,7 +59,7 @@
 		<cfreturn ReturnData />
 	</cffunction>
 
-	<cffunction name="doLogout" access="remote" returntype="struct" returnformat="JSON" output="false" hint="" >
+	<cffunction name="doLogout" access="remote" returntype="struct" returnformat="JSON" output="true" hint="" >
 		<cfargument name="Reason" type="numeric" required="false" default="0" hint="The reason for logging out. 1 :session not existing. 2 :user manually logged out, and 3 :user is blocked." />
 
 		<cfset var ReturnData = {
@@ -70,7 +70,13 @@
 		<cflogout>
 
 		<cfif arguments.Reason IS 1 >
-			<cflocation url="../Login.cfm?Reason=#arguments.Reason#" addtoken="false" />
+			<cfoutput>
+			<script>
+			<!--- This feels dirty and dumb, but the cflocation does not work for requests coming through AJAX calls to CFC methods which expect HTML in return, grrrr --->
+				window.location.replace("../../Login.cfm?Reason=#arguments.Reason#"); 
+			<!--- <cflocation url="../../Login.cfm?Reason=#arguments.Reason#" addtoken="false" /> --->
+			</script>
+			</cfoutput>
 		</cfif>
 
 		<cfreturn ReturnData />
