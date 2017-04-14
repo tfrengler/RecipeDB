@@ -115,14 +115,16 @@ RecipeDB.Menu.init = function() {
 	$("#" + this.UserSettingsOptionID).click(function() {
 		RecipeDB.Menu.UserSettings();
 	});
+
+	this.Hide();
 };
 
 RecipeDB.Menu.Logout = function() {
 	$.ajax({
 		type: "post",
-		url: "../../LoginController.cfc",
+		url: "../../AuthenticationManager.cfc",
 		data: {
-			method: "doLogout",
+			method: "gracefulLogout",
 			Reason: 2
 		},
 		dataType: "json",
@@ -130,10 +132,6 @@ RecipeDB.Menu.Logout = function() {
 		success: function(ResponseData) {
 			RecipeDB.Menu.OnLogoutComplete(ResponseData);
 		}
-		//,
-		// error: function(ResponseData) {
-		// 	RecipeDB.Menu.OnLogoutError(ResponseData);
-		// }
 	});
 };
 
@@ -142,17 +140,13 @@ RecipeDB.Menu.UserSettings = function() {
 		type: "post",
 		url: "../Controllers/UserController.cfc",
 		data: {
-			method: "UserSettings"
+			method: "getUserSettingsView"
 		},
 		dataType: "html",
 
 		success: function(ResponseData) {
 			RecipeDB.Menu.OnGetUserSettingsComplete(ResponseData);
 		}
-		//,
-		// error: function(ResponseData) {
-		// 	RecipeDB.Menu.OnLogoutError(ResponseData);
-		// }
 	});
 };
 
@@ -160,13 +154,7 @@ RecipeDB.Menu.OnGetUserSettingsComplete = function(AjaxResponse) {
 	$("#" + RecipeDB.MainContentContainerID).html(AjaxResponse);
 };
 
-RecipeDB.Menu.OnLogoutComplete = function(AjaxResponse) {
-
-	if (AjaxResponse.Result === false && AjaxResponse.Code !== 2) {
-		console.warn("OnLogoutComplete() did not receive the expected logout response:");
-		console.log(AjaxResponse);
-	};
-	
+RecipeDB.Menu.OnLogoutComplete = function(AjaxResponse) {	
 	window.location.replace("../../Login.cfm?Reason=2");
 };
 
@@ -198,7 +186,7 @@ RecipeDB.LoginPage.attemptLogin = function() {
 
 	$.ajax({
 		type: "post",
-		url: "LoginController.cfc",
+		url: "AuthenticationManager.cfc",
 		data: {
 			method: "attemptLogin",
 			password: Password,
@@ -231,14 +219,8 @@ RecipeDB.LoginPage.OnLoginComplete = function(AjaxResponse) {
 	$('#' + this.MessageBoxID).hide();
 
 	if (AjaxResponse.Result === false) {
-		if (AjaxResponse.Code === 1) {
-			$('#' + this.MessageBoxID).html("The username is wrong or does not exist");
-		}
-		else if (AjaxResponse.Code === 2) {
-			$('#' + this.MessageBoxID).html("The password is wrong");
-		}
-		else if (AjaxResponse.Code === 3) {
-			$('#' + this.MessageBoxID).html("This user account is blocked");
+		if (AjaxResponse.Code > 0) {
+			$('#' + this.MessageBoxID).html("Your username and/or password is wrong");
 		}
 
 		$('#' + this.MessageBoxID).fadeIn(1000);
@@ -271,6 +253,14 @@ RecipeDB.UserSettings = {
 };
 
 RecipeDB.UserSettings.init = function() {
+
+};
+
+/* MAIN */
+
+RecipeDB.Main = {};
+
+RecipeDB.Main.init = function() {
 
 };
 

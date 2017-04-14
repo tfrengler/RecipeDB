@@ -2,10 +2,12 @@
 <cfprocessingdirective pageencoding="utf-8" />
 
 	<cfset this.name="RecipeDB" />
-	<cfset this.applicationtimeout = CreateTimeSpan(0,1,0,0) />
+	<cfset this.applicationtimeout = CreateTimeSpan(1,0,0,0) />
 	<cfset this.sessionmanagement = true />
-	<cfset this.sessiontimeout = CreateTimeSpan(0,0,30,0) />
+	<cfset this.sessiontimeout = CreateTimeSpan(0,0,35,0) />
 	<cfset this.loginstorage = "session" />
+	<cfset this.setClientCookies = true />
+	<cfset this.scriptProtect = "all" />
 
 	<!--- MAPPINGS --->
 
@@ -25,34 +27,18 @@
 		<cfreturn true />
 	</cffunction>
 
-	<cffunction name="onRequestStart" returnType="boolean" output="true">
-		<cfargument name="targetPage" type="string" required=true />
+	<cffunction name="onRequestStart" returnType="boolean" output="true" >
 
 		<cfif isUserLoggedIn() IS false >
-			<cfset createObject("component", "Login.LoginController").doLogout(
-				Reason=1
-			) />
+			<cfset createObject("component", "Login.LoginController").forceLogout() />
+			<cfreturn false />
 		</cfif>
  		
 		<cfreturn true />
 	</cffunction>
 
-	<cffunction name="onRequestEnd" returntype="boolean" output="false">
-		
-		<cfreturn true />
-	</cffunction>
-
-	<cffunction name="onSessionStart" returntype="boolean" output="false">
-		
-		<cfreturn true />
-	</cffunction>
-
 	<cffunction name="onSessionEnd" returntype="boolean" output="false">
-		<cfloop collection="#session#" index="CurrentSessionScopeKey" >
-			<cfset structDelete(session, CurrentSessionScopeKey) />
-		</cfloop>
-
+		<cfset createObject("component", "LoginController").clearSession() />
 		<cfreturn true />
 	</cffunction>
-
 </cfcomponent>

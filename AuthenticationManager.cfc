@@ -56,11 +56,12 @@
 		</cflock>
 
 		<cfset ReturnData.Result = true />
+
 		<cfreturn ReturnData />
 	</cffunction>
 
-	<cffunction name="doLogout" access="remote" returntype="struct" returnformat="JSON" output="true" hint="" >
-		<cfargument name="Reason" type="numeric" required="false" default="0" hint="The reason for logging out. 1 :session not existing. 2 :user manually logged out, and 3 :user is blocked." />
+	<cffunction name="gracefulLogout" access="remote" returntype="struct" returnformat="JSON" output="false" hint="" >
+		<cfargument name="Reason" type="numeric" required="false" default="0" hint="The reason for logging out. 1: session not existing. 2: user manually logged out, and 3: user is blocked." />
 
 		<cfset var ReturnData = {
 			Result: true,
@@ -69,16 +70,34 @@
 
 		<cflogout>
 
-		<cfif arguments.Reason IS 1 >
-			<cfoutput>
-			<script>
-			<!--- This feels dirty and dumb, but the cflocation does not work for requests coming through AJAX calls to CFC methods which expect HTML in return, grrrr --->
-				window.location.replace("../../Login.cfm?Reason=#arguments.Reason#"); 
-			<!--- <cflocation url="../../Login.cfm?Reason=#arguments.Reason#" addtoken="false" /> --->
-			</script>
-			</cfoutput>
-		</cfif>
+		<cfset clearSession() />
 
 		<cfreturn ReturnData />
+	</cffunction>
+
+	<cffunction name="forceLogout" access="remote" returntype="void" output="true" hint="" >
+		<cflogout>
+
+		<cfset clearSession() />
+
+		<cfheader name="Content-Type" value="text/html;charset=UTF-8" />
+		<script>
+			window.location.replace("../../Login.cfm?Reason=1"); 
+		</script>
+	</cffunction>
+
+	<cffunction name="clearSession" access="remote" returntype="void" output="true" hint="" >
+
+		<cfcookie name="CFID" value="" expires="NOW" />
+		<cfcookie name="CFTOKEN" value="" expires="NOW" />
+
+		<cflock timeout="30" scope="Session" throwontimeout="true" >
+			<cfset structClear(session) />
+
+			<cfloop collection="#session#" index="CurrentSessionScopeKey" >
+				<cfset structDelete(session, CurrentSessionScopeKey) />
+			</cfloop>
+		</cflock>
+
 	</cffunction>
 </cfcomponent>

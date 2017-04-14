@@ -13,11 +13,11 @@
 <form id="UserSettings-Form" class="olive-wrapper-grey-background center-block" >
 
 	<span id="DisplayNameLegend">DISPLAY NAME:</span> 
-	<input id="DisplayName" class="form-control" type="text" value="#attributes.DisplayName#" />
+	<input id="DisplayName" class="form-control" type="text" value="#encodeForHTML( attributes.DisplayName )#" />
 	<br/>
 
 	<span id="UsernameLegend">USERNAME:</span> 
-	<input id="Username" class="form-control" type="text" value="#attributes.Username#" />
+	<input id="Username" class="form-control" type="text" value="#encodeForHTML( attributes.Username )#" />
 	<br/>
 
 	<span id="PasswordLegend">PASSWORD:</span>
@@ -25,15 +25,15 @@
 	<br/>
 
 	<span id="AccountCreationDateLegend">ACCOUNT CREATED:</span> 
-	<input id="AccountCreationDate" class="form-control" type="text" value="#attributes.AccountCreationDate#" disabled="disabled" />
+	<input id="AccountCreationDate" class="form-control" type="text" value="#encodeForHTML( DateFormat(attributes.AccountCreationDate, "dd/mm/yyyy") )#" disabled="disabled" />
 	<br/>
 
 	<span id="TimesLoggedInLegend">TIMES LOGGED IN:</span> 
-	<input id="TimesLoggedIn" class="form-control" type="text" value="#attributes.TimesLoggedIn#" disabled="disabled" />
+	<input id="TimesLoggedIn" class="form-control" type="text" value="#encodeForHTML( attributes.TimesLoggedIn )#" disabled="disabled" />
 	<br/>
 
 	<span id="BrowserLastUsedLegend">LOGGED IN WITH BROWSER:</span> 
-	<input id="BrowserLastUsed" class="form-control" type="text" value="#attributes.BrowserLastUsed#" disabled="disabled" />
+	<input id="BrowserLastUsed" class="form-control" type="text" value="#encodeForHTML( attributes.BrowserLastUsed )#" disabled="disabled" />
 	<br/>
 
 	<input id="Login-Button" type="button" value="SAVE CHANGES" class="standard-button btn-block" />

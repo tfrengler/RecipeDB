@@ -1,7 +1,7 @@
 <cfcomponent output="false" >
 <cfprocessingdirective pageEncoding="utf-8" />
 
-	<cffunction name="UserSettings" access="remote" returntype="string" returnformat="plain" output="false" hint="" >
+	<cffunction name="getUserSettingsView" access="remote" returntype="string" returnformat="plain" output="false" hint="" >
 
 		<cfset var ReturnData = "" />
 		<cfset var ViewArguments = {} />

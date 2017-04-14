@@ -3,6 +3,7 @@
 
 	<cfset UserID = 0 />
 	<cfset DateCreated = createDate(1666, 6, 6) />
+	<cfset DateTimePreviousLogin = createDateTime(1666, 6, 6, 6, 6, 6) />
 	<cfset DateTimeLastLogin = createDateTime(1666, 6, 6, 6, 6, 6) />
 	<cfset Password = "" />
 	<cfset TempPassword = "" />
@@ -19,6 +20,12 @@
 
 	<cffunction name="getUserID" access="public" returntype="numeric" output="false" hint="" >
 		<cfreturn UserID />
+	</cffunction>
+
+	<cffunction name="getDateTimePreviousLogin" access="public" returntype="date" output="false" hint="" >
+		<cfset onStatic() />
+
+		<cfreturn DateTimePreviousLogin />
 	</cffunction>
 
 	<cffunction name="getDateCreated" access="public" returntype="date" output="false" hint="" >
@@ -112,19 +119,25 @@
 	<cffunction name="setUserID" access="private" output="false" hint="" >
 		<cfargument name="ID" type="numeric" required="true" hint="" />
 
-		<cfset UserID = arguments.ID />
+		<cfset variables.UserID = arguments.ID />
+	</cffunction>
+
+	<cffunction name="setDateTimePreviousLogin" access="private" output="false" hint="" >
+		<cfargument name="Date" type="date" required="true" hint="" />
+
+		<cfset variables.DateTimePreviousLogin = arguments.Date />
 	</cffunction>
 
 	<cffunction name="setDateCreated" access="private" output="false" hint="" >
 		<cfargument name="Date" type="date" required="true" hint="" />
 
-		<cfset DateCreated = arguments.Date />
+		<cfset variables.DateCreated = arguments.Date />
 	</cffunction>
 
 	<cffunction name="setDateTimeLastLogin" access="private" output="false" hint="" >
 		<cfargument name="Time" type="date" required="true" hint="" />
 
-		<cfset DateTimeLastLogin = arguments.Time />
+		<cfset variables.DateTimeLastLogin = arguments.Time />
 	</cffunction>
 
 	<cffunction name="setPassword" access="private" output="false" hint="" >
@@ -136,31 +149,31 @@
 	<cffunction name="setTempPassword" access="private" output="false" hint="" >
 		<cfargument name="Password" type="string" required="true" hint="" />
 
-		<cfset TempPassword = arguments.Password />
+		<cfset variables.TempPassword = arguments.Password />
 	</cffunction>
 
 	<cffunction name="setUserName" access="public" output="false" hint="" >
 		<cfargument name="Name" type="string" required="true" hint="" />
 
-		<cfset UserName = arguments.Name />
+		<cfset variables.UserName = arguments.Name />
 	</cffunction>
 
 	<cffunction name="setDisplayName" access="public" output="false" hint="" >
 		<cfargument name="Name" type="string" required="true" hint="" />
 
-		<cfset DisplayName = arguments.Name />
+		<cfset variables.DisplayName = arguments.Name />
 	</cffunction>
 
 	<cffunction name="setTimesLoggedIn" access="private" output="false" hint="" >
 		<cfargument name="Count" type="numeric" required="true" hint="" />
 
-		<cfset TimesLoggedIn = arguments.Count />
+		<cfset variables.TimesLoggedIn = arguments.Count />
 	</cffunction>
 
 	<cffunction name="setBrowserLastUsed" access="public" output="false" hint="" >
 		<cfargument name="UserAgentString" type="string" required="true" hint="" />
 
-		<cfset BrowserLastUsed = arguments.UserAgentString />
+		<cfset variables.BrowserLastUsed = arguments.UserAgentString />
 	</cffunction>
 
 	<cffunction name="setBlocked" access="public" output="false" hint="" >
@@ -172,7 +185,7 @@
 	<cffunction name="setDataSource" access="private" output="false" hint="" >
 		<cfargument name="Name" type="string" required="true" hint="" />
 
-		<cfset DatasourceName = arguments.Name />
+		<cfset variables.DatasourceName = arguments.Name />
 	</cffunction>
 
 	<!--- Methods --->
@@ -239,6 +252,8 @@
 
 		<cfset var CurrentLoginCount = getTimesLoggedIn() />
 		<cfset setTimesLoggedIn( Count=CurrentLoginCount+1 ) />
+
+		<cfset setDateTimePreviousLogin( Date=getDateTimeLastLogin() ) />
 
 		<cfset setDateTimeLastLogin( Time=createODBCDateTime(now()) ) />
 		<cfset setBrowserLastUsed( UserAgentString=arguments.UserAgentString ) />
@@ -443,16 +458,20 @@
 		<cfargument name="ID" type="numeric" required="true" hint="The UserID of the user you want to init this instance with." />
 		<cfargument name="Datasource" type="string" required="true" hint="The name of the datasource to use for queries." />
 
-		<cfset setDataSource( Name= trim(arguments.Datasource) ) />
+		<cfif len(arguments.Datasource) IS 0 >
+			<cfthrow message="Error when initializing user. The datasource argument appears to be empty" />
+		</cfif>
 
-		<cfif exists( ID=arguments.ID ) IS false >
+		<cfset variables.setDataSource( Name= trim(arguments.Datasource) ) />
+
+		<cfif variables.exists( ID=arguments.ID ) IS false >
 			<cfthrow message="Error when initializing user. No user with this #getTableKey()# exists: #arguments.ID#" />
 		</cfif>
 
-		<cfset setUserID( ID=arguments.ID ) >
-		<cfset load() />
+		<cfset variables.setUserID( ID=arguments.ID ) >
+		<cfset variables.load() />
 
-		<cfset IsStatic = false />
+		<cfset variables.IsStatic = false />
 
 		<cfreturn this />
 	</cffunction>
