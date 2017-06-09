@@ -1,4 +1,4 @@
-<cfcomponent output="false" >
+<cfcomponent output="false" extends="Model" >
 <cfprocessingdirective pageEncoding="utf-8" />
 
 	<cfset UserID = 0 />
@@ -13,8 +13,9 @@
 	<cfset BrowserLastUsed = "" />
 	<cfset Blocked = true />
 
-	<cfset DatasourceName = "" />
-	<cfset IsStatic = true />
+	<cfset TableName = "Users" />
+	<cfset TableKey = "UserID" />
+	<cfset TableColumns = "DateCreated,DateTimeLastLogin,Password,TempPassword,UserName,DisplayName,TimesLoggedIn,BrowserLastUsed,Blocked" />
 
 	<!--- Getters --->
 
@@ -82,38 +83,6 @@
 		<cfreturn Blocked />
 	</cffunction>
 
-	<cffunction name="getDatasource" access="public" returntype="string" output="false" hint="" >
-		<cfreturn DatasourceName />
-	</cffunction>
-
-	<!--- Table mappings --->
-
-	<cffunction name="getTableName" returntype="string" access="public" output="false" hint="" >
-		<cfreturn "Users" />
-	</cffunction> 
-
-	<cffunction name="getTableKey" returntype="string" access="public" output="false" hint="" >
-		<cfreturn "UserID" />
-	</cffunction>
-
-	<cffunction name="getTableColumns" returntype="string" access="public" output="false" hint="" >
-		<cfreturn "DateCreated,DateTimeLastLogin,Password,TempPassword,UserName,DisplayName,TimesLoggedIn,BrowserLastUsed,Blocked" />
-	</cffunction>
-
-	<!--- Static method support --->
-
-	<cffunction name="onStatic" returntype="void" access="private" output="false" hint="" >
-		<cfif IsStatic >
-			<cfthrow message="Can't call this method because the instance is not initialized" />
-		</cfif>
-	</cffunction>
-
-	<cffunction name="onInitialized" returntype="void" access="public" output="false" hint="" >
-		<cfif IsStatic IS false >
-			<cfthrow message="Can't call this static method because this instance is already initialized with id: #getUserID()#" />
-		</cfif>
-	</cffunction>
-
 	<!--- Setters --->
 
 	<cffunction name="setUserID" access="private" output="false" hint="" >
@@ -142,6 +111,10 @@
 
 	<cffunction name="setPassword" access="private" output="false" hint="" >
 		<cfargument name="Password" type="string" required="true" hint="" />
+
+		<cfif len(arguments.Password) LT 8 >
+			<cfthrow message="Password must be bigger than 8 characters" />
+		</cfif>
 
 		<cfset variables.Password = arguments.Password />
 	</cffunction>
@@ -180,12 +153,6 @@
 		<cfargument name="Blocked" type="boolean" required="true" hint="" />
 
 		<cfset variables.Blocked = arguments.Blocked />
-	</cffunction>
-
-	<cffunction name="setDataSource" access="private" output="false" hint="" >
-		<cfargument name="Name" type="string" required="true" hint="" />
-
-		<cfset variables.DatasourceName = arguments.Name />
 	</cffunction>
 
 	<!--- Methods --->
@@ -374,7 +341,7 @@
 		<cfset var UserData = queryNew("") />
 
 		<cfquery name="UserData" datasource="#getDatasource()#" >
-			SELECT #getTableColumns()#
+			SELECT #getTableKey()#
 			FROM #getTableName()#
 			WHERE #getTableKey()# = <cfqueryparam sqltype="BIGINT" value="#getUserID()#" />
 		</cfquery>
@@ -411,14 +378,14 @@
 		<cfif len(arguments.ColumnList) GT 0 >
 
 			<cfloop list="#arguments.ColumnList#" index="CurrentColumn" >
-				<cfif listFindNoCase(getTableColumns(), CurrentColumn) IS 0 >
+				<cfif listFindNoCase("#getTableKey()#,#getTableColumns()#", CurrentColumn) IS 0 >
 					<cfthrow message="The column '#CurrentColumn#' you are trying to get data for is not a valid column in the #getTableName()#-table. Valid columns are: #getTableColumns()#" />
 				</cfif>
 			</cfloop>
 
 			<cfset Columns = arguments.ColumnList />
 		<cfelse>
-			<cfset Columns = (getTableKey() & "," & getTableColumns()) />
+			<cfset Columns = "#getTableKey()#,#getTableColumns()#" />
 		</cfif>
 
 		<cfquery name="ObjectData" datasource="#arguments.Datasource#" >

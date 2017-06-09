@@ -1,4 +1,4 @@
-<cfcomponent output="false" >
+<cfcomponent output="false" extends="Model" >
 <cfprocessingdirective pageEncoding="utf-8"  />
 
 	<cfset CommentID = 0 />
@@ -6,6 +6,10 @@
 	<cfset CommentText = "" />
 	<cfset UserID = 0 />
 	<cfset DateTimeCreated = createDateTime(666, 6, 6, 0, 0) />
+
+	<cfset TableName = "Comments" />
+	<cfset TableKey = "CommentID" />
+	<cfset TableColumns = "RecipeID,CommentText,UserID,DateTimeCreated" />
 
 	<!--- Getters --->
 
@@ -75,7 +79,7 @@
 		<cfargument name="ID" type="numeric" required="true" hint="" />
 
 		<cfset var CommentExistenceCheck = queryNew("") />
-		<cfquery name="CommentExistenceCheck" datasource="test" >
+		<cfquery name="CommentExistenceCheck" datasource="#getDatasource()#" >
 			SELECT #getTableKey()#
 			FROM #getTableName()#
 			WHERE #getTableKey# = <cfqueryparam sqltype="CF_SQL_BIGINT" value="#arguments.ID#" />
@@ -99,7 +103,7 @@
 		
 		<cftransaction action="begin" >
 			<cftry>
-				<cfquery name="UpdateComment" datasource="test" >
+				<cfquery name="UpdateComment" datasource="#getDatasource()#" >
 					UPDATE #getTableName()#
 					SET	
 						RecipeID = <cfqueryparam sqltype="BIGINT" value="#getRecipeID()#" />,
@@ -139,7 +143,7 @@
 
 		<cftransaction action="begin" >
 			<cftry>
-				<cfquery name="CreateComment" datasource="test" >
+				<cfquery name="CreateComment" datasource="#getDatasource()#" >
 					INSERT INTO #getTableName()# (
 						RecipeID,
 						CommentText,
@@ -173,7 +177,7 @@
 
 		<cfset var CommentData = queryNew("") />
 
-		<cfquery name="CommentData" datasource="test" >
+		<cfquery name="CommentData" datasource="#getDatasource()#" >
 			SELECT *
 			FROM #getTableName()#
 			WHERE #getTableKey()# = <cfqueryparam sqltype="BIGINT" value="#getCommentID()#" />
@@ -203,7 +207,7 @@
 		</cfif>
 
 		<cfset var CommentData = queryNew() />
-		<cfquery name="CommentData" datasource="test" >
+		<cfquery name="CommentData" datasource="#getDatasource()#" >
 			SELECT #arguments.ColumnList#
 			FROM #getTableName()#
 			WHERE #getTableKey()# = #arguments.ID#

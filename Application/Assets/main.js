@@ -19,8 +19,26 @@ RecipeDB.Main.DOM.ElementData = {
 	}
 };
 
-RecipeDB.Main.init = function() {
+RecipeDB.Main.Methods.onGetViewComplete = function(AjaxResponse) {
+	if (AjaxResponse instanceof String == false) {
+		String( AjaxResponse )
+	};
 
+	$("#" + RecipeDB.Main.DOM.ElementData.MainContentContainer.ID).html( AjaxResponse );
+};
+
+RecipeDB.Main.Methods.onAJAXCallStart = function() {
+	$('#' + RecipeDB.Main.DOM.ElementData.MainContentContainer.ID).html("<img class='center-block ajax-loader-container' src='../Assets/Pictures/Standard/ajax-loader.gif' />");
+};
+
+RecipeDB.Main.Methods.onAJAXCallError = function(AjaxResponse) {
+	$('#' + RecipeDB.Main.DOM.ElementData.MainContentContainer.ID).html("<br/><div class='error-box col-md-2 col-md-offset-5' >Oh noes, something went wrong :( <br/>Please try again or contact the admin");
+	$('.error-box').show();
+	console.warn(AjaxResponse);
+};
+
+RecipeDB.Main.init = function() {
+	console.log("Main init complete");
 };
 
 /* LOGIN.CFM */
@@ -91,15 +109,18 @@ RecipeDB.LoginPage.Methods = {
 				RecipeDB.LoginPage.Methods.onLoginError(arguments);
 			},
 			beforeSend: function() {
-				$('#' + RecipeDB.LoginPage.DOM.ElementData.LoginButton.ID).prop("disabled", true);
-				$('#' + RecipeDB.LoginPage.DOM.ElementData.LoginButton.ID).val("OK");
-				$('#' + RecipeDB.LoginPage.DOM.ElementData.LoginButton.ID).addClass("ajax-loading");
+				RecipeDB.Utils.ajaxLoadButton(
+					true,
+					$('#' + RecipeDB.LoginPage.DOM.ElementData.LoginButton.ID).prop("disabled", true)
+				);
 			
 			},
 			complete: function() {
-				$('#' + RecipeDB.LoginPage.DOM.ElementData.LoginButton.ID).prop("disabled", false);
-				$('#' + RecipeDB.LoginPage.DOM.ElementData.LoginButton.ID).removeClass("ajax-loading");
-				$('#' + RecipeDB.LoginPage.DOM.ElementData.LoginButton.ID).val("OK");
+				RecipeDB.Utils.ajaxLoadButton(
+					false,
+					$('#' + RecipeDB.LoginPage.DOM.ElementData.LoginButton.ID).prop("disabled", true),
+					"OK"
+				);
 			}
 		});
 	},
@@ -121,7 +142,11 @@ RecipeDB.LoginPage.Methods = {
 	},
 
 	onLoginError: function(AjaxResponse) {
+		$('#' + RecipeDB.LoginPage.DOM.ElementData.MessageBox.ID).hide();
+
 		$('#' + RecipeDB.LoginPage.DOM.ElementData.MessageBox.ID).html("Internal error. Please try again or contact the administrator");
+		$('#' + RecipeDB.LoginPage.DOM.ElementData.MessageBox.ID).fadeIn(1000);
+
 		console.warn(AjaxResponse);
 	}
 };
@@ -201,6 +226,10 @@ RecipeDB.Menu.DOM.ElementData = {
 
 	UserSettingsOption: {
 		ID: "UserSettings"
+	},
+
+	AddRecipeOption: {
+		ID: "AddRecipe"
 	}
 }
 
@@ -227,6 +256,10 @@ RecipeDB.Menu.init = function() {
 		RecipeDB.Menu.Methods.getUserSettings();
 	});
 
+	$("#" + RecipeDB.Menu.DOM.ElementData.AddRecipeOption.ID).click(function() {
+		RecipeDB.Menu.Methods.getAddRecipe();
+	});
+
 	RecipeDB.Menu.Methods.hide();
 };
 
@@ -242,6 +275,12 @@ RecipeDB.Menu.Methods = {
 			},
 			dataType: "json",
 
+			beforeSend: function() {
+				RecipeDB.Main.Methods.onAJAXCallStart();
+			},
+			error: function() {
+				RecipeDB.Main.Methods.onAJAXCallError(arguments);
+			},
 			success: function(ResponseData) {
 				RecipeDB.Menu.Methods.onLogoutComplete(ResponseData);
 			}
@@ -257,14 +296,37 @@ RecipeDB.Menu.Methods = {
 			},
 			dataType: "html",
 
+			beforeSend: function() {
+				RecipeDB.Main.Methods.onAJAXCallStart();
+			},
+			error: function() {
+				RecipeDB.Main.Methods.onAJAXCallError(arguments);
+			},
 			success: function(ResponseData) {
-				RecipeDB.Menu.Methods.onGetUserSettingsComplete(ResponseData);
+				RecipeDB.Main.Methods.onGetViewComplete(ResponseData);
 			}
 		});
 	},
 
-	onGetUserSettingsComplete: function(AjaxResponse) {
-		$("#" + RecipeDB.Main.DOM.ElementData.MainContentContainer.ID).html( String(AjaxResponse) );
+	getAddRecipe: function() {
+		$.ajax({
+			type: "post",
+			url: "../Controllers/RecipeController.cfc",
+			data: {
+				method: "getAddRecipeView"
+			},
+			dataType: "html",
+
+			beforeSend: function() {
+				RecipeDB.Main.Methods.onAJAXCallStart();
+			},
+			error: function() {
+				RecipeDB.Main.Methods.onAJAXCallError(arguments);
+			},
+			success: function(ResponseData) {
+				RecipeDB.Main.Methods.onGetViewComplete(ResponseData);
+			}
+		});
 	},
 
 	onLogoutComplete: function(AjaxResponse) {
@@ -356,94 +418,235 @@ RecipeDB.Recipe.init = function() {
 	});
 };
 
-RecipeDB.Recipe.Methods = {
+RecipeDB.Recipe.Methods.onResize = function() {
+	RecipeDB.Recipe.Methods.setSectionDimensions();
+	RecipeDB.Recipe.Methods.setPictureEditDimensions();
+};
 
-	onResize: function() {
-		RecipeDB.Recipe.Methods.setSectionDimensions();
-		RecipeDB.Recipe.Methods.setPictureEditDimensions();
-	},
+RecipeDB.Recipe.Methods.setSectionDimensions: function() {
 
-	setSectionDimensions: function() {
+	RecipeDB.Recipe.DOM.ElementData.DescriptionBody.Height = parseFloat( 
+		$("#" + RecipeDB.Recipe.DOM.ElementData.DescriptionBody.ID).css("height") 
+	);
 
-		RecipeDB.Recipe.DOM.ElementData.DescriptionBody.Height = parseFloat( 
-			$("#" + RecipeDB.Recipe.DOM.ElementData.DescriptionBody.ID).css("height") 
-		);
+	RecipeDB.Recipe.DOM.ElementData.IngredientsBody.Height = parseFloat( 
+		$("#" + RecipeDB.Recipe.DOM.ElementData.IngredientsBody.ID).css("height") 
+	);
 
-		RecipeDB.Recipe.DOM.ElementData.IngredientsBody.Height = parseFloat( 
-			$("#" + RecipeDB.Recipe.DOM.ElementData.IngredientsBody.ID).css("height") 
-		);
+	RecipeDB.Recipe.DOM.ElementData.InstructionsBody.Height = parseFloat( 
+		$("#" + RecipeDB.Recipe.DOM.ElementData.InstructionsBody.ID).css("height") 
+	);
 
-		RecipeDB.Recipe.DOM.ElementData.InstructionsBody.Height = parseFloat( 
-			$("#" + RecipeDB.Recipe.DOM.ElementData.InstructionsBody.ID).css("height") 
-		);
+	RecipeDB.Recipe.DOM.ElementData.CommentsBody.Height = parseFloat( 
+		$("#" + RecipeDB.Recipe.DOM.ElementData.CommentsBody.ID).css("height") 
+	);
 
-		RecipeDB.Recipe.DOM.ElementData.CommentsBody.Height = parseFloat( 
-			$("#" + RecipeDB.Recipe.DOM.ElementData.CommentsBody.ID).css("height") 
-		);
+	RecipeDB.Recipe.DOM.ElementData.StatusBody.Height = parseFloat( 
+		$("#" + RecipeDB.Recipe.DOM.ElementData.StatusBody.ID).css("height") 
+	);
 
-		RecipeDB.Recipe.DOM.ElementData.StatusBody.Height = parseFloat( 
-			$("#" + RecipeDB.Recipe.DOM.ElementData.StatusBody.ID).css("height") 
-		);
+};
 
-	},
+RecipeDB.Recipe.Methods.setPictureEditDimensions = function() {
 
-	setPictureEditDimensions: function() {
+	$('#' + RecipeDB.Recipe.DOM.ElementData.PictureEdit.ID).css(
+		'height', 
+		$('#' + RecipeDB.Recipe.DOM.ElementData.Picture.ID).css('height')
+	);
 
-		$('#' + RecipeDB.Recipe.DOM.ElementData.PictureEdit.ID).css(
-			'height', 
-			$('#' + RecipeDB.Recipe.DOM.ElementData.Picture.ID).css('height')
-		);
+	$('#' + RecipeDB.Recipe.DOM.ElementData.PictureEdit.ID).css(
+		'width', 
+		$('#' + RecipeDB.Recipe.DOM.ElementData.Picture.ID).css('width')
+	);
 
-		$('#' + RecipeDB.Recipe.DOM.ElementData.PictureEdit.ID).css(
-			'width', 
-			$('#' + RecipeDB.Recipe.DOM.ElementData.Picture.ID).css('width')
-		);
+};
 
-	},
+RecipeDB.Recipe.Methods.openCloseSection = function(Caller) {
 
-	openCloseSection: function(Caller) {
+	var HeaderSection = Caller;
+	var BodySection = Caller.nextElementSibling;
+	var DesiredHeight = 0;
+	var Key = "";
+	var CurrentElementData = {};
+
+	for (Key in RecipeDB.Recipe.DOM.ElementData) {
+		CurrentElementData = RecipeDB.Recipe.DOM.ElementData[Key];
 		
-		var HeaderSection = Caller;
-		var BodySection = Caller.nextElementSibling;
-		var DesiredHeight = 0;
-		var Key = "";
-		var CurrentElementData = {};
-
-		for (Key in RecipeDB.Recipe.DOM.ElementData) {
-			CurrentElementData = RecipeDB.Recipe.DOM.ElementData[Key];
-			
-			if ( CurrentElementData.ID === BodySection.id) {
-				DesiredHeight = CurrentElementData.Height;
-				break;
-			}
-		};
-
-		if (typeof DesiredHeight === 'undefined' ) {
-			console.warn("DesiredHeight is undefined :(");
-			return false;
-		};
-
-		if ( $(BodySection).css("display") == "block" ) {
-			$(BodySection).animate({height: 0}, 500, function() {
-				$(BodySection).hide();
-				$(HeaderSection).css({display: "block", "text-align": "center"});
-			});
+		if ( CurrentElementData.ID === BodySection.id) {
+			DesiredHeight = CurrentElementData.Height;
+			break;
 		}
-		else {
-			$(BodySection).show();
-			$(BodySection).animate({height: DesiredHeight}, 500, function() {
-				$(BodySection).css("height", "");
-				$(HeaderSection).css({display: "inline-block", "text-align": ""});
-			});
-		}
+	};
+
+	if (typeof DesiredHeight === 'undefined' ) {
+		console.warn("DesiredHeight is undefined :(");
+		return false;
+	};
+
+	if ( $(BodySection).css("display") == "block" ) {
+		$(BodySection).animate({height: 0}, 500, function() {
+			$(BodySection).hide();
+			$(HeaderSection).css({display: "block", "text-align": "center"});
+		});
 	}
+	else {
+		$(BodySection).show();
+		$(BodySection).animate({height: DesiredHeight}, 500, function() {
+			$(BodySection).css("height", "");
+			$(HeaderSection).css({display: "inline-block", "text-align": ""});
+		});
+	}
+};
+
+RecipeDB.Recipe.Methods.onRecipeAdded = function(NewRecipeID) {
+	$.ajax({
+		type: "post",
+		url: "../Controllers/RecipeController.cfc",
+		data: {
+			method: "getRecipeView",
+			recipeID: 0
+		},
+		dataType: "json",
+
+		success: function(ResponseData) {
+			RecipeDB.Main.Methods.onGetViewComplete(ResponseData);
+		},
+		error: function() {
+			RecipeDB.Main.Methods.onAJAXCallError(arguments);
+		},
+		beforeSend: function() {
+			RecipeDB.Main.Methods.onAJAXCallStart();
+		},
+		complete: function() {
+
+		}
+	});	
+};
+
+/* ADD RECIPE.CFM */
+
+RecipeDB.AddRecipe = {
+	DOM: {
+		Pointers: {},
+		ElementData: {}
+	},
+	Methods: {}
+};
+
+RecipeDB.AddRecipe.DOM.ElementData = {
+	DuplicateAlertBox: {
+		ID: "AddRecipe-DuplicateAlertBox"
+	},
+	AddRecipeButton: {
+		ID: "AddNewRecipe-Button"
+	},
+	AddRecipeAnywayFlag: {
+		ID: "AddNewRecipe-Anyway"
+	},
+	NewRecipeName: {
+		ID: "AddRecipe-Name"
+	},
+	MessageBox: {
+		ID: "AddRecipe-MessageBox"
+	},
+	DuplicateCheckBox: {
+		ID: "DuplicateCheck"
+	}
+};
+
+RecipeDB.AddRecipe.Methods.addNewRecipe = function() {
+	var RecipeName = $("#" + RecipeDB.AddRecipe.DOM.ElementData.NewRecipeName.ID).val();
+	var CheckForDuplicates = $("#" + RecipeDB.AddRecipe.DOM.ElementData.DuplicateCheckBox.ID).prop("checked");
+	var AddNewRecipeAnyway = $("#" + RecipeDB.AddRecipe.DOM.ElementData.AddRecipeAnywayFlag.ID).val();;
+
+	if ( AddNewRecipeAnyway == 1) {
+		CheckForDuplicates = false;
+	};
+
+	$('#' + RecipeDB.AddRecipe.DOM.ElementData.DuplicateAlertBox.ID).hide();
+
+	if (RecipeName.length === "" || RecipeName.length === 0) {
+		$("#" + RecipeDB.AddRecipe.DOM.ElementData.MessageBox.ID).html("The name of the recipe can't be blank. Please fill in something.");
+		$("#" + RecipeDB.AddRecipe.DOM.ElementData.MessageBox.ID).fadeIn(1000);
+		return false;
+	};
+
+	$.ajax({
+		type: "post",
+		url: "../Controllers/RecipeController.cfc",
+		data: {
+			method: "addNewRecipe",
+			Name: RecipeName,
+			CheckForDuplicates: CheckForDuplicates
+		},
+		dataType: "json",
+
+		success: function(ResponseData) {
+			RecipeDB.Utils.ajaxLoadButton(
+				false,
+				$('#' + RecipeDB.AddRecipe.DOM.ElementData.AddRecipeButton.ID),
+				"OK"
+			);
+			RecipeDB.AddRecipe.Methods.onAddRecipeSuccess(ResponseData);
+		},
+		error: function() {
+			RecipeDB.Main.Methods.onAJAXCallError(arguments);
+		},
+		beforeSend: function() {
+			$("#" + RecipeDB.AddRecipe.DOM.ElementData.MessageBox.ID).hide().html("");
+
+			RecipeDB.Utils.ajaxLoadButton(
+				true,
+				$('#' + RecipeDB.AddRecipe.DOM.ElementData.AddRecipeButton.ID)
+			);
+		},
+		complete: function() {
+
+		}
+	});
+};
+
+RecipeDB.AddRecipe.Methods.onAddRecipeSuccess = function(AjaxResponse) {
+	if (AjaxResponse instanceof Object === false && typeof AjaxResponse.NewRecipeID === "undefined") {
+		RecipeDB.Main.onAJAXCallError();
+	};
+
+	if (AjaxResponse.DuplicatesFound === true) {
+		$('#' + RecipeDB.AddRecipe.DOM.ElementData.DuplicateAlertBox.ID).html( AjaxResponse.DuplicatesView );
+		$('#' + RecipeDB.AddRecipe.DOM.ElementData.DuplicateAlertBox.ID).fadeIn(1000);
+		$("#" + RecipeDB.AddRecipe.DOM.ElementData.AddRecipeButton.ID).val("ADD ANYWAY");
+		$("#" + RecipeDB.AddRecipe.DOM.ElementData.AddRecipeAnywayFlag.ID).val(1);
+		return false;
+	}
+
+	RecipeDB.Recipe.Methods.onRecipeAdded( AjaxResponse.NewRecipeID );
+};
+
+RecipeDB.AddRecipe.init = function() {
+	$("#" + RecipeDB.AddRecipe.DOM.ElementData.AddRecipeButton.ID).click(function() {
+		RecipeDB.AddRecipe.Methods.addNewRecipe(false);
+	});
+};
+
+/* DUPLICATES RECIPES LIST CFM */
+
+RecipeDB.DuplicatesRecipesList = {
+	DOM: {
+		Pointers: {},
+		ElementData: {}
+	},
+	Methods: {}
+};
+
+RecipeDB.DuplicatesRecipesList.init = function() {
+
 };
 
 /* UTILITIES */
 
 RecipeDB.Utils = {};
 
-RecipeDB.Utils.UpperCaseStructKeys = function(Structure) {
+RecipeDB.Utils.upperCaseStructKeys = function(Structure) {
 	var ReturnData = {};
 	var Key = {};
 
@@ -452,4 +655,19 @@ RecipeDB.Utils.UpperCaseStructKeys = function(Structure) {
 	};
 
 	return ReturnData;
+};
+
+RecipeDB.Utils.ajaxLoadButton = function(Enable, DOMPointer, Label) {
+
+	if (Enable) {
+		DOMPointer.prop("disabled", true);
+		DOMPointer.val("");
+		DOMPointer.addClass("ajax-loading");
+	}
+	else {
+		DOMPointer.prop("disabled", false);
+		DOMPointer.removeClass("ajax-loading");
+		DOMPointer.val( Label );
+	};
+
 };

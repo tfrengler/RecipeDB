@@ -1,8 +1,47 @@
  /* General use */
+a {
+	color: #92CD00;
+}
+
+a:hover {
+	color: #2C6700;
+}
+
+.error-box {
+	border-style: solid;
+	border-width: 1px;
+	display: none;
+	font-weight: bold;
+	color: #a94442;
+	background-color: #f2dede;
+	text-align: center;
+	padding: 1em;
+	margin-bottom: 1em;
+	border-radius: 4px;
+}
+
+.warning-box {
+	border-style: solid;
+	border-width: 1px;
+	display: none;
+	font-weight: bold;
+	color: #a94442;
+	background-color: #f2dede;
+	text-align: center;
+	padding: 1em;
+	margin-bottom: 1em;
+	border-radius: 4px;
+}
+
 .ajax-loading {
 	background-image: url("../Assets/Pictures/Standard/ajax-loader.gif");
 	background-repeat: no-repeat;
 	background-position: center;
+}
+
+.ajax-loader-container {
+	max-width: 20em;
+	margin-top: 2em;
 }
 
 .inline-block {
@@ -218,6 +257,14 @@
 
 /* USER SETTINGS PAGE */
 
-#UserSettings-Form {
-	max-width: 20em;
+/* ADD RECIPE PAGE */
+
+#AddRecipe-DuplicateAlertBox li {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+#AddNewRecipe-Button {
+	width: 50%;
 }

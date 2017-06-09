@@ -1,135 +1,137 @@
 <cfprocessingdirective pageEncoding="utf-8" />
 
-<!DOCTYPE html> 
-<html lang="en" >
+<cfparam name="attributes.RecipeID" default="0" />
+<cfparam name="attributes.Name" default="[no name]" />
+<cfparam name="attributes.DateCreated" default="" />
+<cfparam name="attributes.DateTimeLastModified" default="" />
+<cfparam name="attributes.CreatedByUser" default="" />
+<cfparam name="attributes.LastModifiedByUser" default="" />
+<cfparam name="attributes.Ingredients" default="[no Ingredients]" />
+<cfparam name="attributes.Description" default="[no description]" />
+<cfparam name="attributes.Picture" default="" />
+<cfparam name="attributes.Instructions" default="[no Instructions]" />
+<cfparam name="attributes.Comments" default="#arrayNew(1)#" />
 
-<cfinclude template="/Modules/HTMLHead.cfm" />
+<cfoutput>
 
-<body>
-	<cfinclude template="Menu.cfm" />
+<div id="Recipe-Container" class="row" >
 
-	<div id="Content" class="container-fluid" >
-		<div id="Recipe-Container" class="row" >
+	<div class="recipe col-md-6 col-md-offset-3" >
 
-			<div class="recipe col-md-6 col-md-offset-3" >
+		<div class="row">
+			<div id="Recipe-Title-Container" class="olive-text-color-center" >
+				<h3 id="Recipe-Title" >#attributes.Name#</h3>
+				<!-- <input id="Recipe-Title-Edit" class="h3" type="text" value="TITLE OF RECIPE" /> -->
+			</div>
+			
+			<div id="Recipe-Picture-Container" class="center-block recipe-picture" >
+				<!-- <div id="Recipe-Picture-Edit-Container" >
+					<div id="Recipe-Picture-Edit" >CLICK TO CHANGE</div>
+				</div> -->
+				<img id="Recipe-Picture" src="../Assets/Pictures/Standard/foodexample.jpg" class="img-responsive img-thumbnail" />
+			</div>
+		</div>
+		<br/>
 
-				<div class="row">
-					<div id="Recipe-Title-Container" class="olive-text-color-center" >
-						<h3 id="Recipe-Title" >TITLE OF RECIPE</h3>
-						<!-- <input id="Recipe-Title-Edit" class="h3" type="text" value="TITLE OF RECIPE" /> -->
-					</div>
-					
-					<div id="Recipe-Picture-Container" class="center-block recipe-picture" >
-						<!-- <div id="Recipe-Picture-Edit-Container" >
-							<div id="Recipe-Picture-Edit" >CLICK TO CHANGE</div>
-						</div> -->
-						<img id="Recipe-Picture" src="../Assets/Pictures/Standard/foodexample.jpg" class="img-responsive img-thumbnail" />
-					</div>
-				</div>
-				<br/>
+	<cfif attributes.CreatedByUser EQ session.CurrentUser.getUserId() >
+		<div class="row">
+			<div id="Recipe-Toolbar" class="olive-wrapper-white-background" >
+				<span id="Edit-Recipe-Button" class="standard-button" >Make editable</span>
+				<span id="Save-Recipe-Button" class="standard-button" >Save changes</span>
+			</div>
+		</div>
+		<br/>
+	</cfif>
 
-				<div class="row">
-					<div id="Recipe-Toolbar" class="olive-wrapper-white-background" >
-						<span id="Edit-Recipe-Button" class="standard-button" >Make editable</span>
-						<span id="Save-Recipe-Button" class="standard-button" >Save changes</span>
-					</div>
-				</div>
-				<br/>
+		<div class="row" >
+			<div name="Recipe-Header" id="Description-Header" class="recipe-section-header inline-block standard-top-radius" >DESCRIPTION</div>
+			<div id="Description-Body" class="recipe-section-body" >
 
-				<div class="row" >
-					<div name="Recipe-Header" id="Description-Header" class="recipe-section-header inline-block standard-top-radius" >DESCRIPTION</div>
-					<div id="Description-Body" class="recipe-section-body" >
-
-						<p id="Recipe-Description-Container" >Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-						</p>
-						<!-- <textarea id="Recipe-Description-Edit" ></textarea> -->
-
-					</div>
-				</div>
-				<br/>
-
-				<div class="row" >
-					<div name="Recipe-Header" id="Ingredients-Header" class="recipe-section-header inline-block standard-top-radius" >INGREDIENTS</div>
-					<div id="Ingredients-Body" class="recipe-section-body" >
-
-						<p id="Recipe-Ingredients-Container" >
-							<ul>
-								<li>Ingredient 1</li>
-								<li>Ingredient 1</li>
-								<li>Ingredient 1</li>
-								<li>Ingredient 1</li>
-								<li>Ingredient 1</li>
-								<li>Ingredient 1</li>
-							</ul>
-						</p>
-						<!-- <textarea id="Recipe-Ingredients-Edit" ></textarea> -->
-
-					</div>
-				</div>
-				<br/>
-
-				<div class="row" >
-					<div name="Recipe-Header" id="Instructions-Header" class="recipe-section-header inline-block standard-top-radius" >INSTRUCTIONS</div>
-					<div id="Instructions-Body" class="recipe-section-body" >
-
-						<p id="Recipe-Instructions-Container" >Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.<br/><br/>
-
-						Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?</p>
-						<!-- <textarea id="Recipe-Instructions-Edit" ></textarea> -->
-
-					</div>
-				</div>
-				<br/>
-
-				<div class="row" >
-					<div name="Recipe-Header" id="Comments-Header" class="recipe-section-header inline-block standard-top-radius" >COMMENTS</div>
-					<div id="Comments-Body" class="recipe-section-body" >
-
-						<div id="Comments-Container" >
-							<p id="Comment_123456" >
-								<div class="standard-olive-wrapper olive-background-color" >Thomas | 27-03-1984 13:37</div>
-								<div class="standard-olive-wrapper" >COMMENT</div>
-							</p>
-							<p id="Comment_123456" >
-								<div class="standard-olive-wrapper olive-background-color" >Carlette | 29-09-1983 14:47</div>
-								<div class="standard-olive-wrapper" >COMMENT</div>
-							</p>
-						</div>
-						<div id="Recipe-Comments-Toolbar" >
-							<span id="Comments-AddNew" class="standard-button" >Add comment</span>
-						</div>
-
-					</div>
-				</div>
-				<br/>
-
-				<div class="row" >
-					<div name="Recipe-Header" id="Status-Header" class="recipe-section-header inline-block standard-top-radius" >STATUS</div>
-					<div id="Status-Body" class="recipe-section-body" >
-
-						<div id="Recipe-Status-Container" >
-							<p>Created by: XXX</p>
-							<p>Date created: XXX</p>
-							<p>Modified by: XXX</p>
-							<p>Date modified: XXX</p>
-						</div>
-
-					</div>
-				</div>
-				<br/>
+				<p id="Recipe-Description-Container" >
+					#attributes.Description#
+				</p>
+				<!-- <textarea id="Recipe-Description-Edit" ></textarea> -->
 
 			</div>
-
 		</div>
+		<br/>
+
+		<div class="row" >
+			<div name="Recipe-Header" id="Ingredients-Header" class="recipe-section-header inline-block standard-top-radius" >INGREDIENTS</div>
+			<div id="Ingredients-Body" class="recipe-section-body" >
+
+				<p id="Recipe-Ingredients-Container" >
+					#attributes.Ingredients#
+				</p>
+				<!-- <textarea id="Recipe-Ingredients-Edit" ></textarea> -->
+
+			</div>
+		</div>
+		<br/>
+
+		<div class="row" >
+			<div name="Recipe-Header" id="Instructions-Header" class="recipe-section-header inline-block standard-top-radius" >INSTRUCTIONS</div>
+			<div id="Instructions-Body" class="recipe-section-body" >
+
+				<p id="Recipe-Instructions-Container" >
+					#attributes.Description#
+				</p>
+				<!-- <textarea id="Recipe-Instructions-Edit" ></textarea> -->
+
+			</div>
+		</div>
+		<br/>
+
+		<div class="row" >
+			<div name="Recipe-Header" id="Comments-Header" class="recipe-section-header inline-block standard-top-radius" >COMMENTS</div>
+			<div id="Comments-Body" class="recipe-section-body" >
+
+				<div id="Comments-Container" >
+					<p id="Comment_123456" >
+						<div class="standard-olive-wrapper olive-background-color" >Thomas | 27-03-1984 13:37</div>
+						<div class="standard-olive-wrapper" >COMMENT</div>
+					</p>
+					<p id="Comment_123456" >
+						<div class="standard-olive-wrapper olive-background-color" >Carlette | 29-09-1983 14:47</div>
+						<div class="standard-olive-wrapper" >COMMENT</div>
+					</p>
+				</div>
+				<div id="Recipe-Comments-Toolbar" >
+					<span id="Comments-AddNew" class="standard-button" >Add comment</span>
+				</div>
+
+			</div>
+		</div>
+		<br/>
+
+		<div class="row" >
+			<div name="Recipe-Header" id="Status-Header" class="recipe-section-header inline-block standard-top-radius" >STATUS</div>
+			<div id="Status-Body" class="recipe-section-body" >
+
+				<div id="Recipe-Status-Container" >
+					<p>RecipeID: #attributes.RecipeID#</p>
+					<p>Created by: #attributes.CreatedByUser#</p>
+					<p>Date created: #attributes.DateCreated#</p>
+					<p>Modified by: #attributes.LastModifiedByUser#</p>
+					<p>Date modified: #attributes.DateTimeLastModified#</p>
+				</div>
+
+			</div>
+		</div>
+		<br/>
+
 	</div>
 
-	<script type="text/javascript">
-		$(document).ready(function() {
-			RecipeDB.Recipe.init();
-		});
+</div>
 
-		$(document).resize(function() {
-			RecipeDB.Recipe.onResize();
-		});
-	</script>
-</body>
+</cfoutput>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		RecipeDB.Recipe.init();
+	});
+
+	$(document).resize(function() {
+		RecipeDB.Recipe.onResize();
+	});
+</script>

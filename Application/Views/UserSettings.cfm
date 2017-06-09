@@ -10,7 +10,7 @@
 
 <h1 id="UserSettings-Welcome" class="olive-text-color-center" >My Settings</h1>
 
-<form id="UserSettings-Form" class="olive-wrapper-grey-background center-block" >
+<form id="UserSettings-Form" class="olive-wrapper-grey-background col-md-4 col-md-offset-4" >
 
 	<span id="DisplayNameLegend">DISPLAY NAME:</span> 
 	<input id="DisplayName" class="form-control" type="text" value="#encodeForHTML( attributes.DisplayName )#" />
@@ -36,11 +36,11 @@
 	<input id="BrowserLastUsed" class="form-control" type="text" value="#encodeForHTML( attributes.BrowserLastUsed )#" disabled="disabled" />
 	<br/>
 
-	<input id="Login-Button" type="button" value="SAVE CHANGES" class="standard-button btn-block" />
+	<input id="Save-UserSettings-Button" type="button" value="SAVE CHANGES" class="standard-button btn-block" />
 
 </form>
 
-<div id="Login-MessageBox" class="center-block" ></div>
+<div id="UserSettings-MessageBox" class="center-block" ></div>
 
 <script type="text/javascript">
 	$(document).ready(function() {

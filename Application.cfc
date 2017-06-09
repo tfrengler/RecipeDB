@@ -28,7 +28,7 @@
 
 	<cffunction name="onSessionEnd" returntype="boolean" output="false">
 		
-		<cfset createObject("component", "LoginController").clearSession() />
+		<cfset createObject("component", "AuthenticationManager").clearSession() />
 
 		<cfreturn true />
 	</cffunction>

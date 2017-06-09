@@ -30,7 +30,7 @@
 	<cffunction name="onRequestStart" returnType="boolean" output="true" >
 
 		<cfif isUserLoggedIn() IS false >
-			<cfset createObject("component", "Login.LoginController").forceLogout() />
+			<cfset createObject("component", "Login.AuthenticationManager").forceLogout() />
 			<cfreturn false />
 		</cfif>
  		
@@ -38,7 +38,7 @@
 	</cffunction>
 
 	<cffunction name="onSessionEnd" returntype="boolean" output="false">
-		<cfset createObject("component", "LoginController").clearSession() />
+		<cfset createObject("component", "Login.AuthenticationManager").clearSession() />
 		<cfreturn true />
 	</cffunction>
 </cfcomponent>

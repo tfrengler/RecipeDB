@@ -6,12 +6,33 @@
 	#currentDirectory#<br/>
 	#parentDirectory# --->
 
-<!--- 	<cfset Test = createObject("component", "Models.User") />
+<!--- 	<cfset Test = createObject("component", "Models.User") />--->
 
-	<cfdump var="#Test#" /> --->
+	<!--- <cfdump var="#session.CurrentUser.getUserID()#" abort="true" /> --->
 
-	#isUserLoggedIn()#
-	<cflogout>
-	#isUserLoggedIn()#
+	<cfset RecipeInterface = createObject("component", "Models.Recipe").init(
+		ID=4,
+		Datasource=application.Settings.Datasource
+	) />
+
+	<cfdump var="#RecipeInterface.getCreatedByUser()#" />
+
+<!--- 	<cfset RecipeInterface.createNew(
+		UserID=session.CurrentUser.getUserID(),
+		Name="Test recipe 1",
+		Datasource=application.Settings.Datasource
+	) />
+
+	<cfset RecipeInterface.createNew(
+		UserID=session.CurrentUser.getUserID(),
+		Name="Test recipe 2",
+		Datasource=application.Settings.Datasource
+	) />
+
+	<cfset RecipeInterface.createNew(
+		UserID=session.CurrentUser.getUserID(),
+		Name="Test recipe 3",
+		Datasource=application.Settings.Datasource
+	) /> --->
 
 </cfoutput>
