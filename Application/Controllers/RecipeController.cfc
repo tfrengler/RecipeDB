@@ -40,7 +40,7 @@
 		<cfargument name="CheckForDuplicates" type="boolean" required="false" default="true" />
 
 		<cfif len(arguments.Name) IS 0 >
-			<cfthrow message="The name of the new recipe must not be empty" />
+			<cfthrow message="Error adding new recipe" detail="The name of the new recipe must not be empty. This should have been caught on the front end." />
 		</cfif>
 
 		<cfset var ReturnData = {
@@ -53,8 +53,11 @@
 		<cfset var MatchingRecipes = queryNew("RecipeID,Name") />
 		<cfset var RecipeInterface = createObject("component", "Models.Recipe") />
 		<cfset var RecipesByName = queryNew("RecipeID,Name") />
-		<cfset var DuplicateRecipeObjects = arrayNew(1, true) />
+		<cfset var DuplicateRecipes = arrayNew(1, true) />
 		<cfset var RecipeCounter = 0 />
+		<cfset var CurrentRecipeID = 0 />
+		<cfset var CurrentRecipe = "" />
+		<cfset var DuplicateRecipeData = structNew() />
 
 		<cfif arguments.CheckForDuplicates >
 
@@ -75,24 +78,30 @@
 				<cfset ViewArguments.DuplicateAmount = MatchingRecipes.RecordCount />
 
 				<cfloop list="#valueList(MatchingRecipes.RecipeID)#" index="CurrentRecipeID" >
-					
+
+					<cfset DuplicateRecipeData = structNew() />
+
 					<cfif RecipeCounter GT 50 >
 						<cfset ViewArguments.ExcessDuplicateAmount = (MatchingRecipes.RecordCount - 50) />
 						<cfbreak/>
 					</cfif>
 
-					<cfset arrayAppend(
-						DuplicateRecipeObjects,  
-						createObject("component", "Models.Recipe").init( 
+					<cfset CurrentRecipe = createObject("component", "Models.Recipe").init( 
 							ID=CurrentRecipeID,
 							Datasource=application.Settings.Datasource
-						)
-					) >
+						) 
+					/>
+
+					<cfset DuplicateRecipeData.ID = CurrentRecipe.getRecipeID() />
+					<cfset DuplicateRecipeData.Name = CurrentRecipe.getName() />
+					<cfset DuplicateRecipeData.Owner = CurrentRecipe.getCreatedByUser().getDisplayName() />
+
+					<cfset arrayAppend(DuplicateRecipes, DuplicateRecipeData) >
 					<cfset RecipeCounter = (RecipeCounter + 1) />
 
 				</cfloop>
 
-				<cfset ViewArguments.DuplicateRecipeObjects = DuplicateRecipeObjects />
+				<cfset ViewArguments.DuplicateRecipes = DuplicateRecipes />
 
 				<cfsavecontent variable="ReturnData.DuplicatesView" >
 					<cfmodule template="/Views/DuplicateRecipesList.cfm" attributecollection="#ViewArguments#" >

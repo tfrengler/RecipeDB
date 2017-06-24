@@ -88,6 +88,8 @@
 
 	<cffunction name="clearSession" access="remote" returntype="void" output="true" hint="" >
 
+		<cfset var CurrentSessionScopeKey = "" />
+
 		<cfcookie name="CFID" value="" expires="NOW" />
 		<cfcookie name="CFTOKEN" value="" expires="NOW" />
 

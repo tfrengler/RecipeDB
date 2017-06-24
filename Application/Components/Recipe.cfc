@@ -158,7 +158,7 @@
 
 		<cfset onStatic() />
 
-		<cfif doesRecipeExist( ID=getRecipeID() ) IS false >
+		<cfif exists( ID=getRecipeID() ) IS false >
 			<cfthrow message="You can't update a recipe that doesn't exist: #getRecipeID()#" />
 			<cfreturn false />
 		</cfif>
@@ -195,7 +195,7 @@
 		</cftransaction>
 	</cffunction>
 
-	<cffunction name="createNew" returntype="numeric" access="public" hint="Static method. Creates a new empty recipe in the db, returns the ID of the new record" output="true" >
+	<cffunction name="createNew" returntype="numeric" access="public" hint="Static method. Creates a new empty recipe in the db, returns the ID of the new record" output="false" >
 		<cfargument name="UserID" required="true" type="numeric" />
 		<cfargument name="Name" required="true" type="string" />
 		<cfargument name="Datasource" type="string" required="true" hint="The name of the datasource to use for queries." />

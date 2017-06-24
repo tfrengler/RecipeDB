@@ -4,7 +4,7 @@
 	<cfset CommentID = 0 />
 	<cfset RecipeID = 0 />
 	<cfset CommentText = "" />
-	<cfset UserID = 0 />
+	<cfset CreatedByUser = "" />
 	<cfset DateTimeCreated = createDateTime(666, 6, 6, 0, 0) />
 
 	<cfset TableName = "Comments" />
@@ -13,61 +13,61 @@
 
 	<!--- Getters --->
 
-	<cffunction name="getCommentID" access="public" output="false" hint="" >
-			<cfreturn CommentID />
+	<cffunction name="getCommentID" returntype="numeric" access="public" output="false" hint="" >
+		<cfreturn CommentID />
 	</cffunction>
 
-	<cffunction name="getRecipeID" access="public" output="false" hint="" >
-			<cfreturn RecipeID />
+	<cffunction name="getRecipeID" returntype="numeric" access="public" output="false" hint="" >
+		<cfreturn RecipeID />
 	</cffunction>
 
-	<cffunction name="getCommentText" access="public" output="false" hint="" >
-			<cfreturn CommentText />
+	<cffunction name="getCommentText" returntype="string" access="public" output="false" hint="" >
+		<cfreturn CommentText />
 	</cffunction>
 
-	<cffunction name="getUserID" access="public" output="false" hint="" >
-			<cfreturn UserID />
+	<cffunction name="getCreatedByUser" returntype="Models.User" access="public" output="false" hint="" >
+		<cfreturn CreatedByUser />
 	</cffunction>
 
-	<cffunction name="getDateTimeCreated" access="public" output="false" hint="" >
-			<cfreturn DateTimeCreated />
+	<cffunction name="getDateTimeCreated" returntype="date" access="public" output="false" hint="" >
+		<cfreturn DateTimeCreated />
 	</cffunction>
 
-	<cffunction name="getTableName" access="public" output="false" hint="" >
-			<cfreturn "Comments" />
+	<cffunction name="getTableName" returntype="string" access="public" output="false" hint="" >
+		<cfreturn "Comments" />
 	</cffunction>
 
-	<cffunction name="getTableKey" access="public" output="false" hint="" >
-			<cfreturn "CommentID" />
+	<cffunction name="getTableKey" returntype="string" access="public" output="false" hint="" >
+		<cfreturn "CommentID" />
 	</cffunction>
 
 	<!--- Setters --->
 
-	<cffunction name="setCommentID" access="private" output="false" hint="" >
+	<cffunction name="setCommentID" returntype="void" access="private" output="false" hint="" >
 		<cfargument name="ID" type="numeric" required="true" hint="" />
 
 		<cfset CommentID = arguments.ID />
 	</cffunction>
 
-	<cffunction name="setRecipeID" access="private" output="false" hint="" >
+	<cffunction name="setRecipeID" returntype="void" access="private" output="false" hint="" >
 		<cfargument name="ID" type="numeric" required="true" hint="" />
 
 		<cfset RecipeID = arguments.ID />
 	</cffunction>
 
-	<cffunction name="setCommentText" access="public" output="false" hint="" >
+	<cffunction name="setCommentText" returntype="void" access="public" output="false" hint="" >
 		<cfargument name="Data" type="string" required="true" hint="" />
 
 		<cfset CommentText = arguments.Data />
 	</cffunction>
 
-	<cffunction name="setUserID" access="private" output="false" hint="" >
-		<cfargument name="ID" type="numeric" required="true" hint="" />
+	<cffunction name="setCreatedByUser" returntype="void" access="private" output="false" hint="" >
+		<cfargument name="UserInstance" type="Models.User" required="true" hint="" />
 
-		<cfset UserID = arguments.ID />
+		<cfset CreatedByUser = arguments.ID />
 	</cffunction>
 
-	<cffunction name="setDateTimeCreated" access="private" output="false" hint="" >
+	<cffunction name="setDateTimeCreated" returntype="void" access="private" output="false" hint="" >
 		<cfargument name="Date" type="date" required="true" hint="" />
 
 		<cfset DateCreated = arguments.Date />
@@ -75,8 +75,10 @@
 
 	<!--- Methods --->
 
-	<cffunction name="doesCommentExist" returntype="boolean" access="private" output="false" hint="" >
+	<cffunction name="exists" returntype="boolean" access="private" output="false" hint="" >
 		<cfargument name="ID" type="numeric" required="true" hint="" />
+
+		<cfset onInitialized() />
 
 		<cfset var CommentExistenceCheck = queryNew("") />
 		<cfquery name="CommentExistenceCheck" datasource="#getDatasource()#" >
@@ -93,6 +95,8 @@
 	</cffunction>
 
 	<cffunction name="save" returntype="boolean" access="public" output="false" hint="Persists the current state of the comment to the db" >
+
+		<cfset onStatic() />
 
 		<cfif doesCommentExist( ID=getCommentID() ) IS false >
 			<cfthrow message="You can't update a comment that doesn't exist: #getCommentID()#" />
@@ -131,15 +135,13 @@
 		<cfargument name="UserID" required="true" type="numeric" />
 		<cfargument name="RecipeID" required="true" type="numeric" />
 
+		<cfset onInitialized() />
+
 		<cfset var CreateComment = queryNew("") />
 
-		<cfset RecipeID( ID=arguments.RecipeID ) />
-		<cfset UserID( ID=arguments.UserID ) />
-		<cfset DateTimeCreated( Date=createODBCTime(now()) ) />
-
-		<cfif getCommentID() GT 0 >
-			<cfthrow message="You can't call create() on an initialized comment: #getCommentID()#" />
-		</cfif>
+		<cfset setRecipeID( ID=arguments.RecipeID ) />
+		<cfset setUserID( ID=arguments.UserID ) />
+		<cfset setDateTimeCreated( Date=createODBCTime(now()) ) />
 
 		<cftransaction action="begin" >
 			<cftry>
@@ -176,51 +178,81 @@
 	<cffunction name="load" returntype="boolean" access="private" output="false" hint="Fills this objects instance with data from the db" >
 
 		<cfset var CommentData = queryNew("") />
+		<cfset var CommentCreator = "" />
 
 		<cfquery name="CommentData" datasource="#getDatasource()#" >
-			SELECT *
+			SELECT #getTableColumns()#
 			FROM #getTableName()#
 			WHERE #getTableKey()# = <cfqueryparam sqltype="BIGINT" value="#getCommentID()#" />
 		</cfquery>
 
-		<cfif GetRecipeData.RecordCount GT 0 >
-			<cfset setCommentID( ID=CommentData.CommentID ) />
+		<cfif CommentData.RecordCount GT 0 >
 			<cfset setRecipeID( ID=CommentData.RecipeID ) />
 			<cfset setCommentText( Data=CommentText ) />
-			<cfset setUserID( ID=CommentData.UserID ) />
 			<cfset setDateTimeCreated( Date=DateTimeCreated ) />
 
 		<cfelse>
-			<cfthrow message="Error when loading recipe data. There appears to be no recipe with this #getTableKey()#: #getCommentID()#" />
+			<cfthrow message="Error when loading recipe data" detail="There appears to be no recipe with this #getTableKey()#: #getCommentID()#" />
 			<cfreturn false />
 		</cfif>
+
+		<cfset CommentCreator = createObject("component", "Models.User").init( 
+			ID=CommentData.CreatedByUser,
+			Datasource=getDatasource()
+		) />
+
+		<cfset setCreatedByUser( UserInstance=UserID ) />
 
 		<cfreturn true />
 	</cffunction>
 
-	<cffunction name="getData" returntype="query" access="public" output="false" hint="" >
-		<cfargument name="ID" type="numeric" required="true" hint="" />
-		<cfargument name="ColumnList" type="string" required="true" hint="" />
+	<cffunction name="getData" returntype="query" access="public" output="false" hint="Static method. Fetch data from a specific comment or multiple comments." >
+		<cfargument name="ColumnList" type="string" required="false" default="" hint="List of columns you want to fetch data from." />
+		<cfargument name="ID" type="numeric" required="false" default="0" hint="ID of the comment you want to fetch data for. If you leave this out you get all recipes." />
+		<cfargument name="Datasource" type="string" required="true" hint="The name of the datasource to use for queries." />
 
-		<cfif getCommentID() GT 0 >
-			<cfthrow message="You can't call getData() on an initialized recipe: #getCommentID()#" />
+		<cfset onInitialized() />
+
+		<cfset var ObjectData = queryNew("") />
+		<cfset var CurrentColumn = "" />
+		<cfset var Columns = "" />
+
+		<cfif len(arguments.ColumnList) GT 0 >
+
+			<cfloop list="#arguments.ColumnList#" index="CurrentColumn" >
+				<cfif listFindNoCase("#getTableKey()#,#getTableColumns()#", CurrentColumn) IS 0 >
+					<cfthrow message="The column '#CurrentColumn#' you are trying to get data for is not a valid column in the #getTableName()#-table. Valid columns are: #getTableColumns()#" />
+				</cfif>
+			</cfloop>
+
+			<cfset Columns = arguments.ColumnList />
+		<cfelse>
+			<cfset Columns = "#getTableKey()#,#getTableColumns()#" />
 		</cfif>
 
-		<cfset var CommentData = queryNew() />
-		<cfquery name="CommentData" datasource="#getDatasource()#" >
-			SELECT #arguments.ColumnList#
+		<cfquery name="ObjectData" datasource="#arguments.Datasource#" >
+			SELECT #Columns#
 			FROM #getTableName()#
-			WHERE #getTableKey()# = #arguments.ID#
+			<cfif arguments.ID GT 0 >
+			WHERE #getTableKey()# = <cfqueryparam sqltype="BIGINT" value="#arguments.ID#" />
+			</cfif>
 		</cfquery>
 
-		<cfreturn CommentData />
+		<cfreturn ObjectData />
 	</cffunction>
  
 	<cffunction name="init" access="public" returntype="Components.Comment" output="false" hint="Constructor, returns an initialized comment." >
 		<cfargument name="ID" type="numeric" required="true" hint="" />
+		<cfargument name="Datasource" type="string" required="true" hint="The name of the datasource to use for queries." />
 
-		<cfif doesCommentExist( ID=arguments.ID ) IS false >
-			<cfthrow message="Error when initializing comment. No comment with this #getTableKey()# exists: #arguments.ID#" />
+		<cfif len(arguments.Datasource) IS 0 >
+			<cfthrow message="Error when initializing comment" detail="The 'Datasource' argument appears to be empty" />
+		</cfif>
+
+		<cfset variables.setDataSource( Name= trim(arguments.Datasource) ) />
+
+		<cfif exists( ID=arguments.ID ) IS false >
+			<cfthrow message="Error when initializing comment" detail="No comment with this #getTableKey()# exists: #arguments.ID#" />
 		</cfif>
 
 		<cfset setCommentID( ID=arguments.ID ) >
