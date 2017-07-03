@@ -195,7 +195,7 @@
 		</cftransaction>
 	</cffunction>
 
-	<cffunction name="createNew" returntype="numeric" access="public" hint="Static method. Creates a new empty recipe in the db, returns the ID of the new record" output="false" >
+	<cffunction name="create" returntype="Models.Recipe" access="public" hint="Static method. Creates a new empty recipe in the db, and returns an instance of it" output="false" >
 		<cfargument name="UserID" required="true" type="numeric" />
 		<cfargument name="Name" required="true" type="string" />
 		<cfargument name="Datasource" type="string" required="true" hint="The name of the datasource to use for queries." />
@@ -203,12 +203,20 @@
 		<cfset onInitialized() />
 
 		<cfif len(arguments.Name) IS 0 >
-			<cfthrow message="Error creating recipe. The recipe name is empty." />
+			<cfthrow message="Error creating recipe" detail="The recipe name you passed is empty." />
 		</cfif>
 
-		<cfif len(arguments.UserID) IS 0 >
-			<cfthrow message="Error creating recipe. The UserID is 0." />
+		<cfif arguments.UserID IS 0 >
+			<cfthrow message="Error creating recipe" detail="The UserID you passed is 0." />
 		</cfif>
+
+		<cfif len(arguments.Datasource) IS 0 >
+			<cfthrow message="Error creating new user" detail="The datasource name you passed is empty." />
+		</cfif>
+
+		<cfset variables.setDateCreated(Date=createODBCdate(now())) />
+		<cfset variables.setDateTimeLastModified(Date=createODBCdatetime(now())) />
+		<cfset variables.setName( Data=trim(arguments.Name) ) />
 
 		<cfset var CreateRecipe = queryNew("") />
 
@@ -227,15 +235,15 @@
 						Name
 					)
 					VALUES (
-						<cfqueryparam sqltype="DATE" value="#createODBCdate(now())#" />,
-						<cfqueryparam sqltype="TIMESTAMP" value="#createODBCdatetime(now())#" />,
+						<cfqueryparam sqltype="DATE" value="#getDateCreated()#" />,
+						<cfqueryparam sqltype="TIMESTAMP" value="#getDateTimeLastModified()#" />,
 						<cfqueryparam sqltype="BIGINT" value="#arguments.UserID#" />,
 						<cfqueryparam sqltype="BIGINT" value="#arguments.UserID#" />,
 						<cfqueryparam sqltype="LONGVARCHAR" value="#getIngredients()#" />,
 						<cfqueryparam sqltype="LONGVARCHAR" value="#getDescription()#" />,
 						<cfqueryparam sqltype="BIGINT" value="#getPicture()#" />,
 						<cfqueryparam sqltype="LONGVARCHAR" value="#getInstructions()#" />,
-						<cfqueryparam sqltype="LONGVARCHAR" value="#trim(arguments.Name)#" />
+						<cfqueryparam sqltype="LONGVARCHAR" value="#getName()#" />
 					)
 					RETURNING #getTableKey()#; 
 				</cfquery>
@@ -250,8 +258,10 @@
 			</cftry>
 		</cftransaction>
 
-		<cfset setRecipeID( ID=CreateRecipe.RecipeID ) />
-		<cfreturn CreateRecipe.RecipeID />
+		<cfreturn variables.init(
+			ID=CreateRecipe[ getTableKey() ],
+			Datasource=arguments.Datasource
+		) />
 	</cffunction>
 
 	<cffunction name="load" returntype="boolean" access="private" output="false" hint="" >
@@ -340,6 +350,8 @@
 	<cffunction name="init" access="public" returntype="Models.Recipe" output="false" hint="Constructor, returns an initialized recipe." >
 		<cfargument name="ID" type="numeric" required="true" hint="" />
 		<cfargument name="Datasource" type="string" required="true" hint="The name of the datasource to use for queries." />
+
+		<cfset onInitialized() />
 
 		<cfif len(arguments.Datasource) IS 0 >
 			<cfthrow message="Error when initializing recipe. The datasource argument appears to be empty" />

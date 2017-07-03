@@ -423,7 +423,7 @@ RecipeDB.Recipe.Methods.onResize = function() {
 	RecipeDB.Recipe.Methods.setPictureEditDimensions();
 };
 
-RecipeDB.Recipe.Methods.setSectionDimensions: function() {
+RecipeDB.Recipe.Methods.setSectionDimensions = function() {
 
 	RecipeDB.Recipe.DOM.ElementData.DescriptionBody.Height = parseFloat( 
 		$("#" + RecipeDB.Recipe.DOM.ElementData.DescriptionBody.ID).css("height") 

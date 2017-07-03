@@ -22,7 +22,7 @@
 		<cfset var ViewArguments = {} />
 
 		<cfset var Recipe = createObject("component", "Models.Recipe").init( 
-			ID=CurrentRecipeID,
+			ID=arguments.RecipeID,
 			Datasource=application.Settings.Datasource
 		) />
 
@@ -110,11 +110,12 @@
 		</cfif>
 
 		<cfif MatchingRecipes.RecordCount IS 0 >
-			<cfset ReturnData.NewRecipeID = RecipeInterface.createNew(
+			<cfset ReturnData.NewRecipeID = RecipeInterface.create(
 				UserID=session.CurrentUser.getUserID(),
 				Name=arguments.Name,
 				Datasource=application.Settings.Datasource
-			) />
+				).getRecipeID()
+			 />
 		</cfif>
 
 		<!--- <cfheader name="Content-Type" value="application/json;charset=UTF-8" /> --->

@@ -12,6 +12,12 @@
 	<cfset TableKey = "" /> The primary key of the table
 	<cfset TableColumns = "" /> Comma delimited list of all the table columns but without the primary key
 
+	When adding new DB columns to a model don't forget to:
+	- Add the variable at the top with a blank default value
+	- Add getter and setter methods as appropriate
+	- Add them to load(), save() and TableColumns
+	- Add them to any other methods if needed
+
 	--->
 
 	<cffunction name="setDataSource" access="private" output="false" hint="" >

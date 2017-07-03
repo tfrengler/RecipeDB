@@ -2,9 +2,10 @@ CREATE TABLE Users(
 	UserID bigserial,
 	DateCreated date NOT NULL DEFAULT current_date,
 	DateTimeLastLogin timestamp NOT NULL DEFAULT '1666-12-31 00:00:00',
-	Password varchar(64) NOT NULL, -- SHA-256 hash
+	Password varchar(128) NOT NULL, -- SHA-512 hash
+	PasswordSalt varchar(128) NOT NULL, -- SHA-512 hash
 	TempPassword varchar(100) NOT NULL,
-	UserName varchar(10) NOT NULL,
+	UserName varchar(20) NOT NULL,
 	DisplayName varchar(30) NOT NULL,
 	TimesLoggedIn int NOT NULL DEFAULT 0,
 	BrowserLastUsed varchar(200) NOT NULL,

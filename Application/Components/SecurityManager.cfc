@@ -4,9 +4,14 @@
 	<cffunction name="getHashedString" returntype="string" access="public" hint="" >
 		<cfargument name="StringData" type="string" required="true" hint="" />
 
-		<cfset var HashedString = hash(arguments.StringData, "SHA-256", "utf-8") />
+		<cfset var HashedString = hash(arguments.StringData, "SHA-512", "utf-8") />
 
 		<cfreturn HashedString />
+	</cffunction>
+
+	<cffunction name="getSaltedString" returntype="string" access="public" hint="" >
+
+		<cfreturn Hash(GenerateSecretKey("AES"), "SHA-512") /> 
 	</cffunction>
 
 	<cffunction name="createPassword" returntype="string" access="public" hint="" >

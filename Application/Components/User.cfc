@@ -6,6 +6,7 @@
 	<cfset DateTimePreviousLogin = createDateTime(1666, 6, 6, 6, 6, 6) />
 	<cfset DateTimeLastLogin = createDateTime(1666, 6, 6, 6, 6, 6) />
 	<cfset Password = "" />
+	<cfset PasswordSalt = "" />
 	<cfset TempPassword = "" />
 	<cfset UserName = "" />
 	<cfset DisplayName = "" />
@@ -15,72 +16,56 @@
 
 	<cfset TableName = "Users" />
 	<cfset TableKey = "UserID" />
-	<cfset TableColumns = "DateCreated,DateTimeLastLogin,Password,TempPassword,UserName,DisplayName,TimesLoggedIn,BrowserLastUsed,Blocked" />
+	<cfset TableColumns = "DateCreated,DateTimeLastLogin,Password,PasswordSalt,TempPassword,UserName,DisplayName,TimesLoggedIn,BrowserLastUsed,Blocked" />
 
 	<!--- Getters --->
 
 	<cffunction name="getUserID" access="public" returntype="numeric" output="false" hint="" >
-		<cfreturn UserID />
+		<cfreturn variables.UserID />
 	</cffunction>
 
 	<cffunction name="getDateTimePreviousLogin" access="public" returntype="date" output="false" hint="" >
-		<cfset onStatic() />
-
-		<cfreturn DateTimePreviousLogin />
+		<cfreturn variables.DateTimePreviousLogin />
 	</cffunction>
 
 	<cffunction name="getDateCreated" access="public" returntype="date" output="false" hint="" >
-		<cfset onStatic() />
-
-		<cfreturn DateCreated />
+		<cfreturn variables.DateCreated />
 	</cffunction>
 
 	<cffunction name="getDateTimeLastLogin" access="public" returntype="date" output="false" hint="" >
-		<cfset onStatic() />
-
-		<cfreturn DateTimeLastLogin />
+		<cfreturn variables.DateTimeLastLogin />
 	</cffunction>
 
 	<cffunction name="getPassword" access="public" returntype="string" output="false" hint="" >
-		<cfset onStatic() />
+		<cfreturn variables.Password />
+	</cffunction>
 
-		<cfreturn Password />
+	<cffunction name="getPasswordSalt" access="public" returntype="string" output="false" hint="" >
+		<cfreturn variables.PasswordSalt />
 	</cffunction>
 
 	<cffunction name="getTempPassword" access="public" returntype="string" output="false" hint="" >
-		<cfset onStatic() />
-
-		<cfreturn TempPassword />
+		<cfreturn variables.TempPassword />
 	</cffunction>
 
 	<cffunction name="getUserName" access="public" returntype="string" output="false" hint="" >
-		<cfset onStatic() />
-
-		<cfreturn UserName />
+		<cfreturn variables.UserName />
 	</cffunction>
 
 	<cffunction name="getDisplayName" access="public" returntype="string" output="false" hint="" >
-		<cfset onStatic() />
-
-		<cfreturn DisplayName />
+		<cfreturn variables.DisplayName />
 	</cffunction>
 
 	<cffunction name="getTimesLoggedIn" access="public" returntype="numeric" output="false" hint="" >
-		<cfset onStatic() />
-
-		<cfreturn TimesLoggedIn />
+		<cfreturn variables.TimesLoggedIn />
 	</cffunction>
 
 	<cffunction name="getBrowserLastUsed" access="public" returntype="string" output="false" hint="" >
-		<cfset onStatic() />
-
-		<cfreturn BrowserLastUsed />
+		<cfreturn variables.BrowserLastUsed />
 	</cffunction>
 
 	<cffunction name="getBlocked" access="public" returntype="boolean" output="false" hint="" >
-		<cfset onStatic() />
-
-		<cfreturn Blocked />
+		<cfreturn variables.Blocked />
 	</cffunction>
 
 	<!--- Setters --->
@@ -112,11 +97,13 @@
 	<cffunction name="setPassword" access="private" output="false" hint="" >
 		<cfargument name="Password" type="string" required="true" hint="" />
 
-		<cfif len(arguments.Password) LT 8 >
-			<cfthrow message="Password must be bigger than 8 characters" />
-		</cfif>
-
 		<cfset variables.Password = arguments.Password />
+	</cffunction>
+
+	<cffunction name="setPasswordSalt" access="private" output="false" hint="" >
+		<cfargument name="Salt" type="string" required="true" hint="" />
+
+		<cfset variables.PasswordSalt = arguments.Salt />
 	</cffunction>
 
 	<cffunction name="setTempPassword" access="private" output="false" hint="" >
@@ -164,19 +151,25 @@
 
 		<cfset onStatic() />
 
-		<cfset var Security = arguments.SecurityManager />
 		<cfset var NewPassword = "" />
 		<cfset var NewPasswordHashed = "" />
+		<cfset var NewPasswordSalt = arguments.SecurityManager.getSaltedString() />
+		<cfset var NewFinalPassword = "" />
 
 		<cfif len( trim(arguments.Password) ) IS 0 >
-			<cfset NewPassword = Security.createPassword() />
+			<cfset NewPassword = arguments.SecurityManager.createPassword() />
 		<cfelse>
 			<cfset NewPassword = arguments.Password />
 		</cfif>
 
 		<cfif arguments.TempPassword IS false >
-			<cfset NewPasswordHashed = Security.getHashedString( StringData=NewPassword ) />
-			<cfset setPassword( Password=NewPasswordHashed ) />
+
+			<cfset NewPasswordHashed = arguments.SecurityManager.getHashedString( StringData=NewPassword ) />
+			<cfset NewFinalPassword = arguments.SecurityManager.getHashedString( StringData=(NewPasswordHashed & NewPasswordSalt) ) />
+
+			<cfset setPassword( Password=NewFinalPassword ) />
+			<cfset setPasswordSalt( Salt=NewPasswordSalt ) />
+
 		<cfelse>
 			<cfset setTempPassword( Password=NewPassword ) />
 		</cfif>
@@ -188,13 +181,15 @@
 
 		<cfset onStatic() />
 
-		<cfset var Security = arguments.SecurityManager />
 		<cfset var HashedPassword = "" />
+		<cfset var HashedAndSaltedPassword = "" />
 		<cfset var UsersPassword = getPassword() />
+		<cfset var UsersPasswordSalt = getPasswordSalt() />
 
-		<cfset HashedPassword = Security.getHashedString( StringData=trim(arguments.Password) ) />
+		<cfset HashedPassword = arguments.SecurityManager.getHashedString( StringData=arguments.Password ) />
+		<cfset HashedAndSaltedPassword = arguments.SecurityManager.getHashedString( StringData=(HashedPassword & UsersPasswordSalt) ) />
 
-		<cfif UsersPassword IS HashedPassword >
+		<cfif UsersPassword IS HashedAndSaltedPassword >
 			<cfreturn true>
 		<cfelse>
 			<cfreturn false />
@@ -204,9 +199,8 @@
 	<cffunction name="delete" returntype="void" access="public" output="false" hint="Delete the db data belonging to this object instance" >
 		<cfset onStatic() />
 
-		<cfset var DeleteUser = queryNew("") />
-		<cfquery name="DeleteUser" datasource="#getDatasource()#" >
-			DELETE *
+		<cfquery datasource="#getDatasource()#" >
+			DELETE "#getTableKey()#,#getTableColumns#"
 			FROM #getTableName()#
 			WHERE #getTableKey()# = <cfqueryparam sqltype="BIGINT" value="#getUserID()#" />
 		</cfquery>
@@ -228,12 +222,13 @@
 
 	<cffunction name="exists" returntype="boolean" access="public" output="false" hint="Static method. Checks whether the object exists or not in the db" >
 		<cfargument name="ID" type="numeric" required="true" hint="ID of the user you want to check for" />
+		<cfargument name="Datasource" type="string" required="true" hint="The name of the datasource to use for queries." />
 
 		<cfset onInitialized() />
 
 		<cfset var ExistenceCheck = queryNew("") />
 
-		<cfquery name="ExistenceCheck" datasource="#getDatasource()#" >
+		<cfquery name="ExistenceCheck" datasource="#arguments.Datasource#" >
 			SELECT #getTableKey()#
 			FROM #getTableName()#
 			WHERE #getTableKey()# = <cfqueryparam sqltype="BIGINT" value="#arguments.ID#" />
@@ -259,7 +254,8 @@
 					SET	
 						DateCreated = <cfqueryparam sqltype="DATE" value="#getDateCreated()#" />,
 						DateTimeLastLogin = <cfqueryparam sqltype="TIMESTAMP" value="#getDateTimeLastLogin()#" />,
-						Password = <cfqueryparam sqltype="LONGVARCHAR" value="#getPassword()#" />,
+						Password = <cfqueryparam sqltype="LONGVARCHAR" value="#getPassword()#" maxlength="128" />,
+						PasswordSalt = <cfqueryparam sqltype="LONGVARCHAR" value="#getPasswordSalt()#" maxlength="128" />,
 						TempPassword = <cfqueryparam sqltype="LONGVARCHAR" value="#getTempPassword()#" />,
 						UserName = <cfqueryparam sqltype="LONGVARCHAR" value="#getUserName()#" />,
 						DisplayName = <cfqueryparam sqltype="LONGVARCHAR" value="#getDisplayName()#" />,
@@ -286,8 +282,21 @@
 	</cffunction>
 
 	<cffunction name="create" returntype="Models.User" access="public" hint="Static method. Creates a new empty user in the db and returns an instance of this user" >
+		<cfargument name="Username" type="string" required="true" hint="The login name for the new user." />
+		<cfargument name="Datasource" type="string" required="true" hint="The name of the datasource to use for queries." />
 
 		<cfset onInitialized() />
+
+		<cfif len(arguments.Username) IS 0 >
+			<cfthrow message="Error creating new user" detail="The username you passed is empty, this is not allowed." />
+		</cfif>
+
+		<cfif len(arguments.Datasource) IS 0 >
+			<cfthrow message="Error creating new user" detail="The datasource name you passed is empty, this is not allowed." />
+		</cfif>
+
+		<cfset variables.setDisplayName(Name="New user XYZ#randRange(1, 100)#") />
+		<cfset variables.setUserName(Name=arguments.Username) />
 
 		<cfset var CreateUser = queryNew("") />
 
@@ -295,11 +304,12 @@
 
 		<cftransaction action="begin" >
 			<cftry>
-				<cfquery name="CreateUser" datasource="#getDatasource()#" >
+				<cfquery name="CreateUser" datasource="#arguments.Datasource#" >
 					INSERT INTO #getTableName()# (
 						DateCreated,
 						DateTimeLastLogin,
 						Password,
+						PasswordSalt,
 						TempPassword,
 						UserName,
 						DisplayName,
@@ -311,6 +321,7 @@
 						<cfqueryparam sqltype="DATE" value="#getDateCreated()#" />,
 						<cfqueryparam sqltype="TIMESTAMP" value="#getDateTimeLastLogin()#" />,
 						<cfqueryparam sqltype="LONGVARCHAR" value="#getPassword()#" />,
+						<cfqueryparam sqltype="LONGVARCHAR" value="#getPasswordSalt()#" />,
 						<cfqueryparam sqltype="LONGVARCHAR" value="#getTempPassword()#" />,
 						<cfqueryparam sqltype="LONGVARCHAR" value="#getUserName()#" />,
 						<cfqueryparam sqltype="LONGVARCHAR" value="#getDisplayName()#" />,
@@ -331,9 +342,10 @@
 			</cftry>
 		</cftransaction>
 
-		<cfset setUserID( ID=CreateUser[ getTableKey() ] ) />
-
-		<cfreturn this />
+		<cfreturn variables.init(
+			ID=CreateUser[ getTableKey() ],
+			Datasource=arguments.Datasource
+		) />
 	</cffunction>
 
 	<cffunction name="load" returntype="boolean" access="private" output="false" hint="Fills the instance with data from the db." >
@@ -341,7 +353,7 @@
 		<cfset var UserData = queryNew("") />
 
 		<cfquery name="UserData" datasource="#getDatasource()#" >
-			SELECT #getTableKey()#
+			SELECT #getTableColumns()#
 			FROM #getTableName()#
 			WHERE #getTableKey()# = <cfqueryparam sqltype="BIGINT" value="#getUserID()#" />
 		</cfquery>
@@ -350,6 +362,7 @@
 			<cfset setDateCreated( Date=UserData.DateCreated ) />
 			<cfset setDateTimeLastLogin( Time=UserData.DateTimeLastLogin ) />
 			<cfset setPassword( Password=UserData.Password ) />
+			<cfset setPasswordSalt( Salt=UserData.PasswordSalt ) />
 			<cfset setTempPassword( Password=UserData.TempPassword ) />
 			<cfset setUserName( Name=UserData.UserName ) />
 			<cfset setDisplayName( Name=UserData.DisplayName ) />
@@ -364,7 +377,7 @@
 		<cfreturn true />
 	</cffunction>
 
-	<cffunction name="getData" returntype="any" access="public" output="false" hint="Static method. Fetch data from a specific user or multiple users." >
+	<cffunction name="getData" returntype="query" access="public" output="false" hint="Static method. Fetch data from a specific user or multiple users." >
 		<cfargument name="ColumnList" type="string" required="false" default="" hint="List of columns you want to fetch data from." />
 		<cfargument name="ID" type="numeric" required="false" default="0" hint="ID of the user you want to fetch data for. If you leave this out you get all users." />
 		<cfargument name="Datasource" type="string" required="true" hint="The name of the datasource to use for queries." />
@@ -421,9 +434,11 @@
 		<cfreturn ReturnData />
 	</cffunction>
 
-	<cffunction name="init" access="public" returntype="Models.User" output="false" hint="Constructor, returns an initialized user." >
+	<cffunction name="init" access="public" returntype="Models.User" output="false" hint="Constructor, returns an initialized user who is by default blocked." >
 		<cfargument name="ID" type="numeric" required="true" hint="The UserID of the user you want to init this instance with." />
 		<cfargument name="Datasource" type="string" required="true" hint="The name of the datasource to use for queries." />
+
+		<cfset onInitialized() />
 
 		<cfif len(arguments.Datasource) IS 0 >
 			<cfthrow message="Error when initializing user. The datasource argument appears to be empty" />
@@ -431,7 +446,7 @@
 
 		<cfset variables.setDataSource( Name= trim(arguments.Datasource) ) />
 
-		<cfif variables.exists( ID=arguments.ID ) IS false >
+		<cfif variables.exists( ID=arguments.ID, Datasource=arguments.Datasource ) IS false >
 			<cfthrow message="Error when initializing user. No user with this #getTableKey()# exists: #arguments.ID#" />
 		</cfif>
 
