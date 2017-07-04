@@ -5,23 +5,26 @@
 		<cfargument name="Username" type="string" required="true" hint="" />
 		<cfargument name="Password" type="string" required="true" hint="" />
 
-		<cfset var Security = createObject("component", "Models.SecurityManager") />
-		<cfset var StaticUser = createObject("component", "Models.User") />
+		<cfset var Security = createObject("component", "Components.SecurityManager") />
+		<cfset var UserInterface = createObject("component", "Models.User") />
 		<cfset var UserID = 0 />
+		<cfset var UserSearch = queryNew(1) />
 		<cfset var User = "" />
 		<cfset var ReturnData = {
 			Result: false,
 			Code: 0
 		} />
 
-		<cfset UserID = StaticUser.getByUsername( 
-			Username=trim(arguments.Username),
+		<cfset UserSearch = UserInterface.getBy( 
+			ColumnToSearchOn="UserName",
+			SearchOperator="equal to",
+			SearchData=trim(arguments.Username),
 			Datasource="#application.Settings.Datasource#"
 		) />
 
-		<cfif UserID GT 0 >
+		<cfif UserSearch.RecordCount IS 1 >
 			<cfset User = createObject("component", "Models.User").init(
-				ID=UserID,
+				ID=UserSearch[ UserInterface.getTableKey() ],
 				Datasource="#application.Settings.Datasource#"
 			) />
 		<cfelse>
@@ -70,7 +73,7 @@
 
 		<cflogout>
 
-		<cfset clearSession() />
+		<cfset variables.clearSession() />
 
 		<cfreturn ReturnData />
 	</cffunction>
@@ -78,7 +81,7 @@
 	<cffunction name="forceLogout" access="remote" returntype="void" output="true" hint="" >
 		<cflogout>
 
-		<cfset clearSession() />
+		<cfset variables.clearSession() />
 
 		<cfheader name="Content-Type" value="text/html;charset=UTF-8" />
 		<script>

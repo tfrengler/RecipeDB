@@ -20,7 +20,7 @@
 
 	<!--- Getters --->
 
-	<cffunction name="getUserID" access="public" returntype="numeric" output="false" hint="" >
+	<cffunction name="getID" access="public" returntype="numeric" output="false" hint="" >
 		<cfreturn variables.UserID />
 	</cffunction>
 
@@ -70,8 +70,8 @@
 
 	<!--- Setters --->
 
-	<cffunction name="setUserID" access="private" output="false" hint="" >
-		<cfargument name="ID" type="numeric" required="true" hint="" />
+	<cffunction name="setID" access="private" output="false" hint="" >
+		<cfargument name="Value" type="numeric" required="true" hint="" />
 
 		<cfset variables.UserID = arguments.ID />
 	</cffunction>
@@ -149,7 +149,7 @@
 		<cfargument name="Password" type="string" required="false" default="" hint="The new password, in plain text (non-hashed)" />
 		<cfargument name="TempPassword" type="boolean" required="false" default="false" hint="Whether this is a temporary password or not" />
 
-		<cfset onStatic() />
+		<cfset variables.onStatic() />
 
 		<cfset var NewPassword = "" />
 		<cfset var NewPasswordHashed = "" />
@@ -179,7 +179,7 @@
 		<cfargument name="SecurityManager" type="Models.SecurityManager" required="true" hint="A reference to an instance of the SecurityManager object" />
 		<cfargument name="Password" type="string" required="true" default="" hint="The password to validate, unhashed" />
 
-		<cfset onStatic() />
+		<cfset variables.onStatic() />
 
 		<cfset var HashedPassword = "" />
 		<cfset var HashedAndSaltedPassword = "" />
@@ -196,20 +196,10 @@
 		</cfif>
 	</cffunction>
 
-	<cffunction name="delete" returntype="void" access="public" output="false" hint="Delete the db data belonging to this object instance" >
-		<cfset onStatic() />
-
-		<cfquery datasource="#getDatasource()#" >
-			DELETE "#getTableKey()#,#getTableColumns#"
-			FROM #getTableName()#
-			WHERE #getTableKey()# = <cfqueryparam sqltype="BIGINT" value="#getUserID()#" />
-		</cfquery>
-	</cffunction>
-
 	<cffunction name="updateLoginStats" returntype="void" access="public" output="false" hint="Updates the login count and datetime of last login. Should be called whenever the user successfully logs in." >
 		<cfargument name="UserAgentString" type="string" required="true" hint="The user agent string of the user logging in" />
 
-		<cfset onStatic() />
+		<cfset variables.onStatic() />
 
 		<cfset var CurrentLoginCount = getTimesLoggedIn() />
 		<cfset setTimesLoggedIn( Count=CurrentLoginCount+1 ) />
@@ -220,30 +210,9 @@
 		<cfset setBrowserLastUsed( UserAgentString=arguments.UserAgentString ) />
 	</cffunction>
 
-	<cffunction name="exists" returntype="boolean" access="public" output="false" hint="Static method. Checks whether the object exists or not in the db" >
-		<cfargument name="ID" type="numeric" required="true" hint="ID of the user you want to check for" />
-		<cfargument name="Datasource" type="string" required="true" hint="The name of the datasource to use for queries." />
-
-		<cfset onInitialized() />
-
-		<cfset var ExistenceCheck = queryNew("") />
-
-		<cfquery name="ExistenceCheck" datasource="#arguments.Datasource#" >
-			SELECT #getTableKey()#
-			FROM #getTableName()#
-			WHERE #getTableKey()# = <cfqueryparam sqltype="BIGINT" value="#arguments.ID#" />
-		</cfquery>
-
-		<cfif ExistenceCheck.RecordCount IS 1 >
-			<cfreturn true />
-		</cfif>
-
-		<cfreturn false />
-	</cffunction>
-
 	<cffunction name="save" returntype="boolean" access="public" output="false" hint="Persists the current state of the user to the db" >
 
-		<cfset onStatic() />
+		<cfset variables.onStatic() />
 
 		<cfset var UpdateUser = queryNew("") />
 		
@@ -263,7 +232,7 @@
 						BrowserLastUsed = <cfqueryparam sqltype="LONGVARCHAR" value="#getBrowserLastUsed()#" />,
 						Blocked = <cfqueryparam sqltype="BOOLEAN" value="#getBlocked()#" />
 
-					WHERE #getTableKey()# = <cfqueryparam sqltype="BIGINT" value="#getUserID()#" />;
+					WHERE #getTableKey()# = <cfqueryparam sqltype="BIGINT" value="#getID()#" />;
 				</cfquery>
 
 				<cftransaction action="commit" />
@@ -285,7 +254,7 @@
 		<cfargument name="Username" type="string" required="true" hint="The login name for the new user." />
 		<cfargument name="Datasource" type="string" required="true" hint="The name of the datasource to use for queries." />
 
-		<cfset onInitialized() />
+		<cfset variables.onInitialized() />
 
 		<cfif len(arguments.Username) IS 0 >
 			<cfthrow message="Error creating new user" detail="The username you passed is empty, this is not allowed." />
@@ -355,7 +324,7 @@
 		<cfquery name="UserData" datasource="#getDatasource()#" >
 			SELECT #getTableColumns()#
 			FROM #getTableName()#
-			WHERE #getTableKey()# = <cfqueryparam sqltype="BIGINT" value="#getUserID()#" />
+			WHERE #getTableKey()# = <cfqueryparam sqltype="BIGINT" value="#getID()#" />
 		</cfquery>
 
 		<cfif UserData.RecordCount GT 0 >
@@ -370,75 +339,18 @@
 			<cfset setBrowserLastUsed( UserAgentString=UserData.BrowserLastUsed ) />
 			<cfset setBlocked( Blocked=UserData.Blocked ) />
 		<cfelse>
-			<cfthrow message="Error when loading user data. There appears to be no userdata with this #getTableKey()#: #getUserID()#" />
+			<cfthrow message="Error when loading user data. There appears to be no userdata with this #getTableKey()#: #getID()#" />
 			<cfreturn false />
 		</cfif>
 
 		<cfreturn true />
 	</cffunction>
 
-	<cffunction name="getData" returntype="query" access="public" output="false" hint="Static method. Fetch data from a specific user or multiple users." >
-		<cfargument name="ColumnList" type="string" required="false" default="" hint="List of columns you want to fetch data from." />
-		<cfargument name="ID" type="numeric" required="false" default="0" hint="ID of the user you want to fetch data for. If you leave this out you get all users." />
-		<cfargument name="Datasource" type="string" required="true" hint="The name of the datasource to use for queries." />
-
-		<cfset onInitialized() />
-
-		<cfset var ObjectData = queryNew("") />
-		<cfset var CurrentColumn = "" />
-		<cfset var Columns = "" />
-
-		<cfif len(arguments.ColumnList) GT 0 >
-
-			<cfloop list="#arguments.ColumnList#" index="CurrentColumn" >
-				<cfif listFindNoCase("#getTableKey()#,#getTableColumns()#", CurrentColumn) IS 0 >
-					<cfthrow message="The column '#CurrentColumn#' you are trying to get data for is not a valid column in the #getTableName()#-table. Valid columns are: #getTableColumns()#" />
-				</cfif>
-			</cfloop>
-
-			<cfset Columns = arguments.ColumnList />
-		<cfelse>
-			<cfset Columns = "#getTableKey()#,#getTableColumns()#" />
-		</cfif>
-
-		<cfquery name="ObjectData" datasource="#arguments.Datasource#" >
-			SELECT #Columns#
-			FROM #getTableName()#
-			<cfif arguments.ID GT 0 >
-			WHERE #getTableKey()# = <cfqueryparam sqltype="BIGINT" value="#arguments.ID#" />
-			</cfif>
-		</cfquery>
-
-		<cfreturn ObjectData />
-	</cffunction>
- 
-	<cffunction name="getByUsername" returntype="numeric" access="public" output="false" hint="Static method. Search for a user by username and returns the ID. Returns 0 if nothing is found" >
-		<cfargument name="Datasource" type="string" required="true" hint="The name of the datasource to use for queries." />
-		<cfargument name="Username" type="string" required="true" hint="The name of the user you're searching for" />
-
-		<cfset onInitialized() />
-
-		<cfset var SearchResult = queryNew("") />
-		<cfset var ReturnData = 0 />
-
-		<cfquery name="SearchResult" datasource="#trim(arguments.Datasource)#" >
-			SELECT #getTableKey()#
-			FROM #getTableName()#
-			WHERE UserName = <cfqueryparam sqltype="LONGVARCHAR" value="#trim(arguments.Username)#" />
-		</cfquery>
-
-		<cfif SearchResult.RecordCount GT 0 >
-			<cfset ReturnData = SearchResult[ getTableKey() ] />
-		</cfif>
-
-		<cfreturn ReturnData />
-	</cffunction>
-
 	<cffunction name="init" access="public" returntype="Models.User" output="false" hint="Constructor, returns an initialized user who is by default blocked." >
 		<cfargument name="ID" type="numeric" required="true" hint="The UserID of the user you want to init this instance with." />
 		<cfargument name="Datasource" type="string" required="true" hint="The name of the datasource to use for queries." />
 
-		<cfset onInitialized() />
+		<cfset variables.onInitialized() />
 
 		<cfif len(arguments.Datasource) IS 0 >
 			<cfthrow message="Error when initializing user. The datasource argument appears to be empty" />
@@ -450,7 +362,7 @@
 			<cfthrow message="Error when initializing user. No user with this #getTableKey()# exists: #arguments.ID#" />
 		</cfif>
 
-		<cfset variables.setUserID( ID=arguments.ID ) >
+		<cfset variables.setID( Value=arguments.ID ) >
 		<cfset variables.load() />
 
 		<cfset variables.IsStatic = false />

@@ -20,7 +20,7 @@
 
 	<!--- Getters --->
 
-	<cffunction name="getRecipeID" access="public" output="false" returntype="numeric" >
+	<cffunction name="getID" access="public" output="false" returntype="numeric" >
 		<cfreturn variables.RecipeID />
 	</cffunction>
 
@@ -66,8 +66,8 @@
 
 	<!--- Setters --->
 
-	<cffunction name="setRecipeID" access="private" output="false" hint="" >
-		<cfargument name="ID" type="numeric" required="true" hint="" />
+	<cffunction name="setID" access="private" output="false" hint="" >
+		<cfargument name="Value" type="numeric" required="true" hint="" />
 
 		<cfset variables.RecipeID = arguments.ID />
 	</cffunction>
@@ -134,34 +134,9 @@
 
 	<!--- Methods --->
 
-	<cffunction name="exists" returntype="boolean" access="public" output="false" hint="Static method. Checks whether the object exists or not in the db" >
-		<cfargument name="ID" type="numeric" required="true" hint="ID of the recipe you want to check for" />
+	<cffunction name="save" returntype="boolean" access="public" output="false" hint="Persists the current state of the recipe to the db." >
 
-		<cfset onInitialized() />
-
-		<cfset var ExistenceCheck = queryNew("") />
-
-		<cfquery name="ExistenceCheck" datasource="#getDatasource()#" >
-			SELECT #getTableKey()#
-			FROM #getTableName()#
-			WHERE #getTableKey()# = <cfqueryparam sqltype="BIGINT" value="#arguments.ID#" />
-		</cfquery>
-
-		<cfif ExistenceCheck.RecordCount IS 1 >
-			<cfreturn true />
-		</cfif>
-
-		<cfreturn false />
-	</cffunction>
-
-	<cffunction name="save" returntype="boolean" access="public" output="false" hint="" >
-
-		<cfset onStatic() />
-
-		<cfif exists( ID=getRecipeID() ) IS false >
-			<cfthrow message="You can't update a recipe that doesn't exist: #getRecipeID()#" />
-			<cfreturn false />
-		</cfif>
+		<cfset variables.onStatic() />
 
 		<cfset var UpdateRecipe = queryNew("") />
 		
@@ -179,7 +154,7 @@
 						Picture = <cfqueryparam sqltype="BIGINT" value="#getPicture()#" />,
 						Instructions = <cfqueryparam sqltype="LONGVARCHAR" value="#getInstructions()#" />
 
-					WHERE #getTableKey()# = <cfqueryparam sqltype="CF_SQL_BIGINT" value="#getRecipeID()#" />;
+					WHERE #getTableKey()# = <cfqueryparam sqltype="CF_SQL_BIGINT" value="#getID()#" />;
 				</cfquery>
 
 				<cftransaction action="commit" />
@@ -200,18 +175,18 @@
 		<cfargument name="Name" required="true" type="string" />
 		<cfargument name="Datasource" type="string" required="true" hint="The name of the datasource to use for queries." />
 
-		<cfset onInitialized() />
+		<cfset variables.onInitialized() />
 
 		<cfif len(arguments.Name) IS 0 >
 			<cfthrow message="Error creating recipe" detail="The recipe name you passed is empty." />
 		</cfif>
 
-		<cfif arguments.UserID IS 0 >
-			<cfthrow message="Error creating recipe" detail="The UserID you passed is 0." />
+		<cfif isValid("integer", arguments.UserID) IS false AND arguments.UserID IS 0 >
+			<cfthrow message="Error creating new recipe" detail="The UserID you passed is an invalid integer or is 0: #arguments.UserID#" />
 		</cfif>
 
 		<cfif len(arguments.Datasource) IS 0 >
-			<cfthrow message="Error creating new user" detail="The datasource name you passed is empty." />
+			<cfthrow message="Error creating new recipe" detail="The datasource name you passed is empty." />
 		</cfif>
 
 		<cfset variables.setDateCreated(Date=createODBCdate(now())) />
@@ -264,7 +239,7 @@
 		) />
 	</cffunction>
 
-	<cffunction name="load" returntype="boolean" access="private" output="false" hint="" >
+	<cffunction name="load" returntype="boolean" access="private" output="false" hint="Fills this objects instance with data from the db" >
 
 		<cfset var GetRecipeData = queryNew("") />
 		<cfset var RecipeOwner = "" />
@@ -272,7 +247,7 @@
 		<cfquery name="GetRecipeData" datasource="#getDatasource()#" >
 			SELECT #getTableColumns()#
 			FROM #getTableName()#
-			WHERE #getTableKey()# = <cfqueryparam sqltype="BIGINT" value="#getRecipeID()#" />
+			WHERE #getTableKey()# = <cfqueryparam sqltype="BIGINT" value="#getID()#" />
 		</cfquery>
 
 		<cfif GetRecipeData.RecordCount GT 0 >
@@ -285,7 +260,7 @@
 			<cfset setName( Data=GetRecipeData.Name ) />
 
 		<cfelse>
-			<cfthrow message="Error when loading recipe data. There appears to be no recipe with this #getTableKey()#: #getRecipeID()#" />
+			<cfthrow message="Error when loading recipe data. There appears to be no recipe with this #getTableKey()#: #getID()#" />
 			<cfreturn false />
 		</cfif>
 
@@ -312,46 +287,11 @@
 		<cfreturn true />
 	</cffunction>
 
-	<cffunction name="getData" returntype="query" access="public" output="false" hint="Static method. Fetch data from a specific recipe or multiple recipes." >
-		<cfargument name="ColumnList" type="string" required="false" default="" hint="List of columns you want to fetch data from." />
-		<cfargument name="ID" type="numeric" required="false" default="0" hint="ID of the recipe you want to fetch data for. If you leave this out you get all recipes." />
-		<cfargument name="Datasource" type="string" required="true" hint="The name of the datasource to use for queries." />
-
-		<cfset onInitialized() />
-
-		<cfset var ObjectData = queryNew("") />
-		<cfset var CurrentColumn = "" />
-		<cfset var Columns = "" />
-
-		<cfif len(arguments.ColumnList) GT 0 >
-
-			<cfloop list="#arguments.ColumnList#" index="CurrentColumn" >
-				<cfif listFindNoCase("#getTableKey()#,#getTableColumns()#", CurrentColumn) IS 0 >
-					<cfthrow message="The column '#CurrentColumn#' you are trying to get data for is not a valid column in the #getTableName()#-table. Valid columns are: #getTableColumns()#" />
-				</cfif>
-			</cfloop>
-
-			<cfset Columns = arguments.ColumnList />
-		<cfelse>
-			<cfset Columns = "#getTableKey()#,#getTableColumns()#" />
-		</cfif>
-
-		<cfquery name="ObjectData" datasource="#arguments.Datasource#" >
-			SELECT #Columns#
-			FROM #getTableName()#
-			<cfif arguments.ID GT 0 >
-			WHERE #getTableKey()# = <cfqueryparam sqltype="BIGINT" value="#arguments.ID#" />
-			</cfif>
-		</cfquery>
-
-		<cfreturn ObjectData />
-	</cffunction>
-
 	<cffunction name="init" access="public" returntype="Models.Recipe" output="false" hint="Constructor, returns an initialized recipe." >
 		<cfargument name="ID" type="numeric" required="true" hint="" />
 		<cfargument name="Datasource" type="string" required="true" hint="The name of the datasource to use for queries." />
 
-		<cfset onInitialized() />
+		<cfset variables.onInitialized() />
 
 		<cfif len(arguments.Datasource) IS 0 >
 			<cfthrow message="Error when initializing recipe. The datasource argument appears to be empty" />
@@ -359,11 +299,11 @@
 
 		<cfset variables.setDataSource( Name= trim(arguments.Datasource) ) />
 
-		<cfif variables.exists( ID=arguments.ID ) IS false >
+		<cfif variables.exists( ID=arguments.ID, Datasource=arguments.Datasource ) IS false >
 			<cfthrow message="Error when initializing recipe. No recipe with this #getTableKey()# exists: #arguments.ID#" />
 		</cfif>
 
-		<cfset variables.setRecipeID( ID=arguments.ID ) >
+		<cfset variables.setID( Value=arguments.ID ) >
 		<cfset variables.load() />
 
 		<cfset variables.IsStatic = false />

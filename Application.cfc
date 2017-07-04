@@ -14,7 +14,8 @@
 	<cfset this.root = getDirectoryFromPath( getCurrentTemplatePath() ) />
 	<cfset this.appdirectory = this.root & "Application\" /> 
 	
-	<cfset this.mappings["/Models"] = (this.appdirectory & "Components/") />
+	<cfset this.mappings["/Components"] = (this.appdirectory & "Components/") />
+	<cfset this.mappings["/Models"] = (this.appdirectory & "Models/") />
 	<cfset this.mappings["/Assets"] = (this.appdirectory & "Assets/") />
 	<cfset this.mappings["/Views"] = (this.appdirectory & "Views/") />
 	<cfset this.mappings["/Controllers"] = (this.appdirectory & "Controllers/") />

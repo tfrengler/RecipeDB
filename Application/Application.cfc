@@ -15,7 +15,8 @@
 	<cfset this.loginDirectory = ListDeleteAt(this.root, ListLen(this.root, "\"), "\") />
 
 	<cfset this.mappings["/Login"] = this.loginDirectory & "/" />
-	<cfset this.mappings["/Models"] = (this.root & "Components/") />
+	<cfset this.mappings["/Models"] = (this.root & "Models/") />
+	<cfset this.mappings["/Components"] = (this.root & "Components/") />
 	<cfset this.mappings["/Assets"] = (this.root & "Assets/") />
 	<cfset this.mappings["/Views"] = (this.root & "Views/") />
 	<cfset this.mappings["/Controllers"] = (this.root & "Controllers/") />
