@@ -69,7 +69,7 @@
 	<cffunction name="setID" access="private" output="false" hint="" >
 		<cfargument name="Value" type="numeric" required="true" hint="" />
 
-		<cfset variables.RecipeID = arguments.ID />
+		<cfset variables.RecipeID = arguments.Value />
 	</cffunction>
 
 	<cffunction name="setDateCreated" access="private" output="false" hint="" >

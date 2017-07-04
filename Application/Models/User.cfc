@@ -73,7 +73,7 @@
 	<cffunction name="setID" access="private" output="false" hint="" >
 		<cfargument name="Value" type="numeric" required="true" hint="" />
 
-		<cfset variables.UserID = arguments.ID />
+		<cfset variables.UserID = arguments.Value />
 	</cffunction>
 
 	<cffunction name="setDateTimePreviousLogin" access="private" output="false" hint="" >
@@ -145,7 +145,7 @@
 	<!--- Methods --->
 
 	<cffunction name="changePassword" returntype="void" access="public" output="false" hint="" >
-		<cfargument name="SecurityManager" type="Models.SecurityManager" required="true" hint="A reference to an instance of the SecurityManager object" />
+		<cfargument name="SecurityManager" type="Components.SecurityManager" required="true" hint="A reference to an instance of the SecurityManager object" />
 		<cfargument name="Password" type="string" required="false" default="" hint="The new password, in plain text (non-hashed)" />
 		<cfargument name="TempPassword" type="boolean" required="false" default="false" hint="Whether this is a temporary password or not" />
 
@@ -176,7 +176,7 @@
 	</cffunction>
 
 	<cffunction name="validatePassword" returntype="boolean" access="public" output="false" hint="Checks the password you pass against the user's password" >
-		<cfargument name="SecurityManager" type="Models.SecurityManager" required="true" hint="A reference to an instance of the SecurityManager object" />
+		<cfargument name="SecurityManager" type="Components.SecurityManager" required="true" hint="A reference to an instance of the SecurityManager object" />
 		<cfargument name="Password" type="string" required="true" default="" hint="The password to validate, unhashed" />
 
 		<cfset variables.onStatic() />
@@ -359,7 +359,7 @@
 		<cfset variables.setDataSource( Name= trim(arguments.Datasource) ) />
 
 		<cfif variables.exists( ID=arguments.ID, Datasource=arguments.Datasource ) IS false >
-			<cfthrow message="Error when initializing user. No user with this #getTableKey()# exists: #arguments.ID#" />
+			<cfthrow message="Error when initializing user. No user with this #variables.getTableKey()# exists: #arguments.ID#" />
 		</cfif>
 
 		<cfset variables.setID( Value=arguments.ID ) >

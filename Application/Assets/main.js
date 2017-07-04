@@ -230,6 +230,10 @@ RecipeDB.Menu.DOM.ElementData = {
 
 	AddRecipeOption: {
 		ID: "AddRecipe"
+	},
+
+	FindRecipesOption: {
+		ID: "RecipeList"
 	}
 }
 
@@ -258,6 +262,10 @@ RecipeDB.Menu.init = function() {
 
 	$("#" + RecipeDB.Menu.DOM.ElementData.AddRecipeOption.ID).click(function() {
 		RecipeDB.Menu.Methods.getAddRecipe();
+	});
+
+	$("#" + RecipeDB.Menu.DOM.ElementData.FindRecipesOption.ID).click(function() {
+		RecipeDB.Menu.Methods.getRecipeList();
 	});
 
 	RecipeDB.Menu.Methods.hide();
@@ -314,6 +322,27 @@ RecipeDB.Menu.Methods = {
 			url: "../Controllers/RecipeController.cfc",
 			data: {
 				method: "getAddRecipeView"
+			},
+			dataType: "html",
+
+			beforeSend: function() {
+				RecipeDB.Main.Methods.onAJAXCallStart();
+			},
+			error: function() {
+				RecipeDB.Main.Methods.onAJAXCallError(arguments);
+			},
+			success: function(ResponseData) {
+				RecipeDB.Main.Methods.onGetViewComplete(ResponseData);
+			}
+		});
+	},
+
+	getRecipeList: function() {
+		$.ajax({
+			type: "post",
+			url: "../Controllers/RecipeController.cfc",
+			data: {
+				method: "getRecipeListView"
 			},
 			dataType: "html",
 
@@ -405,11 +434,11 @@ RecipeDB.Recipe.DOM.ElementData = {
 RecipeDB.Recipe.init = function() {
 	RecipeDB.Recipe.Methods.setSectionDimensions();
 
-	$( trim(" [name=' " + RecipeDB.Recipe.DOM.ElementData.SectionHeaders.Name + " '] ") ).click(function() {
+	$( "[name='" + RecipeDB.Recipe.DOM.ElementData.SectionHeaders.Name + "']" ).click(function() {
 		RecipeDB.Recipe.Methods.openCloseSection(this)
 	});
 
-	$("#" + RecipeDB.Recipe.DOM.ElementData.Picture).load(function() {
+	$("#" + RecipeDB.Recipe.DOM.ElementData.Picture.ID).load(function() {
 		RecipeDB.Recipe.Methods.setPictureEditDimensions();
 	});
 
@@ -498,15 +527,15 @@ RecipeDB.Recipe.Methods.openCloseSection = function(Caller) {
 	}
 };
 
-RecipeDB.Recipe.Methods.onRecipeAdded = function(NewRecipeID) {
+RecipeDB.Recipe.Methods.viewRecipe = function(RecipeID) {
 	$.ajax({
 		type: "post",
 		url: "../Controllers/RecipeController.cfc",
 		data: {
 			method: "getRecipeView",
-			recipeID: 0
+			recipeID: RecipeID
 		},
-		dataType: "json",
+		dataType: "html",
 
 		success: function(ResponseData) {
 			RecipeDB.Main.Methods.onGetViewComplete(ResponseData);
@@ -619,7 +648,7 @@ RecipeDB.AddRecipe.Methods.onAddRecipeSuccess = function(AjaxResponse) {
 		return false;
 	}
 
-	RecipeDB.Recipe.Methods.onRecipeAdded( AjaxResponse.NewRecipeID );
+	RecipeDB.Recipe.Methods.viewRecipe( AjaxResponse.NewRecipeID );
 };
 
 RecipeDB.AddRecipe.init = function() {
@@ -640,6 +669,108 @@ RecipeDB.DuplicatesRecipesList = {
 
 RecipeDB.DuplicatesRecipesList.init = function() {
 
+};
+
+/* RECIPELIST.CFM*/
+
+RecipeDB.RecipeList = {
+	DOM: {
+		Pointers: {},
+		ElementData: {}
+	},
+	Methods: {}
+};
+
+RecipeDB.RecipeList.ElementData = {
+
+	RecipeListTable: {
+		ID: "RecipeList-Table"
+	}
+
+};
+
+RecipeDB.RecipeList.init = function() {
+
+	$("#" + RecipeDB.RecipeList.ElementData.RecipeListTable.ID).DataTable(
+		{
+			columnDefs: [
+				{ targets: '_all', className: " dt-head-center dt-body-left" }, /* This is for adding classes that control the alignment of the data, in this case centered th-text and left aligned td-text */
+			],
+			order: [[1, "asc"]], /* Which column you want to order the table by, in this case the second colum (First name) in ascending order */
+			paging: false, /* enabling or disabling pagination. Set this to false and the lengthChange and lengthMenu will be ignored. Enable this if you want to test pagination */
+			fixedHeader: true, /* A plugin for datatables that allows the header row to stay in place when scrolling*/
+			searching: true, /* Self-explanatory */
+			lengthChange: true, /* Whether to allow users to change the amount of rows shown */
+			lengthMenu: [5,10], /* The options shown in the length menu */
+			autoWidth: true, /* Auto scales the cell sizes based on content, if false it divides the cell width equally among all the cells */
+			sPaginationType: "simple_numbers", /* The type of pagination, see the manual for more examples */
+
+			columns: [
+				{
+					"data":"RecipeID",
+					"render":{  
+						_:"display",
+						"sort":"sortdata"
+					}
+				},
+				{
+					"data":"DateCreated",
+					"render":{  
+						_:"display",
+						"sort":"sortdata"
+					}
+				},
+				{
+					"data":"DateTimeLastModified",
+					"render":{  
+						_:"display",
+						"sort":"sortdata"
+					}
+				},
+				{
+					"data":"CreatedByUser",
+					"render":{  
+						_:"display",
+						"sort":"sortdata"
+					}
+				},
+				{
+					"data":"LastModifiedByUser",
+					"render":{  
+						_:"display",
+						"sort":"sortdata"
+					}
+				},
+				{
+					"data":"Ingredients",
+					"render":{  
+						_:"display",
+						"sort":"sortdata"
+					}
+				},
+				{
+					"data":"Description",
+					"render":{  
+						_:"display",
+						"sort":"sortdata"
+					}
+				},
+				{
+					"data":"Name",
+					"render":{  
+						_:"display",
+						"sort":"sortdata"
+					}
+				}					
+			],
+			ajax: {
+				dataSrc: "data",
+				url: "../Controllers/RecipeController.cfc?method=getRecipeListData",
+				type: "GET",
+				dataType: "json"
+			}
+		}
+	);
 };
 
 /* UTILITIES */

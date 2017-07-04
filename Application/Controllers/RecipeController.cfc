@@ -26,6 +26,19 @@
 			Datasource=application.Settings.Datasource
 		) />
 
+		<cfset ViewArguments.RecipeID = Recipe.getID() />
+		<cfset ViewArguments.Name = Recipe.getName() />
+		<cfset ViewArguments.DateCreated = Recipe.getDateCreated() />
+		<cfset ViewArguments.DateTimeLastModified = Recipe.getDateTimeLastModified() />
+		<cfset ViewArguments.CreatedByUserName = Recipe.getCreatedByUser().getDisplayName() />
+		<cfset ViewArguments.CreatedByUserID = Recipe.getCreatedByUser().getID() />
+		<cfset ViewArguments.LastModifiedByUser = Recipe.getLastModifiedByUser().getDisplayName() />
+		<cfset ViewArguments.Ingredients = Recipe.getIngredients() />
+		<cfset ViewArguments.Description = Recipe.getDescription() />
+		<cfset ViewArguments.Picture = Recipe.getPicture() />
+		<cfset ViewArguments.Instructions = Recipe.getInstructions() />
+		<!--- <cfset ViewArguments.Comments = Recipe.getComments() /> --->
+
 		<!--- NOTE TO SELF: Use forward slashes for cfmodule paths that use mappings, derp --->
 		<cfsavecontent variable="ReturnData" >
 			<cfmodule template="/Views/Recipe.cfm" attributecollection="#ViewArguments#" >
@@ -46,10 +59,12 @@
 		<cfset var ReturnData = {
 			DuplicatesFound: false,
 			NewRecipeID: 0,
-			DuplicatesView: ""
+			DuplicatesView: "",
+			NewRecipeView: ""
 		} />
 
-		<cfset var ViewArguments = {} />
+		<cfset var DuplicateViewArguments = {} />
+		<cfset var RecipeViewArguments = {} />
 		<cfset var MatchingRecipes = queryNew("RecipeID,Name") />
 		<cfset var RecipeInterface = createObject("component", "Models.Recipe") />
 		<cfset var RecipesByName = queryNew("RecipeID,Name") />
@@ -58,6 +73,7 @@
 		<cfset var CurrentRecipeID = 0 />
 		<cfset var CurrentRecipe = "" />
 		<cfset var DuplicateRecipeData = structNew() />
+		<cfset var NewRecipe = "" />
 
 		<cfif arguments.CheckForDuplicates >
 
@@ -69,20 +85,20 @@
 			<cfquery name="MatchingRecipes" dbtype="query" >
 				SELECT #RecipeInterface.getTableKey()#
 				FROM RecipesByName 
-				WHERE Name LIKE <cfqueryparam sqltype="LONGVARCHAR" value="%#arguments.Name#%" maxlength="100" />
+				WHERE Name LIKE <cfqueryparam sqltype="LONGVARCHAR" value="%#trim(arguments.Name)#%" maxlength="100" />
 				ORDER BY #RecipeInterface.getTableKey()# ASC;
 			</cfquery>
 
 			<cfif MatchingRecipes.RecordCount GT 0 >
 				<cfset ReturnData.DuplicatesFound = true />
-				<cfset ViewArguments.DuplicateAmount = MatchingRecipes.RecordCount />
+				<cfset DuplicateViewArguments.DuplicateAmount = MatchingRecipes.RecordCount />
 
 				<cfloop list="#valueList(MatchingRecipes.RecipeID)#" index="CurrentRecipeID" >
 
 					<cfset DuplicateRecipeData = structNew() />
 
 					<cfif RecipeCounter GT 50 >
-						<cfset ViewArguments.ExcessDuplicateAmount = (MatchingRecipes.RecordCount - 50) />
+						<cfset DuplicateViewArguments.ExcessDuplicateAmount = (MatchingRecipes.RecordCount - 50) />
 						<cfbreak/>
 					</cfif>
 
@@ -92,7 +108,7 @@
 						) 
 					/>
 
-					<cfset DuplicateRecipeData.ID = CurrentRecipe.getRecipeID() />
+					<cfset DuplicateRecipeData.ID = CurrentRecipe.getID() />
 					<cfset DuplicateRecipeData.Name = CurrentRecipe.getName() />
 					<cfset DuplicateRecipeData.Owner = CurrentRecipe.getCreatedByUser().getDisplayName() />
 
@@ -101,25 +117,45 @@
 
 				</cfloop>
 
-				<cfset ViewArguments.DuplicateRecipes = DuplicateRecipes />
+				<cfset DuplicateViewArguments.DuplicateRecipes = DuplicateRecipes />
 
 				<cfsavecontent variable="ReturnData.DuplicatesView" >
-					<cfmodule template="/Views/DuplicateRecipesList.cfm" attributecollection="#ViewArguments#" >
+					<cfmodule template="/Views/DuplicateRecipesList.cfm" attributecollection="#DuplicateViewArguments#" >
 				</cfsavecontent>
+
+				<cfreturn ReturnData />
 			</cfif>
 		</cfif>
 
-		<cfif MatchingRecipes.RecordCount IS 0 >
-			<cfset ReturnData.NewRecipeID = RecipeInterface.create(
-				UserID=session.CurrentUser.getUserID(),
-				Name=arguments.Name,
-				Datasource=application.Settings.Datasource
-				).getRecipeID()
-			 />
-		</cfif>
+		<cfset NewRecipe = RecipeInterface.create(
+			UserID=session.CurrentUser.getID(),
+			Name=trim(arguments.Name),
+			Datasource=application.Settings.Datasource
+		 ) />
 
-		<!--- <cfheader name="Content-Type" value="application/json;charset=UTF-8" /> --->
+		<cfset ReturnData.NewRecipeID = NewRecipe.getID() />
+
 		<cfreturn ReturnData />
+	</cffunction>
+
+	<cffunction name="getRecipeListView" access="remote" returntype="string" returnformat="plain" output="false" hint="" >
+
+		<cfset var ReturnData = "" />
+
+		<cfsavecontent variable="ReturnData" >
+			<cfmodule template="/Views/RecipeList.cfm" >
+		</cfsavecontent>
+
+		<cfheader name="Content-Type" value="text/html;charset=UTF-8" />
+		<cfreturn ReturnData />
+
+	</cffunction>
+
+	<cffunction name="getRecipeListData" access="remote" returntype="query" returnformat="JSON" output="false" hint="" >
+
+		<cfset var ReturnData = createObject("component", "Models.Recipe").getData( Datasource=application.Settings.Datasource ) >
+		<cfreturn ReturnData />
+
 	</cffunction>
 
 </cfcomponent>

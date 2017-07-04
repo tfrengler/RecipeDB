@@ -4,7 +4,8 @@
 <cfparam name="attributes.Name" default="[no name]" />
 <cfparam name="attributes.DateCreated" default="" />
 <cfparam name="attributes.DateTimeLastModified" default="" />
-<cfparam name="attributes.CreatedByUser" default="" />
+<cfparam name="attributes.CreatedByUserName" default="[unknown owner]" />
+<cfparam name="attributes.CreatedByUserID" default=0 />
 <cfparam name="attributes.LastModifiedByUser" default="" />
 <cfparam name="attributes.Ingredients" default="[no Ingredients]" />
 <cfparam name="attributes.Description" default="[no description]" />
@@ -33,7 +34,7 @@
 		</div>
 		<br/>
 
-	<cfif attributes.CreatedByUser EQ session.CurrentUser.getUserId() >
+	<cfif attributes.CreatedByUserID EQ session.CurrentUser.getID() >
 		<div class="row">
 			<div id="Recipe-Toolbar" class="olive-wrapper-white-background" >
 				<span id="Edit-Recipe-Button" class="standard-button" >Make editable</span>
@@ -110,7 +111,7 @@
 
 				<div id="Recipe-Status-Container" >
 					<p>RecipeID: #attributes.RecipeID#</p>
-					<p>Created by: #attributes.CreatedByUser#</p>
+					<p>Created by: #attributes.CreatedByUserName#</p>
 					<p>Date created: #attributes.DateCreated#</p>
 					<p>Modified by: #attributes.LastModifiedByUser#</p>
 					<p>Date modified: #attributes.DateTimeLastModified#</p>

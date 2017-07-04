@@ -33,15 +33,15 @@
 	<!--- Table mappings --->
 
 	<cffunction name="getTableName" returntype="string" access="public" output="false" hint="" >
-		<cfreturn TableName />
+		<cfreturn variables.TableName />
 	</cffunction> 
 
 	<cffunction name="getTableKey" returntype="string" access="public" output="false" hint="" >
-		<cfreturn TableKey />
+		<cfreturn variables.TableKey />
 	</cffunction>
 
 	<cffunction name="getTableColumns" returntype="string" access="public" output="false" hint="" >
-		<cfreturn TableColumns />
+		<cfreturn variables.TableColumns />
 	</cffunction>
 
 	<!--- Static method support --->
@@ -191,10 +191,10 @@
 
 		<cftransaction action="begin" >
 			<cftry>
-				<cfquery datasource="#getDatasource()#" >
+				<cfquery datasource="#variables.getDatasource()#" >
 					DELETE
-					FROM #getTableName()#
-					WHERE #getTableKey()# = <cfqueryparam sqltype="BIGINT" value="#getID()#" />
+					FROM #variables.getTableName()#
+					WHERE #variables.getTableKey()# = <cfqueryparam sqltype="BIGINT" value="#variables.getID()#" />
 				</cfquery>
 
 				<cftransaction action="commit" />
@@ -209,7 +209,7 @@
 			</cftry>
 		</cftransaction>
 
-		<cfset IsStatic = true />
+		<cfset variables.IsStatic = true />
 		<cfreturn true />
 	</cffunction>
 
@@ -221,9 +221,9 @@
 
 		<cfset var ExistenceCheck = queryNew("") />
 		<cfquery name="ExistenceCheck" datasource="#arguments.Datasource#" >
-			SELECT #getTableKey()#
-			FROM #getTableName()#
-			WHERE #getTableKey# = <cfqueryparam sqltype="CF_SQL_BIGINT" value="#arguments.ID#" />
+			SELECT #variables.getTableKey()#
+			FROM #variables.getTableName()#
+			WHERE #variables.getTableKey()# = <cfqueryparam sqltype="CF_SQL_BIGINT" value="#arguments.ID#" />
 		</cfquery>
 
 		<cfif ExistenceCheck.RecordCount IS 1 >

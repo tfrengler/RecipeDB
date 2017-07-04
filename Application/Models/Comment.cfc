@@ -46,7 +46,7 @@
 	<cffunction name="setID" returntype="void" access="private" output="false" hint="" >
 		<cfargument name="Value" type="numeric" required="true" hint="" />
 
-		<cfset variables.CommentID = arguments.ID />
+		<cfset variables.CommentID = arguments.Value />
 	</cffunction>
 
 	<cffunction name="setRecipeID" returntype="void" access="private" output="false" hint="" >
