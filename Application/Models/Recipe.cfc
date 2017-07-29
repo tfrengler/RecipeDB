@@ -15,8 +15,6 @@
 	<cfset Name = "" />
 
 	<cfset TableName = "Recipes" />
-	<cfset TableKey = "RecipeID" />
-	<cfset TableColumns = "Name,DateCreated,DateTimeLastModified,CreatedByUser,LastModifiedByUser,Ingredients,Description,Picture,Instructions" />
 
 	<!--- Getters --->
 
@@ -176,6 +174,7 @@
 		<cfargument name="Datasource" type="string" required="true" hint="The name of the datasource to use for queries." />
 
 		<cfset variables.onInitialized() />
+		<cfset variables.setupTableColumns( Datasource=trim(arguments.Datasource) ) />
 
 		<cfif len(arguments.Name) IS 0 >
 			<cfthrow message="Error creating recipe" detail="The recipe name you passed is empty." />
@@ -297,7 +296,8 @@
 			<cfthrow message="Error when initializing recipe. The datasource argument appears to be empty" />
 		</cfif>
 
-		<cfset variables.setDataSource( Name= trim(arguments.Datasource) ) />
+		<cfset variables.setDataSource( Name=trim(arguments.Datasource) ) />
+		<cfset variables.setupTableColumns( Datasource=trim(arguments.Datasource) ) />
 
 		<cfif variables.exists( ID=arguments.ID, Datasource=arguments.Datasource ) IS false >
 			<cfthrow message="Error when initializing recipe. No recipe with this #getTableKey()# exists: #arguments.ID#" />

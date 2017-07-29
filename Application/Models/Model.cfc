@@ -5,12 +5,14 @@
 
 	<cfset IsStatic = true />
 	<cfset DatasourceName = "" />
+	<cfset TableKey = "" />
+	<cfset TableColumns = "" />
 
 	<!--- Define these in the child CFC
 
 	<cfset TableName = "" /> The table name this component models its data on
 	<cfset TableKey = "" /> The primary key of the table
-	<cfset TableColumns = "" /> Comma delimited list of all the table columns but without the primary key
+	<cfset TableColumns = "" /> Comma delimited list of all the table columns without the primary key
 
 	When adding new DB columns to a model don't forget to:
 	- Add the variable at the top with a blank default value
@@ -20,7 +22,35 @@
 
 	--->
 
-	<cffunction name="setDataSource" access="private" output="false" hint="" >
+	<cffunction name="setupTableColumns" access="private" returntype="void" output="false" hint="" >
+		<cfargument name="Datasource" type="string" required="true" hint="The name of the datasource to use for queries." />
+
+		<cfif len(variables.getTableColumns()) GT 0 AND len(variables.getTableKey()) GT 0 >
+			<cfreturn />
+		</cfif>
+
+		<cfset var ColumnDataFromDB = "" />
+		<cfset var ListOfColumns = "" />
+
+		<cfdbinfo name="ColumnDataFromDB" datasource="#arguments.Datasource#" type="columns" table="#getTableName()#" />
+
+		<cfloop query="#ColumnDataFromDB#" >
+			<cfif ColumnDataFromDB.IS_PRIMARYKEY IS false >
+
+				<cfset ListOfColumns = listAppend(ListOfColumns, ColumnDataFromDB.COLUMN_NAME) />
+
+			<cfelseif ColumnDataFromDB.IS_PRIMARYKEY IS true >
+				<!--- This is predicated on our db structure being so that we only ever have one primary key of course --->
+				<cfif len(variables.getTableKey()) IS 0 >
+					<cfset variables.TableKey = ColumnDataFromDB.COLUMN_NAME />
+				</cfif>
+			</cfif>
+		</cfloop>
+
+		<cfset variables.TableColumns = ListOfColumns />
+	</cffunction>
+
+	<cffunction name="setDataSource" access="private" returntype="void" output="false" hint="" >
 		<cfargument name="Name" type="string" required="true" hint="" />
 
 		<cfset variables.DatasourceName = arguments.Name />
@@ -67,6 +97,7 @@
 		<cfargument name="Datasource" type="string" required="true" hint="The name of the datasource to use for queries." />
 
 		<cfset variables.onInitialized() />
+		<cfset variables.setupTableColumns( Datasource=arguments.Datasource ) />
 
 		<cfset var ObjectData = queryNew("") />
 		<cfset var CurrentColumn = "" />
@@ -157,6 +188,7 @@
 		<cfargument name="Datasource" type="string" required="true" hint="The name of the datasource to use for queries." />
 
 		<cfset variables.onInitialized() />
+		<cfset variables.setupTableColumns( Datasource=arguments.Datasource ) />
 
 		<cfset var ObjectData = queryNew("") />
 		<cfset var CurrentColumn = "" />
@@ -218,6 +250,7 @@
 		<cfargument name="Datasource" type="string" required="true" hint="The name of the datasource to use for queries." />
 
 		<cfset variables.onInitialized() />
+		<cfset variables.setupTableColumns( Datasource=arguments.Datasource ) />
 
 		<cfset var ExistenceCheck = queryNew("") />
 		<cfquery name="ExistenceCheck" datasource="#arguments.Datasource#" >

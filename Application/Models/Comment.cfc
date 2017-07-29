@@ -8,8 +8,6 @@
 	<cfset DateTimeCreated = createDateTime(1666, 6, 6, 0, 0) />
 
 	<cfset TableName = "Comments" />
-	<cfset TableKey = "CommentID" />
-	<cfset TableColumns = "RecipeID,CommentText,UserID,DateTimeCreated" />
 
 	<!--- Getters --->
 
@@ -113,6 +111,7 @@
 		<cfargument name="Datasource" type="string" required="true" hint="The name of the datasource to use for queries." />
 
 		<cfset variables.onInitialized() />
+		<cfset variables.setupTableColumns( Datasource=trim(arguments.Datasource) ) />
 
 		<cfif isValid("integer", arguments.UserID) IS false AND arguments.UserID IS 0 >
 			<cfthrow message="Error creating new comment" detail="The UserID you passed is an invalid integer or is 0: #arguments.UserID#" />
@@ -200,6 +199,7 @@
 		</cfif>
 
 		<cfset variables.setDataSource( Name= trim(arguments.Datasource) ) />
+		<cfset variables.setupTableColumns( Datasource=trim(arguments.Datasource) ) />
 
 		<cfif exists( ID=arguments.ID, Datasource=arguments.Datasource ) IS false >
 			<cfthrow message="Error when initializing comment" detail="No comment with this #getTableKey()# exists: #arguments.ID#" />

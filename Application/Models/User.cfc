@@ -15,8 +15,6 @@
 	<cfset Blocked = true />
 
 	<cfset TableName = "Users" />
-	<cfset TableKey = "UserID" />
-	<cfset TableColumns = "DateCreated,DateTimeLastLogin,Password,PasswordSalt,TempPassword,UserName,DisplayName,TimesLoggedIn,BrowserLastUsed,Blocked" />
 
 	<!--- Getters --->
 
@@ -255,6 +253,7 @@
 		<cfargument name="Datasource" type="string" required="true" hint="The name of the datasource to use for queries." />
 
 		<cfset variables.onInitialized() />
+		<cfset variables.setupTableColumns( Datasource=trim(arguments.Datasource) ) />
 
 		<cfif len(arguments.Username) IS 0 >
 			<cfthrow message="Error creating new user" detail="The username you passed is empty, this is not allowed." />
@@ -357,6 +356,7 @@
 		</cfif>
 
 		<cfset variables.setDataSource( Name= trim(arguments.Datasource) ) />
+		<cfset variables.setupTableColumns( Datasource=trim(arguments.Datasource) ) />
 
 		<cfif variables.exists( ID=arguments.ID, Datasource=arguments.Datasource ) IS false >
 			<cfthrow message="Error when initializing user. No user with this #variables.getTableKey()# exists: #arguments.ID#" />
