@@ -1,25 +1,25 @@
 <cfprocessingdirective pageencoding="utf-8" />
-<cfparam name="URL.token" default="0" />
-<cfif URL.token IS NOT 86954494 >
-	<p>Look at you, hacker: a pathetic creature of meat and bone, panting and sweating as you run through my corridors. How can you challenge a perfect, immortal machine?</p>
-	<cfabort/>
-</cfif>
+<cfinclude template="checkauth.cfm" />
 
 <!DOCTYPE html>
 <html lang="en" >
+<cfoutput>
 
 <head>
-	<title>DB Health Check</title>
-	<style type="text/css">
-		.error {
-			color: red;
-		}
-	</style>
+	<title>Toolbox</title>
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 </head>
 
-<form name="ToolboxForm" action="POST" >
-	<input name="DoDatabaseCheck" type="hidden" value="0" />
+<body>
+	<h1>Toolbox</h1>
+	
+	<ul>
+		<li><a href="DBTools.cfm?token=#URL.token#" >DB tools</a></li>
+	</ul>
 
-	<p>Do a database check: <input type="submit" value="GO" /></p>
+</body>
 
-</form>
+</cfoutput>
+</html>

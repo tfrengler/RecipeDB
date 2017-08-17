@@ -1,10 +1,7 @@
-<cfparam name="URL.token" default="0" />
-<cfif URL.token IS NOT 86954494 >
-	<p>Look at you, hacker: a pathetic creature of meat and bone, panting and sweating as you run through my corridors. How can you challenge a perfect, immortal machine?</p>
-	<cfabort/>
-</cfif>
+<cfprocessingdirective pageencoding="utf-8" />
+<cfinclude template="checkauth.cfm" />
 
-<cfset DBInfo = {
+<cfset DBExpectedSetup = {
 
 	Users: {
 		UserID: {
