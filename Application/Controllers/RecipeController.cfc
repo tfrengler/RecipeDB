@@ -151,9 +151,65 @@
 
 	</cffunction>
 
-	<cffunction name="getRecipeListData" access="remote" returntype="query" returnformat="JSON" output="false" hint="" >
+	<cffunction name="getRecipeListData" access="remote" returntype="struct" returnformat="JSON" output="true" hint="" >
 
-		<cfset var ReturnData = createObject("component", "Models.Recipe").getData( Datasource=application.Settings.Datasource ) >
+		<cfset var AllRecipes = createObject("component", "Models.Recipe").getData( Datasource=application.Settings.Datasource ) >
+		<cfset var Users = createObject("component", "Models.User").getData( Datasource=application.Settings.Datasource, ColumnList="UserID,DisplayName" ) />
+		<cfset var ColumnNamesFromQuery = AllRecipes.ColumnList />
+		<cfset var CurrentColumnName = "" />
+		<cfset var CurrentRecipeData = structNew() />
+		<cfset var UserDisplayName = "" />
+
+		<cfset var ReturnData = {
+			data: arrayNew(1)
+		} />
+		
+		<cfoutput>
+
+		<cfloop query="AllRecipes" >
+
+			<cfloop list=#ColumnNamesFromQuery# index="CurrentColumnName" >
+
+				<cfset structInsert(CurrentRecipeData, CurrentColumnName, structNew()) />
+				<cfset structInsert(CurrentRecipeData[CurrentColumnName], "sortdata", "") />
+				<cfset structInsert(CurrentRecipeData[CurrentColumnName], "display", "") />
+
+				<cfif len(CurrentRecipeData[CurrentColumnName]) GT 0 AND CurrentRecipeData[CurrentColumnName] NOT " " >
+
+					<cfif CurrentColumnName IS "CreatedByUser" OR CurrentColumnName IS "LastModifiedByUser" >
+
+						<cfquery name="UserDisplayName" dbtype="query" >
+							SELECT DisplayName
+							FROM Users
+							WHERE UserID = #AllRecipes[CurrentColumnName]#;
+						</cfquery>
+
+						<cfset structInsert(CurrentRecipeData[CurrentColumnName], "sortdata", encodeForHTML(UserDisplayName["DisplayName"]), true) />
+						<cfset structInsert(CurrentRecipeData[CurrentColumnName], "display", encodeForHTML(UserDisplayName["DisplayName"]), true) />
+					
+					<cfelseif CurrentColumnName IS "DateTimeLastModified" OR CurrentColumnName IS "DateCreated" >
+
+						<cfset structInsert(CurrentRecipeData[CurrentColumnName], "sortdata", ReReplaceNoCase(AllRecipes[CurrentColumnName], "[^0-9,]", "", "ALL"), true) />
+						<cfset structInsert(CurrentRecipeData[CurrentColumnName], "display", LSDateFormat(AllRecipes[CurrentColumnName], "DD/MM/yyyy"), true) />
+
+					<cfelse>
+
+						<cfset structInsert(CurrentRecipeData[CurrentColumnName], "sortdata", encodeForHTML(AllRecipes[CurrentColumnName]), true) />
+						<cfset structInsert(CurrentRecipeData[CurrentColumnName], "display", encodeForHTML(AllRecipes[CurrentColumnName]), true) />
+
+					</cfif>
+
+				</cfif>
+
+			</cfloop>
+
+			<cfset arrayAppend(ReturnData.data, CurrentRecipeData) />
+			<cfset CurrentRecipeData = structNew() />
+
+		</cfloop>
+
+		</cfoutput>
+
 		<cfreturn ReturnData />
 
 	</cffunction>

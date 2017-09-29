@@ -696,7 +696,7 @@ RecipeDB.RecipeList.init = function() {
 			columnDefs: [
 				{ targets: '_all', className: " dt-head-center dt-body-left" }, /* This is for adding classes that control the alignment of the data, in this case centered th-text and left aligned td-text */
 			],
-			order: [[1, "asc"]], /* Which column you want to order the table by, in this case the second colum (First name) in ascending order */
+			order: [[0, "desc"]], /* Which column you want to order the table by, in this case the second colum (First name) in ascending order */
 			paging: false, /* enabling or disabling pagination. Set this to false and the lengthChange and lengthMenu will be ignored. Enable this if you want to test pagination */
 			fixedHeader: true, /* A plugin for datatables that allows the header row to stay in place when scrolling*/
 			searching: true, /* Self-explanatory */
@@ -707,56 +707,56 @@ RecipeDB.RecipeList.init = function() {
 
 			columns: [
 				{
-					"data":"RecipeID",
+					"data":"RECIPEID",
 					"render":{  
 						_:"display",
 						"sort":"sortdata"
 					}
 				},
 				{
-					"data":"DateCreated",
+					"data":"DATECREATED",
 					"render":{  
 						_:"display",
 						"sort":"sortdata"
 					}
 				},
 				{
-					"data":"DateTimeLastModified",
+					"data":"DATETIMELASTMODIFIED",
 					"render":{  
 						_:"display",
 						"sort":"sortdata"
 					}
 				},
 				{
-					"data":"CreatedByUser",
+					"data":"CREATEDBYUSER",
 					"render":{  
 						_:"display",
 						"sort":"sortdata"
 					}
 				},
 				{
-					"data":"LastModifiedByUser",
+					"data":"LASTMODIFIEDBYUSER",
+					"render":{  
+						_:"display",
+						"sort":"sortdata"
+					}
+				},
+			/*	{
+					"data":"INGREDIENTS",
 					"render":{  
 						_:"display",
 						"sort":"sortdata"
 					}
 				},
 				{
-					"data":"Ingredients",
+					"data":"DESCRIPTION",
 					"render":{  
 						_:"display",
 						"sort":"sortdata"
 					}
-				},
+				}, */
 				{
-					"data":"Description",
-					"render":{  
-						_:"display",
-						"sort":"sortdata"
-					}
-				},
-				{
-					"data":"Name",
+					"data":"NAME",
 					"render":{  
 						_:"display",
 						"sort":"sortdata"

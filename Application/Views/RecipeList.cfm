@@ -5,15 +5,15 @@
 <div id="RecipeList-Container" class="row" >
 
 	<div class="col-md-6 col-md-offset-3" >
-		<table id="RecipeList-Table" border="1" >
+		<table id="RecipeList-Table" border="0" >
 			<thead>
-				<th>RecipeID</th>
-				<th>DateCreated</th>
-				<th>DateTimeLastModified</th>
-				<th>CreatedByUser</th>
-				<th>LastModifiedByUser</th>
-				<th>Ingredients</th>
-				<th>Description</th>
+				<th>ID</th>
+				<th>Created on</th>
+				<th>Modified on</th>
+				<th>Created by</th>
+				<th>Last modified by</th>
+				<!--- <th>Ingredients</th>
+				<th>Description</th> --->
 				<th>Name</th>
 			</thead>
 
