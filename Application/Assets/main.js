@@ -694,34 +694,20 @@ RecipeDB.RecipeList.init = function() {
 	$("#" + RecipeDB.RecipeList.ElementData.RecipeListTable.ID).DataTable(
 		{
 			columnDefs: [
-				{ targets: '_all', className: " dt-head-center dt-body-left" }, /* This is for adding classes that control the alignment of the data, in this case centered th-text and left aligned td-text */
+				{ targets: '_all', className: "dt-head-center dt-body-left" }, /* This is for adding classes that control the alignment of the data, in this case centered th-text and left aligned td-text */
 			],
-			order: [[0, "desc"]], /* Which column you want to order the table by, in this case the second colum (First name) in ascending order */
-			paging: false, /* enabling or disabling pagination. Set this to false and the lengthChange and lengthMenu will be ignored. Enable this if you want to test pagination */
-			fixedHeader: true, /* A plugin for datatables that allows the header row to stay in place when scrolling*/
+			order: [[2, "asc"]], /* Which column you want to order the table by, in this case the third colum (Created on) in ascending order */
+			paging: true, /* enabling or disabling pagination. Set this to false and the lengthChange and lengthMenu will be ignored. Enable this if you want to test pagination */
+			fixedHeader: false, /* A plugin for datatables that allows the header row to stay in place when scrolling*/
 			searching: true, /* Self-explanatory */
 			lengthChange: true, /* Whether to allow users to change the amount of rows shown */
-			lengthMenu: [5,10], /* The options shown in the length menu */
+			lengthMenu: [10,20,30,40,50], /* The options shown in the length menu */
 			autoWidth: true, /* Auto scales the cell sizes based on content, if false it divides the cell width equally among all the cells */
 			sPaginationType: "simple_numbers", /* The type of pagination, see the manual for more examples */
 
 			columns: [
 				{
-					"data":"RECIPEID",
-					"render":{  
-						_:"display",
-						"sort":"sortdata"
-					}
-				},
-				{
-					"data":"DATECREATED",
-					"render":{  
-						_:"display",
-						"sort":"sortdata"
-					}
-				},
-				{
-					"data":"DATETIMELASTMODIFIED",
+					"data":"NAME",
 					"render":{  
 						_:"display",
 						"sort":"sortdata"
@@ -735,7 +721,21 @@ RecipeDB.RecipeList.init = function() {
 					}
 				},
 				{
+					"data":"DATECREATED",
+					"render":{  
+						_:"display",
+						"sort":"sortdata"
+					}
+				},
+				{
 					"data":"LASTMODIFIEDBYUSER",
+					"render":{  
+						_:"display",
+						"sort":"sortdata"
+					}
+				},
+				{
+					"data":"DATETIMELASTMODIFIED",
 					"render":{  
 						_:"display",
 						"sort":"sortdata"
@@ -756,7 +756,7 @@ RecipeDB.RecipeList.init = function() {
 					}
 				}, */
 				{
-					"data":"NAME",
+					"data":"RECIPEID",
 					"render":{  
 						_:"display",
 						"sort":"sortdata"

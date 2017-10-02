@@ -102,15 +102,15 @@
 						<cfbreak/>
 					</cfif>
 
-					<cfset CurrentRecipe = createObject("component", "Models.Recipe").init( 
-							ID=CurrentRecipeID,
-							Datasource=application.Settings.Datasource
-						) 
-					/>
+					<!--- This feels ridiculously expensive in the long run. Might want to do something similar to getRecipeListData() instead --->
+					<!--- <cfset CurrentRecipe = createObject("component", "Models.Recipe").init( 
+						ID=CurrentRecipeID,
+						Datasource=application.Settings.Datasource
+					) />
 
 					<cfset DuplicateRecipeData.ID = CurrentRecipe.getID() />
 					<cfset DuplicateRecipeData.Name = CurrentRecipe.getName() />
-					<cfset DuplicateRecipeData.Owner = CurrentRecipe.getCreatedByUser().getDisplayName() />
+					<cfset DuplicateRecipeData.Owner = CurrentRecipe.getCreatedByUser().getDisplayName() /> --->
 
 					<cfset arrayAppend(DuplicateRecipes, DuplicateRecipeData) >
 					<cfset RecipeCounter = (RecipeCounter + 1) />
@@ -151,51 +151,66 @@
 
 	</cffunction>
 
-	<cffunction name="getRecipeListData" access="remote" returntype="struct" returnformat="JSON" output="true" hint="" >
+	<cffunction name="getRecipeListData" access="remote" returntype="struct" returnformat="JSON" output="false" hint="" >
 
 		<cfset var AllRecipes = createObject("component", "Models.Recipe").getData( Datasource=application.Settings.Datasource ) >
-		<cfset var Users = createObject("component", "Models.User").getData( Datasource=application.Settings.Datasource, ColumnList="UserID,DisplayName" ) />
+		<cfset var Users = createObject("component", "Models.User").getData( 
+			Datasource=application.Settings.Datasource,
+			ColumnList="UserID,DisplayName",
+			CachedWithin=createTimespan(0, 1, 0, 0)
+		) />
+		
 		<cfset var ColumnNamesFromQuery = AllRecipes.ColumnList />
 		<cfset var CurrentColumnName = "" />
 		<cfset var CurrentRecipeData = structNew() />
 		<cfset var UserDisplayName = "" />
+		<cfset var CurrentColumnFromCurrentRowInQuery = "" />
+		<cfset var UserIDColumns = "CreatedByUser,LastModifiedByUser" />
+		<cfset var DateColumns = "DateTimeLastModified,DateCreated" />
 
 		<cfset var ReturnData = {
 			data: arrayNew(1)
 		} />
-		
-		<cfoutput>
 
 		<cfloop query="AllRecipes" >
 
 			<cfloop list=#ColumnNamesFromQuery# index="CurrentColumnName" >
 
+				<cfset CurrentColumnFromCurrentRowInQuery = AllRecipes[CurrentColumnName] />
+
 				<cfset structInsert(CurrentRecipeData, CurrentColumnName, structNew()) />
 				<cfset structInsert(CurrentRecipeData[CurrentColumnName], "sortdata", "") />
 				<cfset structInsert(CurrentRecipeData[CurrentColumnName], "display", "") />
 
-				<cfif len(CurrentRecipeData[CurrentColumnName]) GT 0 AND CurrentRecipeData[CurrentColumnName] NOT " " >
+				<!--- If column is empty, skip processing it --->
+				<cfif len(CurrentColumnFromCurrentRowInQuery) GT 0 AND CurrentColumnFromCurrentRowInQuery IS NOT " " >
 
-					<cfif CurrentColumnName IS "CreatedByUser" OR CurrentColumnName IS "LastModifiedByUser" >
+					<!--- Since users are listed by ID's we need some additional processing to get the names for display purposes --->
+					<cfif listFindNoCase(UserIDColumns, CurrentColumnName) GT 0 >
 
 						<cfquery name="UserDisplayName" dbtype="query" >
 							SELECT DisplayName
 							FROM Users
-							WHERE UserID = #AllRecipes[CurrentColumnName]#;
+							WHERE UserID = <cfqueryparam sqltype="BIGINT" value="#CurrentColumnFromCurrentRowInQuery#" />;
 						</cfquery>
 
 						<cfset structInsert(CurrentRecipeData[CurrentColumnName], "sortdata", encodeForHTML(UserDisplayName["DisplayName"]), true) />
 						<cfset structInsert(CurrentRecipeData[CurrentColumnName], "display", encodeForHTML(UserDisplayName["DisplayName"]), true) />
 					
-					<cfelseif CurrentColumnName IS "DateTimeLastModified" OR CurrentColumnName IS "DateCreated" >
+					<!--- Date columns cannot be sorted by normal means so we need some additional processing --->
+					<cfelseif listFindNoCase(DateColumns, CurrentColumnName) GT 0 >
 
-						<cfset structInsert(CurrentRecipeData[CurrentColumnName], "sortdata", ReReplaceNoCase(AllRecipes[CurrentColumnName], "[^0-9,]", "", "ALL"), true) />
-						<cfset structInsert(CurrentRecipeData[CurrentColumnName], "display", LSDateFormat(AllRecipes[CurrentColumnName], "DD/MM/yyyy"), true) />
+						<cfset structInsert(CurrentRecipeData[CurrentColumnName], "sortdata", ReReplaceNoCase(CurrentColumnFromCurrentRowInQuery, "[^0-9,]", "", "ALL"), true) />
+						<cfset structInsert(CurrentRecipeData[CurrentColumnName], "display", LSDateFormat(CurrentColumnFromCurrentRowInQuery, "DD/MM/yyyy"), true) />
 
+					<!--- For everything else, just put the data in the return data --->
 					<cfelse>
-
-						<cfset structInsert(CurrentRecipeData[CurrentColumnName], "sortdata", encodeForHTML(AllRecipes[CurrentColumnName]), true) />
-						<cfset structInsert(CurrentRecipeData[CurrentColumnName], "display", encodeForHTML(AllRecipes[CurrentColumnName]), true) />
+						<!--- Normally I'd put encodeForHTML() type things in the view but 
+							A: we are not in charge of rendering each row and their content and
+							B: hopefully this helps neuter things that might otherwise break the JSON
+						--->
+						<cfset structInsert(CurrentRecipeData[CurrentColumnName], "sortdata", toString( encodeForHTML(CurrentColumnFromCurrentRowInQuery) ), true) />
+						<cfset structInsert(CurrentRecipeData[CurrentColumnName], "display", toString( encodeForHTML(CurrentColumnFromCurrentRowInQuery) ), true) />
 
 					</cfif>
 
@@ -207,8 +222,6 @@
 			<cfset CurrentRecipeData = structNew() />
 
 		</cfloop>
-
-		</cfoutput>
 
 		<cfreturn ReturnData />
 

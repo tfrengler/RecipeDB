@@ -2,19 +2,23 @@
 
 <cfoutput>
 
-<div id="RecipeList-Container" class="row" >
+<section class="row" >
+	<h1 id="RecipeList-Welcome" class="olive-text-color-center" >List of recipes</h1>
+</section>
 
-	<div class="col-md-6 col-md-offset-3" >
-		<table id="RecipeList-Table" border="0" >
+<section id="RecipeList-Container" class="row" >
+
+	<div class="col-md-8 col-md-offset-2 olive-wrapper-grey-background" >
+		<table id="RecipeList-Table" border="0" class="row-border order-column stripe" >
 			<thead>
-				<th>ID</th>
-				<th>Created on</th>
-				<th>Modified on</th>
-				<th>Created by</th>
-				<th>Last modified by</th>
-				<!--- <th>Ingredients</th>
-				<th>Description</th> --->
 				<th>Name</th>
+				<th>Created by</th>
+				<th>Created on</th>
+				<th>Last modified by</th>
+				<th>Modified on</th>
+				<!--- <th>Ingredients</th> Not sure we want these here. Too much info in these columns to fit the tables nicely
+				<th>Description</th> --->
+				<th>ID</th>
 			</thead>
 
 			<tbody>
@@ -22,7 +26,7 @@
 		</table>
 	</div>
 
-</div>
+</section>
 
 <script type="text/javascript">
 	$(document).ready(function() {

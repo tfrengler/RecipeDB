@@ -23,8 +23,17 @@
 	<cfset this.mappings["/Modules"] = (this.root & "Modules/") />
 
 	<cffunction name="onApplicationStart" returnType="boolean" output="false">
+
 		<cfset application.Settings.Datasource = "dev" />
 
+		<!--- <cfset application.securityManager = createObject("component", "Components.SecurityManager") />
+		<cfset application.system = createObject("component", "Components.System") /> --->
+
+		<cfreturn true />
+	</cffunction>
+
+	<cffunction name="onSessionStart" returntype="boolean" output="false">
+		<!--- <cfset session.ajaxProxy = createObject("component", "Components.AjaxProxy") /> --->
 		<cfreturn true />
 	</cffunction>
 

@@ -1,6 +1,8 @@
 <cfcomponent output="false" >
 <cfprocessingdirective pageEncoding="utf-8"  />
 
+	<cfset SecretKey = "27A19594-F01F-AF65-F844BA5EB80A5C06" />
+
 	<cffunction name="getHashedString" returntype="string" access="public" hint="" >
 		<cfargument name="StringData" type="string" required="true" hint="" />
 
@@ -40,6 +42,17 @@
 		<cfreturn Password />
 	</cffunction>
 
+	<cffunction name="generateAuthKey" returntype="string" access="private" hint="" >
+		<cfset var AuthKey = "" /> 
+
+		<cfif structKeyExists(session, "sessionid") >
+			<cfset AuthKey = (session.sessionid & variables.SecretKey) />
+		<cfelse>
+			<cfthrow message="Error generating authkey" detail="The sessionid does not appear to exist in the session scope!" />
+		</cfif>
+
+		<cfreturn hash(AuthKey, "SHA-512") />
+	</cffunction>
 
 	<cffunction name="removeTagsFromString" returntype="string" access="private" hint="Removes HTML from a string. Will remove entire tag and its attributes (http://cflib.org/udf/stripHTML)" >
 		<cfargument name="StringData" type="string" required="true" />

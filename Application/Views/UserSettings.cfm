@@ -20,9 +20,9 @@
 	<input id="Username" class="form-control" type="text" value="#encodeForHTML( attributes.Username )#" />
 	<br/>
 
-	<span id="PasswordLegend">PASSWORD:</span>
-	<input id="SecretKey" class="form-control" type="text" value="********" />
-	<br/>
+	<!--- <span id="PasswordLegend">PASSWORD:</span>
+	<input id="SecretKey" class="form-control" type="text" value="********" /> NEED SOME OTHER MECHANISM FOR CHANGING PASSWORD, A DIALOG OR A SEPARATE PAGE
+	<br/> --->
 
 	<span id="AccountCreationDateLegend">ACCOUNT CREATED:</span> 
 	<input id="AccountCreationDate" class="form-control" type="text" value="#encodeForHTML( DateFormat(attributes.AccountCreationDate, "dd/mm/yyyy") )#" disabled="disabled" />

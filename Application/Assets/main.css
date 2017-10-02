@@ -268,3 +268,14 @@ a:hover {
 #AddNewRecipe-Button {
 	width: 50%;
 }
+
+/* RECIPE LIST PAGE */
+
+#RecipeList-Container {
+	margin-top: 2em;
+}
+
+#RecipeList-Table th {
+	background-color: #92CD00;
+	color: white;
+}

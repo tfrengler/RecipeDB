@@ -94,24 +94,34 @@
 		<cfargument name="ColumnToSearchOn" type="string" required="true" hint="The name of the column you want to search on." />
 		<cfargument name="SearchOperator" type="string" required="true" hint="The search operator you want to use (such as equal to, begins with, contains etc)." />
 		<cfargument name="SearchData" type="any" required="true" hint="The data you're searching on. Can be a date, float, integer or a string. NOTE: For IN-searches you don't have to put parentheses around the values!" />
+		<cfargument name="CachedWithin" type="any" required="false" default="#createTimespan(0, 0, 0, 0)#" hint="A timespan in which you want to cache the query for subsequent calls." />
 		<cfargument name="Datasource" type="string" required="true" hint="The name of the datasource to use for queries." />
 
 		<cfset variables.onInitialized() />
+
+		<cfif len(arguments.Datasource) IS 0 >
+			<cfthrow message="Error when getting data for object" detail="Argument 'Datasource' is empty" />
+		</cfif>
+
 		<cfset variables.setupTableColumns( Datasource=arguments.Datasource ) />
 
-		<cfset var ObjectData = queryNew("") />
 		<cfset var CurrentColumn = "" />
 		<cfset var Columns = "#getTableKey()#,#getTableColumns()#" />
+		<cfset var GetByObjectData = queryNew(Columns) />
 		<cfset var ValidOperators = "equal to,not equal to,begins with,ends with,contains,in,greater than,less than" />
 		<cfset var Qualifier = "" />
 		<cfset var QueryString = "" />
 
 		<cfif listFindNoCase(ValidOperators, arguments.SearchOperator) IS 0 >
-			<cfthrow message="Error when searching for users" detail="The search operator you passed as '#arguments.SearchOperator#' is not valid. Valid operators are: #ValidOperators#" />
+			<cfthrow message="Error when getting data for object" detail="The search operator you passed as '#arguments.SearchOperator#' is not valid. Valid operators are: #ValidOperators#" />
 		</cfif>
 
 		<cfif listFindNoCase(Columns, arguments.ColumnToSearchOn) IS 0 >
-			<cfthrow message="Error when searching for users" detail="The search column you passed as '#arguments.ColumnToSearchOn#' is not valid. Valid columns are: #Columns#" />
+			<cfthrow message="Error when getting data for object" detail="The search column you passed as '#arguments.ColumnToSearchOn#' is not valid. Valid columns are: #Columns#" />
+		</cfif>
+
+		<cfif isInstanceOf(arguments.CachedWithin, "lucee.runtime.type.dt.TimeSpanImpl") IS false >
+			<cfthrow message="Error when getting data for object" detail="Argument 'CachedWithin' is not a valid time span" />
 		</cfif>
 
 		<cfswitch expression="#arguments.SearchOperator#" >
@@ -123,7 +133,7 @@
 
 			<cfcase value="not equal to" >
 				<cfset Qualifier = "!=" >
-				<cfset QueryString = arguments.SearchData />
+				<!--- <cfset QueryString = arguments.SearchData /> --->
 			</cfcase>
 
 			<cfcase value="begins with" >
@@ -158,7 +168,7 @@
 
 		</cfswitch>
 
-		<cfquery name="ObjectData" datasource="#arguments.Datasource#" >
+		<cfquery name="GetByObjectData" datasource="#arguments.Datasource#" cachedwithin="#arguments.CachedWithin#" >
 			SELECT #Columns#
 			FROM #getTableName()#
 				
@@ -175,24 +185,34 @@
 			WHERE #arguments.ColumnToSearchOn# #Qualifier# '#QueryString#';
 
 			<cfelse>
-				<cfthrow message="Error when searching for users" detail="The search string column you passed as '#arguments.ColumnToSearchOn#' is not a valid float, date, integer or string" />
+				<cfthrow message="Error when fetching data" detail="The search string column you passed as '#arguments.ColumnToSearchOn#' is not a valid float, date, integer or string" />
 			</cfif>
 		</cfquery>
 
-		<cfreturn ObjectData />
+		<cfreturn GetByObjectData />
 	</cffunction>
 
 	<cffunction name="getData" returntype="query" access="public" output="false" hint="Static method. Fetch data from a specific object or multiple objects." >
 		<cfargument name="ColumnList" type="string" required="false" default="" hint="List of columns you want to fetch data from." />
 		<cfargument name="ID" type="numeric" required="false" default="0" hint="ID of the object you want to fetch data for. If you leave this out you get all objects." />
 		<cfargument name="Datasource" type="string" required="true" hint="The name of the datasource to use for queries." />
+		<cfargument name="CachedWithin" type="any" required="false" default="#createTimespan(0, 0, 0, 0)#" hint="A timespan in which you want to cache the query for subsequent calls." />
 
 		<cfset variables.onInitialized() />
+
+		<cfif len(arguments.Datasource) IS 0 AND arguments.Datasource IS NOT " " >
+			<cfthrow message="Error when getting data for object" detail="Argument 'Datasource' is empty" />
+		</cfif>
+
 		<cfset variables.setupTableColumns( Datasource=arguments.Datasource ) />
 
 		<cfset var ObjectData = queryNew("") />
 		<cfset var CurrentColumn = "" />
 		<cfset var Columns = "" />
+
+		<cfif isInstanceOf(arguments.CachedWithin, "lucee.runtime.type.dt.TimeSpanImpl") IS false >
+			<cfthrow message="Error when getting data for object" detail="Argument 'CachedWithin' is not a valid time span" />
+		</cfif>
 
 		<cfif len(arguments.ColumnList) GT 0 >
 
@@ -207,7 +227,9 @@
 			<cfset Columns = "#getTableKey()#,#getTableColumns()#" />
 		</cfif>
 
-		<cfquery name="ObjectData" datasource="#arguments.Datasource#" >
+		<cfset ObjectData = queryNew(Columns) />
+
+		<cfquery name="ObjectData" datasource="#arguments.Datasource#" cachedwithin="#arguments.CachedWithin#" >
 			SELECT #Columns#
 			FROM #getTableName()#
 			<cfif arguments.ID GT 0 >
