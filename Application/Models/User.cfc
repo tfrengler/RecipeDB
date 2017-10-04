@@ -13,6 +13,7 @@
 	<cfset TimesLoggedIn = 0 />
 	<cfset BrowserLastUsed = "" />
 	<cfset Blocked = true />
+	<cfset AuthKey = "" />
 
 	<cfset TableName = "Users" />
 
@@ -64,6 +65,10 @@
 
 	<cffunction name="getBlocked" access="public" returntype="boolean" output="false" hint="" >
 		<cfreturn variables.Blocked />
+	</cffunction>
+
+	<cffunction name="getAuthKey" access="public" returntype="string" output="false" hint="" >
+		<cfreturn variables.AuthKey />
 	</cffunction>
 
 	<!--- Setters --->
@@ -138,6 +143,12 @@
 		<cfargument name="Blocked" type="boolean" required="true" hint="" />
 
 		<cfset variables.Blocked = arguments.Blocked />
+	</cffunction>
+
+	<cffunction name="setAuthKey" access="public" output="false" hint="" >
+		<cfargument name="AuthKey" type="string" required="true" hint="" />
+
+		<cfset variables.AuthKey = arguments.AuthKey />
 	</cffunction>
 
 	<!--- Methods --->

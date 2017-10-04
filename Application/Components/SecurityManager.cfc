@@ -12,7 +12,6 @@
 	</cffunction>
 
 	<cffunction name="getSaltedString" returntype="string" access="public" hint="" >
-
 		<cfreturn Hash(GenerateSecretKey("AES"), "SHA-512") /> 
 	</cffunction>
 

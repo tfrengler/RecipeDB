@@ -23,14 +23,11 @@
 
 	<cffunction name="onApplicationStart" returnType="boolean" output="false">
 		<cfset application.Settings.Datasource = "dev" />
-
 		<cfreturn true />
 	</cffunction>
 
 	<cffunction name="onSessionEnd" returntype="boolean" output="false">
-		
 		<cfset createObject("component", "AuthenticationManager").clearSession() />
-
 		<cfreturn true />
 	</cffunction>
 </cfcomponent>
