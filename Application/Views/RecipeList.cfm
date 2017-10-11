@@ -7,8 +7,15 @@
 </section>
 
 <section id="RecipeList-Container" class="row" >
-
 	<div class="col-md-8 col-md-offset-2 olive-wrapper-grey-background" >
+
+		<div id="Recipe-Toolbar" class="olive-wrapper-white-background" >
+			<span><b>TOOLBOX: </b></span>
+			<span id="Filter-OwnedByMe-Button" class="standard-button" >Owned by me</span>
+		</div>
+
+		<hr/>
+
 		<table id="RecipeList-Table" border="0" class="row-border order-column stripe" >
 			<thead>
 				<th>Name</th>
@@ -16,16 +23,15 @@
 				<th>Created on</th>
 				<th>Last modified by</th>
 				<th>Modified on</th>
-				<!--- <th>Ingredients</th> Not sure we want these here. Too much info in these columns to fit the tables nicely
-				<th>Description</th> --->
+				<th>Ingredients</th>
 				<th>ID</th>
 			</thead>
 
 			<tbody>
 			</tbody>
 		</table>
-	</div>
 
+	</div>
 </section>
 
 <script type="text/javascript">

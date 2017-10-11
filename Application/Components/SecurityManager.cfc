@@ -41,7 +41,7 @@
 		<cfreturn Password />
 	</cffunction>
 
-	<cffunction name="generateAuthKey" returntype="string" access="private" hint="" >
+	<cffunction name="generateAuthKey" returntype="string" access="public" hint="" >
 		<cfset var AuthKey = "" /> 
 
 		<cfif structKeyExists(session, "sessionid") >

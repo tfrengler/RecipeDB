@@ -152,8 +152,16 @@
 	</cffunction>
 
 	<cffunction name="getRecipeListData" access="remote" returntype="struct" returnformat="JSON" output="false" hint="" >
+		<!--- 
+			Looking further down, yes I realize that the formatting of the data for viewing should be done in the VIEW
+			rather than here in a backend CFC. Sadly we are not in control of the rendering of each table row since datables
+			control that, hence we NEED to do it here!
+		 --->
 
-		<cfset var AllRecipes = createObject("component", "Models.Recipe").getData( Datasource=application.Settings.Datasource ) >
+		<cfset var AllRecipes = createObject("component", "Models.Recipe").getData(
+			Datasource=application.Settings.Datasource,
+			ColumnList="RecipeID,Name,DateCreated,DateTimeLastModified,CreatedByUser,LastModifiedByUser,Ingredients"
+		) >
 		<cfset var Users = createObject("component", "Models.User").getData( 
 			Datasource=application.Settings.Datasource,
 			ColumnList="UserID,DisplayName",
@@ -201,10 +209,17 @@
 					<cfelseif listFindNoCase(DateColumns, CurrentColumnName) GT 0 >
 
 						<cfset structInsert(CurrentRecipeData[CurrentColumnName], "sortdata", ReReplaceNoCase(CurrentColumnFromCurrentRowInQuery, "[^0-9,]", "", "ALL"), true) />
-						<cfset structInsert(CurrentRecipeData[CurrentColumnName], "display", LSDateFormat(CurrentColumnFromCurrentRowInQuery, "DD/MM/yyyy"), true) />
+
+						<!--- DateTimeLastModified is a Date and Time-stamp so we need to format it differently --->
+						<cfif findNoCase("DateTimeLastModified", CurrentColumnName) GT 0 >
+							<cfset structInsert(CurrentRecipeData[CurrentColumnName], "display", LSDateTimeFormat(CurrentColumnFromCurrentRowInQuery, "dd-mm-yyyy HH:nn:ss"), true) />
+						<cfelse>
+							<cfset structInsert(CurrentRecipeData[CurrentColumnName], "display", LSDateFormat(CurrentColumnFromCurrentRowInQuery, "DD/MM/yyyy"), true) />
+						</cfif>
 
 					<!--- For everything else, just put the data in the return data --->
 					<cfelse>
+						
 						<!--- Normally I'd put encodeForHTML() type things in the view but 
 							A: we are not in charge of rendering each row and their content and
 							B: hopefully this helps neuter things that might otherwise break the JSON

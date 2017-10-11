@@ -24,7 +24,7 @@
 
 	<cffunction name="onApplicationStart" returnType="boolean" output="false">
 
-		<cfset application.Settings.Datasource = "dev" />
+		<cfset application.settings.datasource = "dev" />
 
 		<cfset application.securityManager = createObject("component", "Components.SecurityManager") />
 		<cfset application.ajaxProxy = createObject("component", "Components.AjaxProxy") />
@@ -39,6 +39,14 @@
 	</cffunction>
 
 	<cffunction name="onRequestStart" returnType="boolean" output="true" >
+
+		<cfif structKeyExists(url, "Restart") >
+
+			<cfset sessionInvalidate() />
+			<cfset applicationStop() />
+			<cfreturn false />
+
+		</cfif>
 
 		<cfif isUserLoggedIn() IS false >
 			<cfset createObject("component", "Login.AuthenticationManager").forceLogout() />

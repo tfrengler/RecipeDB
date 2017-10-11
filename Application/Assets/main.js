@@ -20,7 +20,7 @@ RecipeDB.Main.DOM.ElementData = {
 };
 
 RecipeDB.Main.Methods.onGetViewComplete = function(AjaxResponse) {
-	if (AjaxResponse instanceof String == false) {
+	if (AjaxResponse instanceof String === false) {
 		String( AjaxResponse )
 	};
 
@@ -693,6 +693,8 @@ RecipeDB.RecipeList.init = function() {
 
 	$("#" + RecipeDB.RecipeList.ElementData.RecipeListTable.ID).DataTable(
 		{
+			// initComplete: RecipeDB.RecipeList.Methods.onListUpdated,
+			drawCallback: RecipeDB.RecipeList.Methods.onListUpdated,
 			columnDefs: [
 				{ targets: '_all', className: "dt-head-center dt-body-left" }, /* This is for adding classes that control the alignment of the data, in this case centered th-text and left aligned td-text */
 			],
@@ -741,20 +743,13 @@ RecipeDB.RecipeList.init = function() {
 						"sort":"sortdata"
 					}
 				},
-			/*	{
+				{
 					"data":"INGREDIENTS",
 					"render":{  
 						_:"display",
 						"sort":"sortdata"
 					}
 				},
-				{
-					"data":"DESCRIPTION",
-					"render":{  
-						_:"display",
-						"sort":"sortdata"
-					}
-				}, */
 				{
 					"data":"RECIPEID",
 					"render":{  
@@ -771,6 +766,28 @@ RecipeDB.RecipeList.init = function() {
 			}
 		}
 	);
+};
+
+RecipeDB.RecipeList.Methods.onListUpdated = function() {
+	$("#RecipeList-Table tbody tr").click( function() {
+		RecipeDB.RecipeList.Methods.openRecipe(this);
+	});
+};
+
+RecipeDB.RecipeList.Methods.openRecipe = function(Caller) {
+	/* Caller is the row, so we need to get the last child, which SHOULD be the RecipeID */
+
+	var RecipeID = 0;
+	RecipeID = Caller.children[ (Caller.children.length-1) ].innerHTML.trim();
+	RecipeID = parseInt(RecipeID);
+
+	if ( Number.isNaN(RecipeID) === true && RecipeID < 1) {
+		console.warn("RecipeDB.RecipeList.Methods.openRecipe(): RecipeID is not a number or less than 1!");
+		RecipeDB.Main.Methods.onAJAXCallError(arguments);
+		return false;
+	};
+	
+	RecipeDB.Recipe.Methods.viewRecipe( RecipeID );
 };
 
 /* UTILITIES */

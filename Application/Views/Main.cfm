@@ -12,6 +12,8 @@
 			<cfoutput>
 				<h3 id="Welcome-Text-Name" class="olive-text-color-center" >Welcome #encodeForHTML( session.CurrentUser.getDisplayName() )#!</h3>
 				<h3 id="Welcome-Text-PreviousLogin" class="olive-text-color-center" >Last time you visited us was on #encodeForHTML( dateTimeFormat(session.CurrentUser.getDateTimePreviousLogin(), "dd/mm/yyyy HH:nn") )#</h3>
+
+				<cfdump var=#session# />
 			</cfoutput>
 		</div>
 	</body>

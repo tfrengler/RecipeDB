@@ -30,7 +30,7 @@
 		<div class="row">
 			<div id="Recipe-Title-Container" class="olive-text-color-center" >
 				<h3 id="Recipe-Title" >#encodeForHTML(attributes.Name)#</h3>
-				<!-- <input id="Recipe-Title-Edit" class="h3" type="text" value="TITLE OF RECIPE" /> -->
+				<input id="Recipe-Title-Edit" class="h3 hidden" type="text" value="#attributes.Name#" />
 			</div>
 			
 			<div id="Recipe-Picture-Container" class="center-block recipe-picture" >
@@ -57,9 +57,13 @@
 			<div id="Description-Body" class="recipe-section-body" >
 
 				<p id="Recipe-Description-Container" >
-					#encodeForHTML(attributes.Description)#
+					<cfif len(attributes.Description) IS 0 >
+						<i>No description yet</i>
+					<cfelse>
+						#encodeForHTML(attributes.Description)#
+					</cfif>
 				</p>
-				<!-- <textarea id="Recipe-Description-Edit" ></textarea> -->
+				<textarea id="Recipe-Description-Edit" class="hidden" >#attributes.Description#</textarea>
 
 			</div>
 		</div>
@@ -70,9 +74,13 @@
 			<div id="Ingredients-Body" class="recipe-section-body" >
 
 				<p id="Recipe-Ingredients-Container" >
-					#encodeForHTML(attributes.Ingredients)#
+					<cfif len(attributes.Ingredients) IS 0 >
+						<i>No ingredients yet</i>
+					<cfelse>
+						#encodeForHTML(attributes.Ingredients)#
+					</cfif>
 				</p>
-				<!-- <textarea id="Recipe-Ingredients-Edit" ></textarea> -->
+				<textarea id="Recipe-Ingredients-Edit" class="hidden" >#attributes.Ingredients#</textarea>
 
 			</div>
 		</div>
@@ -83,9 +91,13 @@
 			<div id="Instructions-Body" class="recipe-section-body" >
 
 				<p id="Recipe-Instructions-Container" >
-					#encodeForHTML(attributes.Instructions)#
+					<cfif len(attributes.Instructions) IS 0 >
+						<i>No instructions yet</i>
+					<cfelse>
+						#encodeForHTML(attributes.Instructions)#
+					</cfif>
 				</p>
-				<!-- <textarea id="Recipe-Instructions-Edit" ></textarea> -->
+				<textarea id="Recipe-Instructions-Edit" class="hidden" >#attributes.Instructions#</textarea>
 
 			</div>
 		</div>
@@ -120,9 +132,9 @@
 				<div id="Recipe-Status-Container" >
 					<p>RecipeID: #attributes.RecipeID#</p>
 					<p>Created by: #encodeForHTML(attributes.CreatedByUserName)#</p>
-					<p>Date created: #attributes.DateCreated#</p>
+					<p>Created on: #LSDateFormat(attributes.DateCreated, "dd-mm-yyyy")#</p>
 					<p>Modified by: #encodeForHTML(attributes.LastModifiedByUser)#</p>
-					<p>Date modified: #attributes.DateTimeLastModified#</p>
+					<p>Last modified: #LSDateTimeFormat(attributes.DateTimeLastModified, "dd-mm-yyyy HH:nn:ss")#</p>
 				</div>
 
 			</div>

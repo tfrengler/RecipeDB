@@ -54,10 +54,9 @@
 		) />
 		<cfset User.save() />
 
-		<cfset User.setAuthKey(AuthKey=SecurityManager.generateAuthKey()) />
-
 		<cflock timeout="30" scope="Session" throwontimeout="true" >
 			<cfset session.CurrentUser = User />
+			<cfset session.authKey = Security.generateAuthKey() />
 		</cflock>
 
 		<cfset ReturnData.Result = true />

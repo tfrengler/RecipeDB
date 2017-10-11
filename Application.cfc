@@ -22,12 +22,18 @@
 	<cfset this.mappings["/Modules"] = (this.appdirectory & "Modules/") />
 
 	<cffunction name="onApplicationStart" returnType="boolean" output="false">
+
+		<cfset application.securityManager = createObject("component", "Components.SecurityManager") />
+		<cfset application.authenticationManager = createObject("component", "AuthenticationManager") />
 		<cfset application.Settings.Datasource = "dev" />
+
 		<cfreturn true />
 	</cffunction>
 
 	<cffunction name="onSessionEnd" returntype="boolean" output="false">
-		<cfset createObject("component", "AuthenticationManager").clearSession() />
+
+		<cfset application.authenticationManager.clearSession() />
 		<cfreturn true />
+		
 	</cffunction>
 </cfcomponent>

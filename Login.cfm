@@ -29,7 +29,7 @@
 			<h3 id="Login-Header" class="form-signin-heading" >Please log in</h3>
 
 			<input id="Username" name="Username" class="form-control" type="text" placeholder="username" />
-			<input id="Password" name="Password" class="form-control" type="password" placeholder="password" />
+			<input id="Password" name="Password" class="form-control" type="password" />
 
 			<input id="Login-Button" type="button" value="OK" class="standard-button btn-block" />
 
