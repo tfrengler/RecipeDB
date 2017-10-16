@@ -23,16 +23,37 @@
 
 	<cffunction name="onApplicationStart" returnType="boolean" output="false">
 
-		<cfset application.securityManager = createObject("component", "Components.SecurityManager") />
-		<cfset application.authenticationManager = createObject("component", "AuthenticationManager") />
+		<cfif structKeyExists(application, "securityManager") IS false >
+			<cfset application.securityManager = createObject("component", "Components.SecurityManager") />
+		</cfif>
+		<!--- <cfif structKeyExists(application, "ajaxProxy") IS false >
+			<cfset application.ajaxProxy = createObject("component", "Components.AjaxProxy") />
+		</cfif> --->
+		<cfif structKeyExists(application, "authenticationManager") IS false >
+			<cfset application.authenticationManager = createObject("component", "AuthenticationManager") />
+		</cfif>
+
 		<cfset application.Settings.Datasource = "dev" />
+
+		<cfreturn true />
+	</cffunction>
+
+	<cffunction name="onRequestStart" returnType="boolean" output="true" >
+
+		<cfif structKeyExists(url, "Restart") >
+
+			<cfset sessionInvalidate() />
+			<cfset applicationStop() />
+			<cflocation url="Login.cfm" addtoken="false" />
+
+		</cfif>
 
 		<cfreturn true />
 	</cffunction>
 
 	<cffunction name="onSessionEnd" returntype="boolean" output="false">
 
-		<cfset application.authenticationManager.clearSession() />
+		<cfset sessionInvalidate() />
 		<cfreturn true />
 		
 	</cffunction>

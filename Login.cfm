@@ -43,7 +43,7 @@
 			RecipeDB.LoginPage.init();
 
 		<cfif structKeyExists(cookie, "CFID") IS false AND structKeyExists(cookie, "CFTOKEN") IS false >
-		$('#' + RecipeDB.LoginPage.DOM.ElementData.MessageBox.ID).html("Your browser doesn't support cookies or cookies are not enabled.<br/><br/>Cookies are required if you want to use this application.");
+		$('#' + RecipeDB.LoginPage.DOM.ElementData.MessageBox.ID).html("Your browser doesn't support cookies or cookies are not enabled<br/><br/>Cookies are required if you want to use this application");
 		$('#' + RecipeDB.LoginPage.DOM.ElementData.MessageBox.ID).fadeIn(1000);
 
 		<cfelseif URL.Reason GT 0 >
@@ -51,7 +51,7 @@
 				$('#' + RecipeDB.LoginPage.DOM.ElementData.MessageBox.ID).html("Your session has expired. You need to log in again");
 				$('#' + RecipeDB.LoginPage.DOM.ElementData.MessageBox.ID).fadeIn(1000);
 			<cfelseif URL.Reason IS 2 >
-				$('#' + RecipeDB.LoginPage.DOM.ElementData.MessageBox.ID).html("You've been logged out successfully");
+				$('#' + RecipeDB.LoginPage.DOM.ElementData.MessageBox.ID).html("You've been logged out");
 				$('#' + RecipeDB.LoginPage.DOM.ElementData.MessageBox.ID).fadeIn(1000);
 			<cfelse>
 				console.warn("unknown response reason");
@@ -60,6 +60,9 @@
 		</cfif>
 		});
 	</script>
+
+	<cfdump var=#session# />
+	<cfdump var=#application# />
 </body>
 
 </html>

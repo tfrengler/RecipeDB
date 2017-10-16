@@ -20,9 +20,9 @@
 	<input id="Username" class="form-control" type="text" value="#encodeForHTML( attributes.Username )#" />
 	<br/>
 
-	<!--- <span id="PasswordLegend">PASSWORD:</span>
-	<input id="SecretKey" class="form-control" type="text" value="********" /> NEED SOME OTHER MECHANISM FOR CHANGING PASSWORD, A DIALOG OR A SEPARATE PAGE
-	<br/> --->
+	<span id="PasswordLegend">PASSWORD:&nbsp;</span><input id="Change-Password-Button" class="standard-button" type="button" value="CHANGE" />
+	<input id="ObscuredPassword" class="form-control" type="text" value="********" disabled="disabled" />
+	<br/>
 
 	<span id="AccountCreationDateLegend">ACCOUNT CREATED:</span> 
 	<input id="AccountCreationDate" class="form-control" type="text" value="#encodeForHTML( DateFormat(attributes.AccountCreationDate, "dd/mm/yyyy") )#" disabled="disabled" />
@@ -32,7 +32,7 @@
 	<input id="TimesLoggedIn" class="form-control" type="text" value="#encodeForHTML( attributes.TimesLoggedIn )#" disabled="disabled" />
 	<br/>
 
-	<span id="BrowserLastUsedLegend">LOGGED IN WITH BROWSER:</span> 
+	<span id="BrowserLastUsedLegend">LOGGED IN WITH:</span> 
 	<input id="BrowserLastUsed" class="form-control" type="text" value="#encodeForHTML( attributes.BrowserLastUsed )#" disabled="disabled" />
 	<br/>
 

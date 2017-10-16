@@ -14,6 +14,7 @@
 				<h3 id="Welcome-Text-PreviousLogin" class="olive-text-color-center" >Last time you visited us was on #encodeForHTML( dateTimeFormat(session.CurrentUser.getDateTimePreviousLogin(), "dd/mm/yyyy HH:nn") )#</h3>
 
 				<cfdump var=#session# />
+				<cfdump var=#application# />
 			</cfoutput>
 		</div>
 	</body>
@@ -21,6 +22,7 @@
 	<script type="text/javascript">
 		$(document).ready(function() {
 			RecipeDB.Main.init();
+			<cfoutput>#toScript(session.AuthKey, "RecipeDB.authKey", false)#</cfoutput>
 		});
 	</script>
 </html>

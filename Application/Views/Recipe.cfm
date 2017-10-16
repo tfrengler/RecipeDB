@@ -6,31 +6,25 @@
 <cfparam name="attributes.DateTimeLastModified" default="" />
 <cfparam name="attributes.CreatedByUserName" default="[unknown owner]" />
 <cfparam name="attributes.CreatedByUserID" default=0 />
-<cfparam name="attributes.LastModifiedByUser" default="" />
-<cfparam name="attributes.Ingredients" default="[no Ingredients]" />
+<cfparam name="attributes.LastModifiedByUser" default="0" />
+<cfparam name="attributes.Ingredients" default="[no ingredients]" />
 <cfparam name="attributes.Description" default="[no description]" />
 <cfparam name="attributes.Picture" default="" />
-<cfparam name="attributes.Instructions" default="[no Instructions]" />
+<cfparam name="attributes.Instructions" default="[no instructions]" />
 <cfparam name="attributes.Comments" default="#arrayNew(1)#" />
 
 <cfoutput>
-
-<!--- 
-	Still not sure how to deal with editing the recipe. Choices are along the lines of:
-	1: Use dialogs per section. Pops up, you edit stuff, press OK/SAVE and only that section is saved
-	2: Click an edit-button to make the recipe (or specific sections) editable. Press a button to save the entire thing (ajax form submit, no page reload)
-	3: Similar to 2 but using form submission and page reload
-	4: Not an actual method for saving but maybe implement some sort of autosave later on?
---->
 
 <div id="Recipe-Container" class="row" >
 
 	<div class="recipe col-md-6 col-md-offset-3" >
 
+		<input type="hidden" id="RecipeID" value="#attributes.RecipeID#" />
+
 		<div class="row">
 			<div id="Recipe-Title-Container" class="olive-text-color-center" >
-				<h3 id="Recipe-Title" >#encodeForHTML(attributes.Name)#</h3>
-				<input id="Recipe-Title-Edit" class="h3 hidden" type="text" value="#attributes.Name#" />
+				<h3 id="Recipe-Title" name="ViewSection" >#encodeForHTML(attributes.Name)#</h3>
+				<input id="Recipe-Title-Edit" name="EditSection" class="h3 display-none" type="text" value="#attributes.Name#" />
 			</div>
 			
 			<div id="Recipe-Picture-Container" class="center-block recipe-picture" >
@@ -46,7 +40,7 @@
 			<div class="row">
 				<div id="Recipe-Toolbar" class="olive-wrapper-white-background" >
 					<span id="Edit-Recipe-Button" class="standard-button" >Make editable</span>
-					<span id="Save-Recipe-Button" class="standard-button" >Save changes</span>
+					<span id="Save-Recipe-Button" class="standard-button display-none" >Save changes</span>
 				</div>
 			</div>
 			<br/>
@@ -56,14 +50,14 @@
 			<div name="Recipe-Header" id="Description-Header" class="recipe-section-header inline-block standard-top-radius" >DESCRIPTION</div>
 			<div id="Description-Body" class="recipe-section-body" >
 
-				<p id="Recipe-Description-Container" >
+				<div id="Recipe-Description-Container" name="ViewSection" >
 					<cfif len(attributes.Description) IS 0 >
 						<i>No description yet</i>
 					<cfelse>
-						#encodeForHTML(attributes.Description)#
+						#attributes.Description#
 					</cfif>
-				</p>
-				<textarea id="Recipe-Description-Edit" class="hidden" >#attributes.Description#</textarea>
+				</div>
+				<textarea id="Recipe-Description-Edit" name="EditSection" class="display-none" >#attributes.Description#</textarea>
 
 			</div>
 		</div>
@@ -73,14 +67,14 @@
 			<div name="Recipe-Header" id="Ingredients-Header" class="recipe-section-header inline-block standard-top-radius" >INGREDIENTS</div>
 			<div id="Ingredients-Body" class="recipe-section-body" >
 
-				<p id="Recipe-Ingredients-Container" >
+				<div id="Recipe-Ingredients-Container" name="ViewSection" >
 					<cfif len(attributes.Ingredients) IS 0 >
 						<i>No ingredients yet</i>
 					<cfelse>
-						#encodeForHTML(attributes.Ingredients)#
+						#attributes.Ingredients#
 					</cfif>
-				</p>
-				<textarea id="Recipe-Ingredients-Edit" class="hidden" >#attributes.Ingredients#</textarea>
+				</div>
+				<textarea id="Recipe-Ingredients-Edit" name="EditSection" class="display-none" >#attributes.Ingredients#</textarea>
 
 			</div>
 		</div>
@@ -90,20 +84,20 @@
 			<div name="Recipe-Header" id="Instructions-Header" class="recipe-section-header inline-block standard-top-radius" >INSTRUCTIONS</div>
 			<div id="Instructions-Body" class="recipe-section-body" >
 
-				<p id="Recipe-Instructions-Container" >
+				<div id="Recipe-Instructions-Container" name="ViewSection" >
 					<cfif len(attributes.Instructions) IS 0 >
 						<i>No instructions yet</i>
 					<cfelse>
-						#encodeForHTML(attributes.Instructions)#
+						#attributes.Instructions#
 					</cfif>
-				</p>
-				<textarea id="Recipe-Instructions-Edit" class="hidden" >#attributes.Instructions#</textarea>
+				</div>
+				<textarea id="Recipe-Instructions-Edit" name="EditSection" class="display-none" >#attributes.Instructions#</textarea>
 
 			</div>
 		</div>
 		<br/>
 
-		<div class="row" >
+		<!--- <div class="row" >
 			<div name="Recipe-Header" id="Comments-Header" class="recipe-section-header inline-block standard-top-radius" >COMMENTS</div>
 			<div id="Comments-Body" class="recipe-section-body" >
 
@@ -123,7 +117,7 @@
 
 			</div>
 		</div>
-		<br/>
+		<br/> --->
 
 		<div class="row" >
 			<div name="Recipe-Header" id="Status-Header" class="recipe-section-header inline-block standard-top-radius" >STATUS</div>
@@ -142,6 +136,12 @@
 		<br/>
 
 	</div>
+
+	<section id="Notification-Container" >
+		<div id="Notification">
+			<img src='../Assets/Pictures/Standard/ajax-loader.gif' />
+		</div>
+	</section>
 
 </div>
 

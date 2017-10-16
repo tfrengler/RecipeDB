@@ -239,7 +239,48 @@
 		</cfloop>
 
 		<cfreturn ReturnData />
+	</cffunction>
 
+	<cffunction name="updateRecipe" access="remote" returntype="struct" returnformat="JSON" output="true" hint="" >
+		<cfargument name="RecipeID" type="numeric" required="true" />
+		<cfargument name="UpdateData" type="string" required="true" />
+
+		<cfset var ReturnData = {
+			status: "",
+			message: ""
+		} />
+
+		<cftry>
+			<cfset arguments.UpdateData = deserializeJSON(arguments.UpdateData) />
+		<cfcatch>
+
+			<cfset ReturnData.status = "NOK" />
+			<cfset ReturnData.message = cfcatch.message />
+			<cfreturn ReturnData />
+			
+		</cfcatch>
+		</cftry>
+
+		<cfset var Recipe = createObject("component", "Models.Recipe").init( 
+			ID=arguments.RecipeID,
+			Datasource=application.Settings.Datasource
+		) />
+
+		<cfset Recipe.setIngredients(Data=arguments.UpdateData.ingredients) />
+		<cfset Recipe.setDescription(Data=arguments.UpdateData.description) />
+		<cfset Recipe.setInstructions(Data=arguments.UpdateData.instructions) />
+		<cfset Recipe.setName(Data=arguments.UpdateData.name) />
+
+		<cfset Recipe.setDateTimeLastModified(Date=createODBCdatetime(now())) />
+		<cfset Recipe.setLastModifiedByUser(UserInstance=session.currentUser) />
+		
+		<cfif Recipe.save() >
+			<cfset ReturnData.status = "OK" />
+		<cfelse>
+			<cfset ReturnData.status = "NOK" />
+		</cfif>
+
+		<cfreturn ReturnData />
 	</cffunction>
 
 </cfcomponent>

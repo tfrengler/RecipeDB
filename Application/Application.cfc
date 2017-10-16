@@ -21,15 +21,22 @@
 	<cfset this.mappings["/Views"] = (this.root & "Views/") />
 	<cfset this.mappings["/Controllers"] = (this.root & "Controllers/") />
 	<cfset this.mappings["/Modules"] = (this.root & "Modules/") />
+	<cfset this.mappings["/PatchNotes"] = (this.loginDirectory & "/Notes/Patch/") />
+	<cfset this.mappings["/Roadmap"] = (this.loginDirectory & "/Notes/Roadmap/") />
 
 	<cffunction name="onApplicationStart" returnType="boolean" output="false">
 
 		<cfset application.settings.datasource = "dev" />
 
-		<cfset application.securityManager = createObject("component", "Components.SecurityManager") />
-		<cfset application.ajaxProxy = createObject("component", "Components.AjaxProxy") />
-		<!--- <cfset application.system = createObject("component", "Components.System") /> --->
-		<!--- <cfset application.system = createObject("component", "Components.FileManager") /> --->
+		<cfif structKeyExists(application, "securityManager") IS false >
+			<cfset application.securityManager = createObject("component", "Components.SecurityManager") />
+		</cfif>
+		<!--- <cfif structKeyExists(application, "ajaxProxy") IS false >
+			<cfset application.ajaxProxy = createObject("component", "Components.AjaxProxy") />
+		</cfif> --->
+		<cfif structKeyExists(application, "authenticationManager") IS false >
+			<cfset application.authenticationManager = createObject("component", "Login.AuthenticationManager") />
+		</cfif>
 
 		<cfreturn true />
 	</cffunction>
@@ -44,7 +51,7 @@
 
 			<cfset sessionInvalidate() />
 			<cfset applicationStop() />
-			<cfreturn false />
+			<cflocation url="Main.cfm" addtoken="false" />
 
 		</cfif>
 
@@ -52,12 +59,24 @@
 			<cfset createObject("component", "Login.AuthenticationManager").forceLogout() />
 			<cfreturn false />
 		</cfif>
- 		
+		
 		<cfreturn true />
 	</cffunction>
 
 	<cffunction name="onSessionEnd" returntype="boolean" output="false">
-		<cfset createObject("component", "Login.AuthenticationManager").clearSession() />
+
+		<cfcookie name="CFID" value="" expires="NOW" />
+		<cfcookie name="CFTOKEN" value="" expires="NOW" />
+
 		<cfreturn true />
+
 	</cffunction>
+
+	<!--- <cffunction name="onCFCRequest" returnType="void"> 
+		<cfargument type="string" name="cfcname" required="false" />
+		<cfargument type="string" name="method" required="false" />
+		<cfargument type="struct" name="args" required="false" />
+
+		<cfreturn "404" />
+	</cffunction> --->
 </cfcomponent>

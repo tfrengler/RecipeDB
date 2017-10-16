@@ -145,8 +145,8 @@
 					SET	
 						DateCreated = <cfqueryparam sqltype="DATE" value="#getDateCreated()#" />,
 						DateTimeLastModified = <cfqueryparam sqltype="TIMESTAMP" value="#getDateTimeLastModified()#" />,
-						CreatedByUser = <cfqueryparam sqltype="BIGINT" value="#getCreatedByUser().getUserID()#" />,
-						LastModifiedByUser = <cfqueryparam sqltype="BIGINT" value="#getLastModifiedByUser().getUserID()#" />,
+						CreatedByUser = <cfqueryparam sqltype="BIGINT" value="#getCreatedByUser().getID()#" />,
+						LastModifiedByUser = <cfqueryparam sqltype="BIGINT" value="#getLastModifiedByUser().getID()#" />,
 						Ingredients = <cfqueryparam sqltype="LONGVARCHAR" value="#getIngredients()#" />,
 						Description = <cfqueryparam sqltype="LONGVARCHAR" value="#getDescription()#" />,
 						Picture = <cfqueryparam sqltype="BIGINT" value="#getPicture()#" />,

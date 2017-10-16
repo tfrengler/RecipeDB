@@ -17,6 +17,8 @@
 	
 	<ul>
 		<li><a href="DBTools.cfm?token=#URL.token#" >DB tools</a></li>
+		<li><a href="UserTools.cfm?token=#URL.token#" >User Tools</a></li>
+		<li><a href="CommunicationTools.cfm?token=#URL.token#" >Communication Tools</a></li>
 	</ul>
 
 </body>

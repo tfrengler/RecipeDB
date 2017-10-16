@@ -2,6 +2,7 @@
 
 /* Main container, a namespace for all our functionality */
 var RecipeDB = {};
+RecipeDB.authKey = "";
 
 /* MAIN.CFM */
 
@@ -27,17 +28,44 @@ RecipeDB.Main.Methods.onGetViewComplete = function(AjaxResponse) {
 	$("#" + RecipeDB.Main.DOM.ElementData.MainContentContainer.ID).html( AjaxResponse );
 };
 
+RecipeDB.Main.Methods.onGetViewSuccess = function(AjaxResponse) {
+	var ViewResponse = {};
+
+	try {
+		ViewResponse = JSON.parse(AjaxResponse);
+	}
+	catch(CatchError) {
+		this.onAJAXCallError(CatchError);
+	};
+
+	if (ViewResponse.status !== "OK" && ViewResponse.data instanceof String === false) {
+		this.onAJAXCallError(ViewResponse);
+	};
+
+	$("#" + RecipeDB.Main.DOM.ElementData.MainContentContainer.ID).html( ViewResponse.data );
+};
+
 RecipeDB.Main.Methods.onAJAXCallStart = function() {
 	$('#' + RecipeDB.Main.DOM.ElementData.MainContentContainer.ID).html("<img class='center-block ajax-loader-container' src='../Assets/Pictures/Standard/ajax-loader.gif' />");
 };
 
 RecipeDB.Main.Methods.onAJAXCallError = function(AjaxResponse) {
-	$('#' + RecipeDB.Main.DOM.ElementData.MainContentContainer.ID).html("<br/><div class='error-box col-md-2 col-md-offset-5' >Oh noes, something went wrong :( <br/>Please try again or contact the admin");
-	$('.error-box').show();
+	document.getElementById("MainContent").innerHTML = AjaxResponse["0"].responseText;
+	// $('#' + RecipeDB.Main.DOM.ElementData.MainContentContainer.ID).html("<br/><div class='error-box col-md-2 col-md-offset-5' >Oh noes, something went wrong :( <br/>Please try again or contact the admin");
+	// $('.error-box').show();
+	console.warn("onAJAXCallError triggered");
 	console.warn(AjaxResponse);
 };
 
 RecipeDB.Main.init = function() {
+
+	/* Polyfill for Number.isNan(), which is not supported by IE */
+	if (Number.isNan === "undefined") {
+		Number.isNaN = Number.isNaN || function(value) {
+			return value !== value;
+		}
+	};
+
 	console.log("Main init complete");
 };
 
@@ -207,33 +235,35 @@ RecipeDB.Menu.DOM.ElementData = {
 		ID :"side-menu",
 		Width: 0
 	},
-
 	MenuOptions: {
 		ID :"menu-options"
 	},
-
 	CloseButton: {
 		ID: "Close-Menu-Button"
 	},
-
 	OpenButton: {
 		ID: "Open-Menu-Button"
 	},
-
 	LogoutOption: {
 		ID: "Logout"
 	},
-
 	UserSettingsOption: {
 		ID: "UserSettings"
 	},
-
 	AddRecipeOption: {
 		ID: "AddRecipe"
 	},
-
 	FindRecipesOption: {
 		ID: "RecipeList"
+	},
+	StatisticsOption: {
+		ID: "Statistics"
+	},
+	WhatChangedOption: {
+		ID: "PatchNotes"
+	},
+	PlannedChangesOption: {
+		ID: "Roadmap"
 	}
 }
 
@@ -243,29 +273,32 @@ RecipeDB.Menu.init = function() {
 	$(document).resize(function() {
 		RecipeDB.Menu.Methods.onResize();
 	});
-
 	$("#" + RecipeDB.Menu.DOM.ElementData.CloseButton.ID).click(function() {
 		RecipeDB.Menu.Methods.hide();
 	});
-
 	$("#" + RecipeDB.Menu.DOM.ElementData.OpenButton.ID).click(function() {
 		RecipeDB.Menu.Methods.show();
 	});
-
 	$("#" + RecipeDB.Menu.DOM.ElementData.LogoutOption.ID).click(function() {
 		RecipeDB.Menu.Methods.logout();
 	});
-
 	$("#" + RecipeDB.Menu.DOM.ElementData.UserSettingsOption.ID).click(function() {
 		RecipeDB.Menu.Methods.getUserSettings();
 	});
-
 	$("#" + RecipeDB.Menu.DOM.ElementData.AddRecipeOption.ID).click(function() {
 		RecipeDB.Menu.Methods.getAddRecipe();
 	});
-
 	$("#" + RecipeDB.Menu.DOM.ElementData.FindRecipesOption.ID).click(function() {
 		RecipeDB.Menu.Methods.getRecipeList();
+	});
+	$("#" + RecipeDB.Menu.DOM.ElementData.StatisticsOption.ID).click(function() {
+		RecipeDB.Menu.Methods.getStatistics();
+	});
+	$("#" + RecipeDB.Menu.DOM.ElementData.WhatChangedOption.ID).click(function() {
+		RecipeDB.Menu.Methods.getPatchNotes();
+	});
+	$("#" + RecipeDB.Menu.DOM.ElementData.PlannedChangesOption.ID).click(function() {
+		RecipeDB.Menu.Methods.getRoadmap();
 	});
 
 	RecipeDB.Menu.Methods.hide();
@@ -291,6 +324,84 @@ RecipeDB.Menu.Methods = {
 			},
 			success: function(ResponseData) {
 				RecipeDB.Menu.Methods.onLogoutComplete(ResponseData);
+			}
+		});
+	},
+
+	getPatchNotes: function() {
+		$.ajax({
+			type: "post",
+			url: "../Components/AjaxProxy.cfc",
+			data: {
+				method: "call",
+				argumentCollection: JSON.stringify({
+					component: "1385A39A4884C42B25F4E2F24D4F52DC",
+					function: "getPatchNotesView",
+					authKey: RecipeDB.authKey
+				}),
+			},
+			dataType: "html",
+
+			beforeSend: function() {
+				RecipeDB.Main.Methods.onAJAXCallStart();
+			},
+			error: function() {
+				RecipeDB.Main.Methods.onAJAXCallError(arguments);
+			},
+			success: function(ResponseData) {
+				RecipeDB.Main.Methods.onGetViewSuccess(ResponseData);
+			}
+		});
+	},
+
+	getStatistics: function() {
+		$.ajax({
+			type: "post",
+			url: "../Components/AjaxProxy.cfc",
+			data: {
+				method: "call",
+				argumentCollection: JSON.stringify({
+					component: "1385A39A4884C42B25F4E2F24D4F52DC",
+					function: "getStatisticsView",
+					authKey: RecipeDB.authKey
+				}),
+			},
+			dataType: "html",
+
+			beforeSend: function() {
+				RecipeDB.Main.Methods.onAJAXCallStart();
+			},
+			error: function() {
+				RecipeDB.Main.Methods.onAJAXCallError(arguments);
+			},
+			success: function(ResponseData) {
+				RecipeDB.Main.Methods.onGetViewSuccess(ResponseData);
+			}
+		});
+	},
+
+	getRoadmap: function() {
+		$.ajax({
+			type: "post",
+			url: "../Components/AjaxProxy.cfc",
+			data: {
+				method: "call",
+				argumentCollection: JSON.stringify({
+					component: "1385A39A4884C42B25F4E2F24D4F52DC",
+					function: "getRoadmapView",
+					authKey: RecipeDB.authKey
+				}),
+			},
+			dataType: "html",
+
+			beforeSend: function() {
+				RecipeDB.Main.Methods.onAJAXCallStart();
+			},
+			error: function() {
+				RecipeDB.Main.Methods.onAJAXCallError(arguments);
+			},
+			success: function(ResponseData) {
+				RecipeDB.Main.Methods.onGetViewSuccess(ResponseData);
 			}
 		});
 	},
@@ -428,6 +539,34 @@ RecipeDB.Recipe.DOM.ElementData = {
 
 	PictureEdit: {
 		ID: "Recipe-Picture-Edit"
+	},
+
+	EditButton: {
+		ID: "Edit-Recipe-Button"
+	},
+
+	SaveButton: {
+		ID: "Save-Recipe-Button"
+	},
+
+	RecipeTitleEdit: {
+		ID: "Recipe-Title-Edit"
+	},
+
+	RecipeDescriptionEdit: {
+		ID: "Recipe-Description-Edit"
+	},
+
+	RecipeIngredientsEdit: {
+		ID: "Recipe-Ingredients-Edit"
+	},
+
+	RecipeInstructionsEdit: {
+		ID: "Recipe-Instructions-Edit"
+	},
+
+	RecipeID: {
+		ID: "RecipeID"
 	}
 };
 
@@ -445,6 +584,14 @@ RecipeDB.Recipe.init = function() {
 	$(document).resize( function() {
 		RecipeDB.Recipe.Methods.onResize();
 	});
+
+	$("#" + RecipeDB.Recipe.DOM.ElementData.EditButton.ID).click(
+		RecipeDB.Recipe.Methods.enableEditing
+	);
+
+	$("#" + RecipeDB.Recipe.DOM.ElementData.SaveButton.ID).click(
+		RecipeDB.Recipe.Methods.saveChanges
+	);
 };
 
 RecipeDB.Recipe.Methods.onResize = function() {
@@ -545,11 +692,62 @@ RecipeDB.Recipe.Methods.viewRecipe = function(RecipeID) {
 		},
 		beforeSend: function() {
 			RecipeDB.Main.Methods.onAJAXCallStart();
-		},
-		complete: function() {
-
 		}
 	});	
+};
+
+RecipeDB.Recipe.Methods.enableEditing = function() {
+	$("#" + RecipeDB.Recipe.DOM.ElementData.SaveButton.ID).show();
+	$("[name='ViewSection']").hide();
+	$("[name='EditSection']").show();
+	tinyMCE.init( {selector: "textarea"} );
+};
+
+RecipeDB.Recipe.Methods.saveChanges = function() {
+	var RecipeDescription = tinyMCE.get(RecipeDB.Recipe.DOM.ElementData.RecipeDescriptionEdit.ID).getContent();
+	var RecipeIngredients = tinyMCE.get(RecipeDB.Recipe.DOM.ElementData.RecipeIngredientsEdit.ID).getContent();
+	var RecipeInstructions = tinyMCE.get(RecipeDB.Recipe.DOM.ElementData.RecipeInstructionsEdit.ID).getContent();
+	var RecipeTitle = document.getElementById(RecipeDB.Recipe.DOM.ElementData.RecipeTitleEdit.ID).value.trim();
+	var RecipeID = parseInt(document.getElementById(RecipeDB.Recipe.DOM.ElementData.RecipeID.ID).value);
+
+	var UpdatedRecipeData = {
+		name: RecipeTitle,
+		description: RecipeDescription,
+		ingredients: RecipeIngredients,
+		instructions: RecipeInstructions
+	};
+
+	$.ajax({
+		type: "post",
+		url: "../Controllers/RecipeController.cfc",
+		data: {
+			method: "updateRecipe",
+			recipeid: RecipeID,
+			updatedata: JSON.stringify(UpdatedRecipeData)
+		},
+		dataType: "json",
+
+		success: function(ResponseData) {
+			RecipeDB.Recipe.Methods.onSavedChangesSuccess();
+		},
+		error: function() {
+			RecipeDB.Main.Methods.onAJAXCallError(arguments);
+		},
+		beforeSend: function() {
+			$("#Notification").show();
+		}
+	});	
+};
+
+RecipeDB.Recipe.Methods.onSavedChangesSuccess = function() {
+	$("#Notification").html("Changes saved!");
+	tinyMCE.remove();
+
+	$("[name='EditSection']").hide();
+	$("[name='ViewSection']").show();
+
+	$("#" + RecipeDB.Recipe.DOM.ElementData.SaveButton.ID).show();
+	$("#Notification").delay(3000).fadeOut();
 };
 
 /* ADD RECIPE.CFM */
