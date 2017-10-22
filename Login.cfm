@@ -24,12 +24,12 @@
 	<div id="Content" class="container" >
 		<h1 id="Login-Welcome" class="olive-text-color-center" >RecipeDB</h1>
 
-		<form id="Login-Form" class="olive-wrapper-grey-background center-block" >
+		<form id="Login-Form" class="olive-wrapper-grey-background center-block" action="Login.cfm" method="POST" >
 
 			<h3 id="Login-Header" class="form-signin-heading" >Please log in</h3>
 
-			<input id="Username" name="Username" class="form-control" type="text" placeholder="username" />
-			<input id="Password" name="Password" class="form-control" type="password" />
+			<input id="Username" name="j_username" class="form-control" type="text" placeholder="username" />
+			<input id="Password" name="j_password" class="form-control" type="password" />
 
 			<input id="Login-Button" type="button" value="OK" class="standard-button btn-block" />
 
@@ -47,14 +47,15 @@
 		$('#' + RecipeDB.LoginPage.DOM.ElementData.MessageBox.ID).fadeIn(1000);
 
 		<cfelseif URL.Reason GT 0 >
-			<cfif URL.Reason IS 1 >
+			<cfif URL.Reason IS 5 >
 				$('#' + RecipeDB.LoginPage.DOM.ElementData.MessageBox.ID).html("Your session has expired. You need to log in again");
 				$('#' + RecipeDB.LoginPage.DOM.ElementData.MessageBox.ID).fadeIn(1000);
-			<cfelseif URL.Reason IS 2 >
+			<cfelseif URL.Reason IS 6 >
 				$('#' + RecipeDB.LoginPage.DOM.ElementData.MessageBox.ID).html("You've been logged out");
 				$('#' + RecipeDB.LoginPage.DOM.ElementData.MessageBox.ID).fadeIn(1000);
 			<cfelse>
-				console.warn("unknown response reason");
+				$('#' + RecipeDB.LoginPage.DOM.ElementData.MessageBox.ID).html("Username or password is not correct");
+				$('#' + RecipeDB.LoginPage.DOM.ElementData.MessageBox.ID).fadeIn(1000);
 		</cfif>
 
 		</cfif>

@@ -80,27 +80,26 @@ RecipeDB.LoginPage = {
 };
 
 RecipeDB.LoginPage.DOM.ElementData = {
-
 	MessageBox: {
 		ID: "Login-MessageBox"
 	},
-
 	LoginButton: {
 		ID: "Login-Button"
 	},
-
 	Password: {
 		ID: "Password"
 	},
-
 	Username: {
 		ID: "Username"
+	},
+	LoginForm: {
+		ID: "Login-Form"
 	}
 };
 
 RecipeDB.LoginPage.init = function() {
 
-	$('#Login-Button').click(function() {
+	$("#" + RecipeDB.LoginPage.DOM.ElementData.LoginButton.ID).click(function() {
 		RecipeDB.LoginPage.Methods.attemptLogin();
 	});
 
@@ -120,62 +119,13 @@ RecipeDB.LoginPage.Methods = {
 			return false;
 		};
 
-		$.ajax({
-			type: "post",
-			url: "AuthenticationManager.cfc",
-			data: {
-				method: "attemptLogin",
-				password: String(Password),
-				username: String(Username)
-			},
-			dataType: "json",
-
-			success: function(ResponseData) {
-				RecipeDB.LoginPage.Methods.onLoginComplete(ResponseData);
-			},
-			error: function() {
-				RecipeDB.LoginPage.Methods.onLoginError(arguments);
-			},
-			beforeSend: function() {
-				RecipeDB.Utils.ajaxLoadButton(
-					true,
-					$('#' + RecipeDB.LoginPage.DOM.ElementData.LoginButton.ID).prop("disabled", true)
-				);
-			
-			},
-			complete: function() {
-				RecipeDB.Utils.ajaxLoadButton(
-					false,
-					$('#' + RecipeDB.LoginPage.DOM.ElementData.LoginButton.ID).prop("disabled", true),
-					"OK"
-				);
-			}
-		});
-	},
-
-	onLoginComplete: function(AjaxResponse) {
-
-		$('#' + RecipeDB.LoginPage.DOM.ElementData.MessageBox.ID).hide();
-
-		if (AjaxResponse.Result === false) {
-			if (AjaxResponse.Code > 0) {
-				$('#' + RecipeDB.LoginPage.DOM.ElementData.MessageBox.ID).html("Your username and/or password is wrong");
-			}
-
+		if ( Password.length === 0 || Password === " " ) {
+			$('#' + RecipeDB.LoginPage.DOM.ElementData.MessageBox.ID).html("Please enter a password");
 			$('#' + RecipeDB.LoginPage.DOM.ElementData.MessageBox.ID).fadeIn(1000);
 			return false;
 		};
 
-		window.location.replace("Application/Views/Main.cfm");
-	},
-
-	onLoginError: function(AjaxResponse) {
-		$('#' + RecipeDB.LoginPage.DOM.ElementData.MessageBox.ID).hide();
-
-		$('#' + RecipeDB.LoginPage.DOM.ElementData.MessageBox.ID).html("Internal error. Please try again or contact the administrator");
-		$('#' + RecipeDB.LoginPage.DOM.ElementData.MessageBox.ID).fadeIn(1000);
-
-		console.warn(AjaxResponse);
+		document.getElementById(RecipeDB.LoginPage.DOM.ElementData.LoginForm.ID).submit();
 	}
 };
 
@@ -278,9 +228,6 @@ RecipeDB.Menu.init = function() {
 	});
 	$("#" + RecipeDB.Menu.DOM.ElementData.OpenButton.ID).click(function() {
 		RecipeDB.Menu.Methods.show();
-	});
-	$("#" + RecipeDB.Menu.DOM.ElementData.LogoutOption.ID).click(function() {
-		RecipeDB.Menu.Methods.logout();
 	});
 	$("#" + RecipeDB.Menu.DOM.ElementData.UserSettingsOption.ID).click(function() {
 		RecipeDB.Menu.Methods.getUserSettings();

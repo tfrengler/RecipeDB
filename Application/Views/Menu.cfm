@@ -13,7 +13,7 @@
 		<li><a id="RecipeList" href="#" >Find recipes</a></li>
 		<li><a id="Favorites" href="#" >Favorites</a></li>
 		<li><a id="UserSettings" href="#" >My settings</a></li>
-		<li><a id="Logout" href="#" >Logout</a></li>
+		<li><a id="Logout" href="../../Login.cfm?Reason=6" >Logout</a></li>
 		<hr/>
 		<li><a id="Statistics" href="#" >Statistics</a></li>
 		<li><a id="PatchNotes" href="#" >Recent changes</a></li>
