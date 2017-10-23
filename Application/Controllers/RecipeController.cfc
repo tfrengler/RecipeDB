@@ -164,8 +164,7 @@
 		) >
 		<cfset var Users = createObject("component", "Models.User").getData( 
 			Datasource=application.Settings.Datasource,
-			ColumnList="UserID,DisplayName",
-			CachedWithin=createTimespan(0, 1, 0, 0)
+			ColumnList="UserID,DisplayName"
 		) />
 		
 		<cfset var ColumnNamesFromQuery = AllRecipes.ColumnList />

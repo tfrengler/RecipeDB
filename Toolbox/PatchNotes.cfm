@@ -51,37 +51,43 @@
 	<p><a href="CommunicationTools.cfm?token=#URL.token#" >Back to Communcation Tools</a></p>
 	<h1>Patch notes</h1>
 
-	<cfif structIsEmpty(FORM) IS false >
+	<cfif directoryExists("#expandPath("/")#RecipeDB\Notes\Patch") >
+		<cfset PatchDirDoesNotExist = false />
 
-		<!--- SAVING FILE --->
-		<cfif 	structKeyExists(FORM, "Saved_PatchNote_FileContents") AND
-				structKeyExists(FORM, "Saved_PatchNote_FileName") AND 
-				len(FORM.Saved_PatchNote_FileName) GT 0 >
+		<cfif structIsEmpty(FORM) IS false >
+			<!--- SAVING FILE --->
+			<cfif 	structKeyExists(FORM, "Saved_PatchNote_FileContents") AND
+					structKeyExists(FORM, "Saved_PatchNote_FileName") AND 
+					len(FORM.Saved_PatchNote_FileName) GT 0 >
 
-			<cffile 
-				action="write" 
-				file="#expandPath("/")#RecipeDB/Notes/Patch/#FORM.Saved_PatchNote_FileName#" 
-				output="#FORM.Saved_PatchNote_FileContents#" 
-				charset="utf-8" 
-				nameconflict="overwrite"
-			/>
-			<cfset ChangesSaved = true />
+				<cffile 
+					action="write" 
+					file="#expandPath("/")#RecipeDB/Notes/Patch/#FORM.Saved_PatchNote_FileName#" 
+					output="#FORM.Saved_PatchNote_FileContents#" 
+					charset="utf-8" 
+					nameconflict="overwrite"
+				/>
+				<cfset ChangesSaved = true />
 
-		<cfelseif structKeyExists(FORM, "Saved_PatchNote_FileName") AND len(FORM.Saved_PatchNote_FileName) IS 0 >
-			<cfset UnableToSave = true />
+			<cfelseif structKeyExists(FORM, "Saved_PatchNote_FileName") AND len(FORM.Saved_PatchNote_FileName) IS 0 >
+				<cfset UnableToSave = true />
+			</cfif>
+
+			<!--- LOADING FILE --->
+			<cfif structKeyExists(FORM, "PatchNote_FileName") AND len(FORM.PatchNote_FileName) GT 0 >
+				<cffile 
+					action="read" 
+					file="#expandPath("/")#RecipeDB/Notes/Patch/#FORM.PatchNote_FileName#" 
+					variable="PatchNoteFileContents" 
+					charset="utf-8"
+				/>
+			<cfelseif structKeyExists(FORM, "PatchNote_FileName") AND len(FORM.PatchNote_FileName) IS 0 >
+				<cfset UnableToLoad = true />
+			</cfif>
 		</cfif>
 
-		<!--- LOADING FILE --->
-		<cfif structKeyExists(FORM, "PatchNote_FileName") AND len(FORM.PatchNote_FileName) GT 0 >
-			<cffile 
-				action="read" 
-				file="#expandPath("/")#RecipeDB/Notes/Patch/#FORM.PatchNote_FileName#" 
-				variable="PatchNoteFileContents" 
-				charset="utf-8"
-			/>
-		<cfelseif structKeyExists(FORM, "PatchNote_FileName") AND len(FORM.PatchNote_FileName) IS 0 >
-			<cfset UnableToLoad = true />
-		</cfif>
+	<cfelse>
+		<cfset PatchDirDoesNotExist = true />
 	</cfif>
 
 	<cfparam name="PatchNoteFileContents" type="string" default="" />
@@ -139,6 +145,10 @@
 	<cfif UnableToLoad >
 		<p class="bad">UNABLE TO LOAD! Filename is empty</p>
 	</cfif>
+
+	<cfif PatchDirDoesNotExist >
+		<p class="bad">Patch notes-folder does not exist: #expandPath("/")#RecipeDB\Notes\Patch</p>
+	</cfif>	
 
 </body>
 

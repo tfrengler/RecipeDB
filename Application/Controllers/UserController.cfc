@@ -67,4 +67,34 @@
 		<cfreturn ReturnData />
 	</cffunction>
 
+	<cffunction name="changeUserSettings" access="public" returntype="struct" returnformat="json" output="false" hint="" >
+		<cfargument name="NewDisplayName" type="string" required="true" hint="" />
+		<cfargument name="NewUserName" type="string" required="true" hint="" />
+
+		<cfset var ReturnData = {
+			status: "",
+			message: "",
+			data: ""
+		} />
+
+		<cfset var ChangesMade = false />
+
+		<cfif session.CurrentUser.getDisplayName() NEQ arguments.NewDisplayName >
+			<cfset session.CurrentUser.setDisplayName(Name=arguments.NewDisplayName) />
+			<cfset ChangesMade = true />
+		</cfif>
+
+		<cfif session.CurrentUser.getUsername() NEQ arguments.NewUserName >
+			<cfset session.CurrentUser.setUserName(Name=arguments.NewUserName) />
+			<cfset ChangesMade = true />
+		</cfif>
+
+		<cfif ChangesMade >
+			<cfset session.CurrentUser.save() />
+		</cfif>
+
+		<cfset ReturnData.status = "OK" />
+		<cfreturn ReturnData />
+	</cffunction>
+
 </cfcomponent>

@@ -1,17 +1,17 @@
 <cfprocessingdirective pageEncoding="utf-8" />
 
 <cfparam name="attributes.RecipeID" default="0" />
-<cfparam name="attributes.Name" default="[no name]" />
-<cfparam name="attributes.DateCreated" default="" />
+<cfparam name="attributes.Name" type="string" default="[no name]" />
+<cfparam name="attributes.DateCreated" type="string" default="" />
 <cfparam name="attributes.DateTimeLastModified" default="" />
-<cfparam name="attributes.CreatedByUserName" default="[unknown owner]" />
+<cfparam name="attributes.CreatedByUserName" type="string" default="[unknown owner]" />
 <cfparam name="attributes.CreatedByUserID" default=0 />
 <cfparam name="attributes.LastModifiedByUser" default="0" />
-<cfparam name="attributes.Ingredients" default="[no ingredients]" />
-<cfparam name="attributes.Description" default="[no description]" />
+<cfparam name="attributes.Ingredients" type="string" default="[no ingredients]" />
+<cfparam name="attributes.Description" type="string" default="[no description]" />
 <cfparam name="attributes.Picture" default="" />
-<cfparam name="attributes.Instructions" default="[no instructions]" />
-<cfparam name="attributes.Comments" default="#arrayNew(1)#" />
+<cfparam name="attributes.Instructions" type="string" default="[no instructions]" />
+<cfparam name="attributes.Comments" type="array" default="#arrayNew(1)#" />
 
 <cfoutput>
 
@@ -38,6 +38,8 @@
 
 		<cfif attributes.CreatedByUserID EQ session.CurrentUser.getID() >
 			<div class="row">
+				<div id="Toolbar-Header" class="recipe-section-header inline-block standard-top-radius" >TOOLBAR</div>
+
 				<div id="Recipe-Toolbar" class="olive-wrapper-white-background" >
 					<span id="Edit-Recipe-Button" class="standard-button" >Make editable</span>
 					<span id="Save-Recipe-Button" class="standard-button display-none" >Save changes</span>

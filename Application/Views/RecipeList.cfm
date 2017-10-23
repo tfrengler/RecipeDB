@@ -9,10 +9,10 @@
 <section id="RecipeList-Container" class="row" >
 	<div class="col-md-8 col-md-offset-2 olive-wrapper-grey-background" >
 
-		<div id="Recipe-Toolbar" class="olive-wrapper-white-background" >
+		<!--- <div id="Recipe-Toolbar" class="olive-wrapper-white-background" >
 			<span><b>TOOLBOX: </b></span>
 			<span id="Filter-OwnedByMe-Button" class="standard-button" >Owned by me</span>
-		</div>
+		</div> --->
 
 		<hr/>
 

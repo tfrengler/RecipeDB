@@ -99,6 +99,11 @@ RecipeDB.LoginPage.DOM.ElementData = {
 
 RecipeDB.LoginPage.init = function() {
 
+	if ( document.querySelector("nav#side-menu") != null ) {
+		window.location.replace("../../Login.cfm");
+		return false;
+	};
+
 	$("#" + RecipeDB.LoginPage.DOM.ElementData.LoginButton.ID).click(function() {
 		RecipeDB.LoginPage.Methods.attemptLogin();
 	});
@@ -140,33 +145,98 @@ RecipeDB.UserSettings = {
 };
 
 RecipeDB.UserSettings.DOM.ElementData = {
-
 	DisplayNameBox: {
 		ID: "DisplayName"
 	},
-
 	UsernameBox: {
 		ID: "Username"
 	},
-
-	PasswordBox: {
-		ID: "SecretKey"
+	SaveButton: {
+		ID: "Save-UserSettings-Button"
 	},
-
-	AccountCreationDateBox: {
-		ID: "AccountCreationDate"
-	},
-
-	LoginCountBox: {
-		ID: "TimesLoggedIn"
-	},
-
-	BrowserLastUsedBox: {
-		ID: "BrowserLastUsed"
+	NotificationBox: {
+		ID: "UserSettings-MessageBox"
 	}
 };
 
 RecipeDB.UserSettings.init = function() {
+	$("#" + RecipeDB.UserSettings.DOM.ElementData.SaveButton.ID).click(
+		RecipeDB.UserSettings.Methods.saveChanges
+	);
+};
+
+RecipeDB.UserSettings.Methods.saveChanges = function() {
+	var NotificationMessage = "";
+
+	var DisplayName = document.getElementById(RecipeDB.UserSettings.DOM.ElementData.DisplayNameBox.ID).value.trim();
+	var Username = document.getElementById(RecipeDB.UserSettings.DOM.ElementData.UsernameBox.ID).value.trim();
+
+	var NotificationArea = $("#" + RecipeDB.UserSettings.DOM.ElementData.NotificationBox.ID);
+	NotificationArea.html("");
+
+	if (DisplayName.length === 0 || DisplayName === " ") {
+		NotificationMessage += "Display name is empty!";
+	};
+	if (Username.length === 0 || Username === " ") {
+		if (NotificationMessage.length > 0) {
+			NotificationMessage += "<br/>"
+		}
+		NotificationMessage += "User name is empty!";
+	};
+
+	if (NotificationMessage.length > 0) {
+
+		$(NotificationArea).removeClass("success-box");
+		$(NotificationArea).addClass("error-box");
+
+		$(NotificationArea).html(NotificationMessage);
+		$(NotificationArea).show();
+		$(NotificationArea).delay(3000).fadeOut();
+
+		return false;
+	};
+
+	if ( window.confirm("Are you sure you want to change your display name and/or user name?") ) {
+		$.ajax({
+			type: "post",
+			url: "../Components/AjaxProxy.cfc",
+			data: {
+				method: "call",
+				argumentCollection: JSON.stringify({
+					component: "5B46CD366E910EC668CA3BD765DFEAB4",
+					function: "changeUserSettings",
+					authKey: RecipeDB.authKey,
+					parameters: {
+						newusername: Username,
+						newdisplayName: DisplayName
+					}
+				}),
+			},
+			dataType: "json",
+
+			error: function() {
+				RecipeDB.Main.Methods.onAJAXCallError(arguments);
+			},
+			success: function() {
+				RecipeDB.UserSettings.Methods.onSaveChangesSuccess()
+			}
+		});
+	};
+
+	return true;
+};
+
+RecipeDB.UserSettings.Methods.onSaveChangesSuccess = function() {
+
+	var NotificationArea = $("#" + RecipeDB.UserSettings.DOM.ElementData.NotificationBox.ID);
+	NotificationArea.html("");
+
+	$(NotificationArea).removeClass("error-box");
+	$(NotificationArea).addClass("success-box");
+
+	$(NotificationArea).html("Changes saved");
+	$(NotificationArea).show();
+	$(NotificationArea).delay(3000).fadeOut();
 
 };
 
@@ -252,28 +322,6 @@ RecipeDB.Menu.init = function() {
 };
 
 RecipeDB.Menu.Methods = {
-
-	logout: function() {
-		$.ajax({
-			type: "post",
-			url: "../../AuthenticationManager.cfc",
-			data: {
-				method: "gracefulLogout",
-				Reason: 2
-			},
-			dataType: "json",
-
-			beforeSend: function() {
-				RecipeDB.Main.Methods.onAJAXCallStart();
-			},
-			error: function() {
-				RecipeDB.Main.Methods.onAJAXCallError(arguments);
-			},
-			success: function(ResponseData) {
-				RecipeDB.Menu.Methods.onLogoutComplete(ResponseData);
-			}
-		});
-	},
 
 	getPatchNotes: function() {
 		$.ajax({
@@ -416,10 +464,6 @@ RecipeDB.Menu.Methods = {
 		});
 	},
 
-	onLogoutComplete: function(AjaxResponse) {
-		window.location.replace("../../Login.cfm?Reason=2");
-	},
-
 	hide: function() {
 		$("#" + RecipeDB.Menu.DOM.ElementData.MenuOptions.ID).hide(200);
 		$("#" + RecipeDB.Menu.DOM.ElementData.Menu.ID).animate({width: 0}, 500);
@@ -519,6 +563,8 @@ RecipeDB.Recipe.DOM.ElementData = {
 
 RecipeDB.Recipe.init = function() {
 	RecipeDB.Recipe.Methods.setSectionDimensions();
+	tinyMCE.remove();
+	$("[name='EditSection']").hide();
 
 	$( "[name='" + RecipeDB.Recipe.DOM.ElementData.SectionHeaders.Name + "']" ).click(function() {
 		RecipeDB.Recipe.Methods.openCloseSection(this)
@@ -645,9 +691,26 @@ RecipeDB.Recipe.Methods.viewRecipe = function(RecipeID) {
 
 RecipeDB.Recipe.Methods.enableEditing = function() {
 	$("#" + RecipeDB.Recipe.DOM.ElementData.SaveButton.ID).show();
+	$("#" + RecipeDB.Recipe.DOM.ElementData.EditButton.ID).html("Disable editing");
+
 	$("[name='ViewSection']").hide();
 	$("[name='EditSection']").show();
+
 	tinyMCE.init( {selector: "textarea"} );
+	$("#" + RecipeDB.Recipe.DOM.ElementData.EditButton.ID).unbind("click", RecipeDB.Recipe.Methods.enableEditing);
+	$("#" + RecipeDB.Recipe.DOM.ElementData.EditButton.ID).click(RecipeDB.Recipe.Methods.disableEditing);
+};
+
+RecipeDB.Recipe.Methods.disableEditing = function() {
+	$("#" + RecipeDB.Recipe.DOM.ElementData.SaveButton.ID).hide();
+	$("#" + RecipeDB.Recipe.DOM.ElementData.EditButton.ID).html("Make editable");
+	tinyMCE.remove();
+
+	$("[name='ViewSection']").show();
+	$("[name='EditSection']").hide();
+
+	$("#" + RecipeDB.Recipe.DOM.ElementData.EditButton.ID).unbind("click", RecipeDB.Recipe.Methods.disableEditing);
+	$("#" + RecipeDB.Recipe.DOM.ElementData.EditButton.ID).click(RecipeDB.Recipe.Methods.enableEditing);
 };
 
 RecipeDB.Recipe.Methods.saveChanges = function() {

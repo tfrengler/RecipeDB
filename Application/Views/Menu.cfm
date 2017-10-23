@@ -11,11 +11,11 @@
 	<ul id="Menu-Options">
 		<li><a id="AddRecipe" href="#" >Add recipe</a></li>
 		<li><a id="RecipeList" href="#" >Find recipes</a></li>
-		<li><a id="Favorites" href="#" >Favorites</a></li>
+		<!--- <li><a id="Favorites" href="#" >Favorites</a></li> --->
 		<li><a id="UserSettings" href="#" >My settings</a></li>
 		<li><a id="Logout" href="../../Login.cfm?Reason=6" >Logout</a></li>
 		<hr/>
-		<li><a id="Statistics" href="#" >Statistics</a></li>
+		<!--- <li><a id="Statistics" href="#" >Statistics</a></li> --->
 		<li><a id="PatchNotes" href="#" >Recent changes</a></li>
 		<li><a id="Roadmap" href="#" >Planned changes</a></li>
 	</ul>
