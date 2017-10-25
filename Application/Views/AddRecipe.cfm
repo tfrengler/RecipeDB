@@ -14,7 +14,7 @@
 		<input id="AddNewRecipe-Anyway" type="hidden" value="0" >
 
 		<input id="AddRecipe-Name" class="form-control" type="text" value="" placeholder="recipe name" maxlength="100" />
-		<input id="DuplicateCheck" type="checkbox" checked /><span> Warn me about potential duplicate recipes</span>
+		<input id="DuplicateCheck" type="checkbox" /><span> Warn me about potential duplicate recipes</span>
 
 		<br/><br/>
 

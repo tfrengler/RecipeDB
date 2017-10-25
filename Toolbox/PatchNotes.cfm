@@ -51,7 +51,9 @@
 	<p><a href="CommunicationTools.cfm?token=#URL.token#" >Back to Communcation Tools</a></p>
 	<h1>Patch notes</h1>
 
-	<cfif directoryExists("#expandPath("/")#RecipeDB\Notes\Patch") >
+	<cfset PatchNoteDirectory = "#expandPath("/")#Notes\Patch" />
+
+	<cfif directoryExists(PatchNoteDirectory) >
 		<cfset PatchDirDoesNotExist = false />
 
 		<cfif structIsEmpty(FORM) IS false >
@@ -62,7 +64,7 @@
 
 				<cffile 
 					action="write" 
-					file="#expandPath("/")#RecipeDB/Notes/Patch/#FORM.Saved_PatchNote_FileName#" 
+					file="#PatchNoteDirectory#/#FORM.Saved_PatchNote_FileName#" 
 					output="#FORM.Saved_PatchNote_FileContents#" 
 					charset="utf-8" 
 					nameconflict="overwrite"
@@ -77,7 +79,7 @@
 			<cfif structKeyExists(FORM, "PatchNote_FileName") AND len(FORM.PatchNote_FileName) GT 0 >
 				<cffile 
 					action="read" 
-					file="#expandPath("/")#RecipeDB/Notes/Patch/#FORM.PatchNote_FileName#" 
+					file="#PatchNoteDirectory#/#FORM.PatchNote_FileName#" 
 					variable="PatchNoteFileContents" 
 					charset="utf-8"
 				/>
@@ -147,7 +149,7 @@
 	</cfif>
 
 	<cfif PatchDirDoesNotExist >
-		<p class="bad">Patch notes-folder does not exist: #expandPath("/")#RecipeDB\Notes\Patch</p>
+		<p class="bad">Patch notes-folder does not exist: #PatchNoteDirectory#</p>
 	</cfif>	
 
 </body>

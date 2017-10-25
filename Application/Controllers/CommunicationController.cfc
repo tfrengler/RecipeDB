@@ -66,7 +66,14 @@
 			data: ""
 		} />
 
-		<cfset var ViewArguments = structNew() />
+		<cfset var ViewArguments = {roadMap: ""} />
+
+		<cffile 
+			action="read" 
+			file="#expandPath("/Roadmap")#/Roadmap.html" 
+			variable="ViewArguments.roadMap" 
+			charset="utf-8"
+		/>
 		
 		<!--- NOTE TO SELF: Use forward slashes for cfmodule paths that use mappings, derp --->
 		<cfsavecontent variable="ReturnData.data" >

@@ -76,4 +76,61 @@
 		<cfreturn trim(ReturnData) />
 	</cffunction>
 
+	<cffunction name="cleanWordMess" output="no" returntype="string">
+		<cfargument name="string" type="string" required="true" />
+
+		<!--- if nothing passed , return empty string --->
+		<cfif len(trim(arguments.string) IS 0 )>
+			<cfreturn "" />
+		</cfif>
+
+		<!--- create a tmporary variable to cold the passed text --->
+		<cfset var CleanedText = arguments.inString />
+		<!--- remove the HTML comments --->
+		<cfset CleanedText = REReplace(CleanedText, "<!--.*-->", "", "ALL") />
+		<!--- remove most of the unwanted HTML attributes with their values --->
+		<cfset CleanedText = REReplace(CleanedText, "[ ]+(style|align|valign|dir|class|id|lang|width|height|nowrap)=""[^""]*""", "", "ALL") />
+		<!--- clean extra spaces & tabs --->
+		<cfset CleanedText = REReplace(CleanedText, "\s{2,}", " ", "ALL") />
+		<!--- remove extra spaces between tags --->
+		<cfset CleanedText = REReplace(CleanedText, ">\s{1,}<", "><", "ALL") />
+		<!--- remove any &nbsp; spaces between tags --->
+		<cfset CleanedText = REReplace(CleanedText, ">&nbsp;<", "><", "ALL") />
+		<!--- remove empty <b> empty tags --->
+		<cfset CleanedText = REReplace(CleanedText, "<b></b>", "", "ALL") />
+		<!--- remove empty <p> empty tags --->
+		<cfset CleanedText = REReplace(CleanedText, "<p></p>", "", "ALL") />
+		<!--- Remove all unwanted tags opening and closing --->
+		<cfset CleanedText = REReplace(CleanedText, "</?(span|div|o:p|p)>", "", "ALL") />
+		<!--- remove and repetition of &nbsp; and make it one only --->
+		<cfset CleanedText = REReplace(CleanedText, "(&nbsp;){2,}", "&nbsp;", "ALL") />
+
+		<cfreturn local.text />
+	</cffunction>
+
+	<cffunction name="cleanExtendedASCIIChars" access="public" returntype="string" output="no" hint="This scans through a string, finds any characters that have a higher ASCII numeric value greater than 127 and automatically convert them to a hexadecimal numeric character">
+        <cfargument name="text" type="string" required="true" />
+
+        <!--- if nothing passed , return empty string --->
+		<cfif len(trim(arguments.string) IS 0 )>
+			<cfreturn "" />
+		</cfif>
+
+        <cfscript>
+            var i = 0;
+            var tmp = '';
+
+            while(ReFind('[^\x00-\x7F]',text,i,false))
+            {
+                i = ReFind('[^\x00-\x7F]',text,i,false); // discover high chr and save its numeric string position.
+                tmp = '&##x#FormatBaseN(Asc(Mid(text,i,1)),16)#;'; // obtain the high chr and convert it to a hex numeric chr.
+                text = Insert(tmp,text,i); // insert the new hex numeric chr into the string.
+                text = RemoveChars(text,i,1); // delete the redundant high chr from string.
+                i = i+Len(tmp); // adjust the loop scan for the new chr placement, then continue the loop.
+            }
+            return text;
+        </cfscript>
+
+    </cffunction>
+
 </cfcomponent>

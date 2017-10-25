@@ -20,8 +20,8 @@
 	<cfset this.mappings["/Views"] = (this.appdirectory & "Views/") />
 	<cfset this.mappings["/Controllers"] = (this.appdirectory & "Controllers/") />
 	<cfset this.mappings["/Modules"] = (this.appdirectory & "Modules/") />
-	<cfset this.mappings["/PatchNotes"] = (this.root & "/Notes/Patch/") />
-	<cfset this.mappings["/Roadmap"] = (this.root & "/Notes/Roadmap/") />
+	<cfset this.mappings["/PatchNotes"] = (this.root & "Notes/Patch/") />
+	<cfset this.mappings["/Roadmap"] = (this.root & "Notes/Roadmap/") />
 
 	<cffunction name="onApplicationStart" returnType="boolean" output="false">
 
@@ -41,7 +41,7 @@
 
 			<cfset sessionInvalidate() />
 			<cfset applicationStop() />
-			<cflocation url="http://#CGI.SERVER_NAME#/RecipeDB/Login.cfm" addtoken="false" />
+			<cflocation url="http://#CGI.SERVER_NAME#/Login.cfm" addtoken="false" />
 
 		</cfif>
 
@@ -51,7 +51,7 @@
 			is already logged in. If he/she isn't then we log them out and kill their session
 			so that a new one is created. We also do a return so that cflogin does not trigger
 		--->
-		<cfif find("RecipeDB/Login.cfm", arguments.targetPage) GT 0 AND structIsEmpty(form) >
+		<cfif find("Login.cfm", arguments.targetPage) GT 0 AND structIsEmpty(form) >
 			<cfif isUserLoggedIn() >
 				<cflogout />
 				<cfset sessionInvalidate() />
@@ -72,7 +72,7 @@
 				the code means it came from a request that didn't target the login-page, thus we redirect them back.
 			--->
 			<cfif structKeyExists(form, "j_username") IS false AND structKeyExists(form, "j_password") IS false >
-				<cflocation url="http://#CGI.SERVER_NAME#/RecipeDB/Login.cfm?Reason=5" addtoken="false" />
+				<cflocation url="http://#CGI.SERVER_NAME#/Login.cfm?Reason=5" addtoken="false" />
 			</cfif>
 
 			<cfset var UserInterface = createObject("component", "Models.User") />
