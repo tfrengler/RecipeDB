@@ -34,9 +34,10 @@
 		<cfreturn true />
 	</cffunction>
 
-	<cffunction name="onRequestStart" returnType="boolean" output="true" >
+	<cffunction name="onRequestStart" returnType="boolean" output="false" >
 		<cfargument type="string" name="targetPage" required=true />
 
+		<!--- For testing purposes, this nukes the session and restarts the application --->
 		<cfif structKeyExists(url, "Restart") >
 
 			<cfset sessionInvalidate() />
@@ -45,26 +46,31 @@
 
 		</cfif>
 
+		<cfif listFind("/Toolbox/", arguments.targetPage) GT 0 >
+			<cfreturn true />
+		</cfif>
+
 		<!--- 
 			Make a request, if it's targeting the login page and the form-scope is empty
 			(meaning no login request has been made), then we check if the current user
 			is already logged in. If he/she isn't then we log them out and kill their session
 			so that a new one is created. We also do a return so that cflogin does not trigger
 		--->
-		<cfif find("Login.cfm", arguments.targetPage) GT 0 AND structIsEmpty(form) >
+		<cfif listFindNoCase("/Login.cfm,/index.cfm", arguments.targetPage) GT 0 AND structIsEmpty(form) >
+
 			<cfif isUserLoggedIn() >
 				<cflogout />
 				<cfset sessionInvalidate() />
 			</cfif>
-
 			<cfreturn true />
+
 		</cfif>
 
 		<!--- LOGIN/AUTHENTICATION PROCESS --->
 		<cflogin applicationtoken="RecipeDB" idletimeout="1800" >
 			<!--- 
 				The body of cflogin is executed if the current user is not logged in, otherwise it's skipped completely.
-				This is what we want to happen everytime a request is made in the system after they are logged in.
+				This latter what we want to happen everytime a request is made in the system after they are logged in.
 			--->
 
 			<!---
