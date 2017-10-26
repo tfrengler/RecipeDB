@@ -696,7 +696,14 @@ RecipeDB.Recipe.Methods.enableEditing = function() {
 	$("[name='ViewSection']").hide();
 	$("[name='EditSection']").show();
 
-	tinyMCE.init( {selector: "textarea"} );
+	tinyMCE.init(
+		{
+			selector: "textarea",
+			plugins: "paste,lists,code",
+			paste_as_text: true
+		}
+	);
+
 	$("#" + RecipeDB.Recipe.DOM.ElementData.EditButton.ID).unbind("click", RecipeDB.Recipe.Methods.enableEditing);
 	$("#" + RecipeDB.Recipe.DOM.ElementData.EditButton.ID).click(RecipeDB.Recipe.Methods.disableEditing);
 };
@@ -946,13 +953,6 @@ RecipeDB.RecipeList.init = function() {
 				},
 				{
 					"data":"DATETIMELASTMODIFIED",
-					"render":{  
-						_:"display",
-						"sort":"sortdata"
-					}
-				},
-				{
-					"data":"INGREDIENTS",
 					"render":{  
 						_:"display",
 						"sort":"sortdata"

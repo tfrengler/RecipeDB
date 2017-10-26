@@ -46,7 +46,7 @@
 
 		</cfif>
 
-		<cfif listFind("/Toolbox/", arguments.targetPage) GT 0 >
+		<cfif find("/Toolbox/", arguments.targetPage) GT 0 >
 			<cfreturn true />
 		</cfif>
 

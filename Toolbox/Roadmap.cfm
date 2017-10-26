@@ -17,7 +17,8 @@
 			tinyMCE.init( 
 				{
 					selector: "textarea",
-					plugins: "paste,lists,code"
+					plugins: "paste,lists,code",
+					paste_as_text: true
 				} 
 			);
 			document.getElementById("SaveRoadmap").addEventListener("click", saveChanges);

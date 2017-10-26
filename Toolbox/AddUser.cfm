@@ -101,6 +101,11 @@
 			) />
 
 			<cfset NewUserInstance.setBlocked( Blocked=false ) />
+
+			<cfif len(FORM.DisplayName) GT 0 >
+				<cfset NewUserInstance.setDisplayName( Name=FORM.DisplayName ) />
+			</cfif>
+			
 			<cfset NewUserInstance.save() />
 
 			<p class="good" >SUCCESS! New user added!</p>

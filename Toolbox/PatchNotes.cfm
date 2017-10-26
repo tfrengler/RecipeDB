@@ -14,7 +14,13 @@
 	<script type="text/javascript" src="../Application/Assets/Libs/tinymce/tinymce.min.js" ></script>
 	<script type="text/javascript">
 		window.onload = function() {
-			tinyMCE.init( {selector: "textarea"} );
+			tinyMCE.init(
+				{
+					selector: "textarea",
+					plugins: "paste,lists,code",
+					paste_as_text: true
+				} 
+			);
 			document.getElementById("SavePatchNotes").addEventListener("click", saveChanges);
 		};
 

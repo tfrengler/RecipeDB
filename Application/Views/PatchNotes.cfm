@@ -7,6 +7,8 @@
 
 <section id="PatchNotesContainer" class="olive-wrapper-grey-background col-md-8 col-md-offset-2" >
 
+	<p>Source code and changes can also be found <a href="https://github.com/tfrengler/RecipeDB/commits/">on GitHub</a></p>
+
 	<cfif arrayLen(attributes.patchNoteCollection) GT 0 >
 
 		<cfloop array="#attributes.patchNoteCollection#" index="CurrentPatchNotes" >

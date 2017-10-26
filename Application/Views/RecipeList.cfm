@@ -11,7 +11,9 @@
 
 		<!--- <div id="Recipe-Toolbar" class="olive-wrapper-white-background" >
 			<span><b>TOOLBOX: </b></span>
-			<span id="Filter-OwnedByMe-Button" class="standard-button" >Owned by me</span>
+			<input type="checkbox" id="Filter-OwnedByMe" >Owned by me</span>
+			<input type="checkbox" id="Filter-Published" >Published</span>
+			<input type="checkbox" id="Filter-UnPublished" >Unpublished</span>
 		</div> --->
 
 		<hr/>
@@ -23,7 +25,6 @@
 				<th>Created on</th>
 				<th>Last modified by</th>
 				<th>Modified on</th>
-				<th>Ingredients</th>
 				<th>ID</th>
 			</thead>
 

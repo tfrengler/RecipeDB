@@ -53,7 +53,7 @@
 		<cfreturn hash(AuthKey, "SHA-512") />
 	</cffunction>
 
-	<cffunction name="removeTagsFromString" returntype="string" access="private" hint="Removes HTML from a string. Will remove entire tag and its attributes (http://cflib.org/udf/stripHTML)" >
+	<!--- <cffunction name="removeHTMLTags" returntype="string" access="private" hint="Removes HTML from a string. Will remove entire tag and its attributes (http://cflib.org/udf/stripHTML)" >
 		<cfargument name="StringData" type="string" required="true" />
 		<cfargument name="SpecialTagsOnly" type="boolean" required="false" default="false" />
 		
@@ -76,8 +76,57 @@
 		<cfreturn trim(ReturnData) />
 	</cffunction>
 
-	<cffunction name="cleanWordMess" output="no" returntype="string">
+	<cffunction name="removeIllegalHTML" returntype="string" output="false">
+		<cfargument name="htmlString" required="true" type="string">
+		<cfargument name="tagsAllowed" required="false" type="string" default="a,p,h1,h2,h3,h4,h5,h6,h7,h8,h9,b,strong,i,ol,ul,li,br,img,span">
+
+		<cfset var cleanedString = arguments.htmlString />
+		<cfset var tagFound = "" />
+		<cfset var stringStartPos = 0 />
+		<cfset var cleanedStringLeft = "" />
+		<cfset var cleanedStringRight = "" />
+
+		<!--- LOOP OVER TEXT AND FIND ALL TAGS --->
+		<cfloop condition="stringStartPos LT len(cleanedString)">
+		<!--- FIND HTML TAGS --->
+			<cfset tagFound = refindnocase("</{0,1}(.[^>]*?)>",cleanedString,stringStartPos,"true")>
+
+			<!--- TAGS FOUND? --->
+			<cfif tagFound.pos[1] IS 0>
+				<!--- NO TAGS FOUND -> EXIT LOOP --->
+				<cfset stringStartPos = len(arguments.htmlString) + 5>
+			<cfelse>
+				<!--- TAGS FOUND --->
+				<!--- CHECK IF TAGS MUST BE CLEARED --->
+				<cfif NOT listFindNoCase(arguments.tagsAllowed,listFirst(mid(cleanedString,tagFound.pos[2],tagFound.len[2]), '<>/ '))>
+					<!--- CLEAR TAG --->
+					<!--- CREATE NEW RETURN STRING --->
+					<cfif tagFound.pos[1] IS NOT 1 />
+						<cfset cleanedStringLeft = left(cleanedString,tagFound.pos[1]-1) />
+					<cfelse>
+						<cfset cleanedStringLeft = "" />
+					</cfif>
+
+					<cfif len(cleanedString) - (tagFound.pos[1]+tagFound.len[1])+1 GT 0 />
+						<cfset cleanedStringRight = right(cleanedString, len(cleanedString) - (tagFound.pos[1]+tagFound.len[1])+1) />
+					<cfelse>
+						<cfset cleanedStringRight = "" />
+					</cfif>
+
+					<cfset cleanedString = cleanedStringLeft & cleanedStringRight>
+				<cfelse>
+					<!--- TAG ALLOWED --->
+					<cfset stringStartPos = tagFound.pos[1] + tagFound.len[1]>
+				</cfif>
+			</cfif>
+		</cfloop>
+
+		<cfreturn trim(cleanedString)>
+	</cffunction>
+
+	<cffunction name="removeWordCode" returntype="string" output="false" >
 		<cfargument name="string" type="string" required="true" />
+		<cfargument name="hardClean" type="boolean" required="false" default="true" />
 
 		<!--- if nothing passed , return empty string --->
 		<cfif len(trim(arguments.string) IS 0 )>
@@ -105,10 +154,16 @@
 		<!--- remove and repetition of &nbsp; and make it one only --->
 		<cfset CleanedText = REReplace(CleanedText, "(&nbsp;){2,}", "&nbsp;", "ALL") />
 
-		<cfreturn local.text />
+		<cfif arguments.hardClean >
+			<cfset CleanedText = REReplace(CleanedText, "</?(span|div|o:p|p)>", "", "ALL") />
+		<cfelse>
+			<cfset CleanedText = REReplace(CleanedText, "</?(o:p)>", "", "ALL") />
+		</cfif>
+
+		<cfreturn CleanedText />
 	</cffunction>
 
-	<cffunction name="cleanExtendedASCIIChars" access="public" returntype="string" output="no" hint="This scans through a string, finds any characters that have a higher ASCII numeric value greater than 127 and automatically convert them to a hexadecimal numeric character">
+	<cffunction name="removeExtendedASCIIChars" access="public" returntype="string" output="no" hint="This scans through a string, finds any characters that have a higher ASCII numeric value greater than 127 and automatically convert them to a hexadecimal numeric character">
         <cfargument name="text" type="string" required="true" />
 
         <!--- if nothing passed , return empty string --->
@@ -130,7 +185,6 @@
             }
             return text;
         </cfscript>
-
-    </cffunction>
+    </cffunction> --->
 
 </cfcomponent>
