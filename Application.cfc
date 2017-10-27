@@ -22,6 +22,7 @@
 	<cfset this.mappings["/Modules"] = (this.appdirectory & "Modules/") />
 	<cfset this.mappings["/PatchNotes"] = (this.root & "Notes/Patch/") />
 	<cfset this.mappings["/Roadmap"] = (this.root & "Notes/Roadmap/") />
+	<cfset this.mappings["/RecipeImage"] = (this.root & "Assets/Pictures/Recipes") />
 
 	<cffunction name="onApplicationStart" returnType="boolean" output="false">
 
