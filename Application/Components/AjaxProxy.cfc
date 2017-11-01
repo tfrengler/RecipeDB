@@ -1,11 +1,6 @@
 <cfcomponent output="false" hint="" >
 <cfprocessingdirective pageencoding="utf-8" />
 
-	<cfset ObfuscatedControllerList = structNew() />
-	<cfset ObfuscatedControllerList[ hash("RecipeController", "MD5") ] = "RecipeController" />
-	<cfset ObfuscatedControllerList[ hash("UserController", "MD5") ] = "UserController" />
-	<cfset ObfuscatedControllerList[ hash("CommunicationController", "MD5") ] = "CommunicationController" />
-
 	<cffunction name="call" returntype="struct" access="remote" returnformat="JSON" hint="Acts as a interface for frontend Javascript via ajax to call backend CFC methods, passing along argument data as well." >
 		<cfargument name="Component" type="string" required="true" hint="The name of the CFC you want to call." />
 		<cfargument name="Function" type="string" required="true" hint="The name of the CFC method you want to call." />
@@ -45,7 +40,7 @@
 
 		</cfif>
 
-		<cfreturn invoke("Controllers.#ObfuscatedControllerList[arguments.Component]#", arguments.Function, arguments.Parameters) />
+		<cfreturn invoke("Controllers.#arguments.Component#", arguments.Function, arguments.Parameters) />
 	</cffunction>
 
 </cfcomponent>

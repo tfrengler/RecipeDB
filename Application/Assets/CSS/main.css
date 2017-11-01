@@ -1,0 +1,119 @@
+a {
+	color: #92CD00;
+}
+
+a:hover {
+	color: #2C6700;
+}
+
+#MainContent {
+	margin-bottom: 2em;
+}
+
+.notification-box {
+	border-style: solid;
+	border-width: 1px;
+	display: none;
+	font-weight: bold;
+	text-align: center;
+	padding: 1em;
+	margin-bottom: 1em;
+	border-radius: 0.3em;
+}
+
+.red-error-text {
+	color: #a94442;
+	background-color: #f2dede;
+}
+
+.yellow-warning-text {
+	color: #a94442;
+	background-color: #f2dede;
+}
+
+.green-success-text {
+	color: lightgreen;
+	background-color: green;
+}
+
+.ajax-loading {
+	background-image: url("../Pictures/Standard/ajax-loader-small.gif");
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+.inline-block {
+	display: inline-block;
+}
+
+.display-none {
+	display: none;
+}
+
+.standard-olive-wrapper {
+	border-style: solid;
+	border-width: 1px;
+	border-color: #92CD00;
+	padding: 0.5em;
+	border-radius: 0.3em;
+}
+
+.olive-wrapper-grey-background {
+	border-style: solid;
+	border-width: 1px;
+	border-color: #92CD00;
+	background-color: #f2f2f2;
+	padding: 0.5em;
+	border-radius: 0.3em;
+}
+
+.olive-wrapper-white-background {
+	border-style: solid;
+	border-width: 1px;
+	border-color: #92CD00;
+	background-color: white;
+	padding: 0.5em;
+	border-radius: 0.3em;
+}
+
+.standard-button {
+	border-style: solid;
+	border-width: 1px;
+	border-color: #92CD00;
+	background-color: #92CD00;
+	color: white;
+	padding: 2px 2px 2px 2px;
+	border-radius: 0.3em;
+}
+
+.standard-button:hover, .recipe-section-header:hover {
+	background-color: #2C6700;
+	color: white;
+	cursor: pointer;
+}
+
+.olive-text-color {
+	color: #92CD00;
+}
+
+.olive-background-color {
+	background-color: #92CD00;
+	color: white;
+}
+
+.olive-text-color-center {
+	color: #92CD00;
+	text-align: center;
+}
+
+.roboto-font {
+	font-family: 'Roboto', sans-serif;
+}
+
+.background-image { 
+	background: url("../Pictures/Standard/background1.jpg") no-repeat center center fixed;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+}

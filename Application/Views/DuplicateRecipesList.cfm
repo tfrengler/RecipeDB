@@ -1,10 +1,10 @@
 <cfprocessingdirective pageEncoding="utf-8" />
-
-<cfparam name="attributes.DuplicateAmount" default="0" />
-<cfparam name="attributes.ExcessDuplicateAmount" default=0 />
-<cfparam name="attributes.DuplicateRecipes" default="#arrayNew(1)#" />
-
 <cfoutput>
+<!--- MODULE --->
+
+<cfparam name="attributes.DuplicateAmount" type="numeric" default="0" />
+<cfparam name="attributes.ExcessDuplicateAmount" type="numeric" default=0 />
+<cfparam name="attributes.DuplicateRecipes" type="array" default="#arrayNew(1)#" />
 
 <div class="standard-olive-wrapper" >
 	<p>We found #attributes.DuplicateAmount# recipes that have a similar name to the new recipe you want to add:</p>
@@ -17,11 +17,5 @@
 		<div>...plus #attributes.ExcessDuplicateAmount# more</div>
 	</cfif>
 </div>
-
-<script type="text/javascript">
-	$(document).ready(function() {
-		RecipeDB.DuplicatesRecipesList.init();
-	});
-</script>
 
 </cfoutput>

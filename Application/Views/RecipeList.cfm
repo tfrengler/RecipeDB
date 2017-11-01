@@ -35,10 +35,4 @@
 	</div>
 </section>
 
-<script type="text/javascript">
-	$(document).ready(function() {
-		RecipeDB.RecipeList.init();
-	});
-</script>
-
 </cfoutput>

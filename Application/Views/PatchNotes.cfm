@@ -3,7 +3,11 @@
 
 <cfparam name="attributes.patchNoteCollection" type="array" default="#arrayNew(1)#" />
 
-<h1 id="PatchNotes-Welcome" class="olive-text-color-center" >What has changed?</h1>
+<section class="row" >
+	<h1 id="PatchNotes-Welcome" class="olive-text-color-center" >What has changed?</h1>
+</section>
+
+<br/>
 
 <section id="PatchNotesContainer" class="olive-wrapper-grey-background col-md-8 col-md-offset-2" >
 

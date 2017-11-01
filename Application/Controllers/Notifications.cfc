@@ -59,6 +59,7 @@
 	</cffunction>
 
 	<cffunction name="getRoadmapView" access="public" returntype="struct" returnformat="JSON" output="false" hint="" >
+		<cfargument name="pageContext" type="struct" required="true" />
 
 		<cfset var ReturnData = {
 			status: "",

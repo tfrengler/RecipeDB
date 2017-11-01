@@ -1,5 +1,4 @@
 <cfprocessingdirective pageEncoding="utf-8" />
-
 <cfoutput>
 
 <section class="row" >
@@ -28,15 +27,5 @@
 <section class="row" >
 	<div id="AddRecipe-DuplicateAlertBox" class="col-md-4 col-md-offset-4" ></div>
 </section>
-
-<section class="row" >
-	<div id="AddRecipe-MessageBox" class="error-box col-md-2 col-md-offset-5" ></div>
-</section>
-
-<script type="text/javascript">
-	$(document).ready(function() {
-		RecipeDB.AddRecipe.init();
-	});
-</script>
 
 </cfoutput>

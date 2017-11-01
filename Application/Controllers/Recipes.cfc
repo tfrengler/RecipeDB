@@ -15,36 +15,29 @@
 		<cfreturn ReturnData />
 	</cffunction>
 
-	<cffunction name="getRecipeView" access="remote" returntype="string" returnformat="plain" output="false" hint="" >
+	<cffunction name="getRecipeView" access="public" returntype="struct" output="false" hint="" >
 		<cfargument name="RecipeID" type="numeric" required="true" />
 
-		<cfset var ReturnData = "" />
-		<cfset var ViewArguments = {} />
+		<cfset var ReturnData = {} />
 
 		<cfset var Recipe = createObject("component", "Models.Recipe").init( 
 			ID=arguments.RecipeID,
 			Datasource=application.Settings.Datasource
 		) />
 
-		<cfset ViewArguments.RecipeID = Recipe.getID() />
-		<cfset ViewArguments.Name = Recipe.getName() />
-		<cfset ViewArguments.DateCreated = Recipe.getDateCreated() />
-		<cfset ViewArguments.DateTimeLastModified = Recipe.getDateTimeLastModified() />
-		<cfset ViewArguments.CreatedByUserName = Recipe.getCreatedByUser().getDisplayName() />
-		<cfset ViewArguments.CreatedByUserID = Recipe.getCreatedByUser().getID() />
-		<cfset ViewArguments.LastModifiedByUser = Recipe.getLastModifiedByUser().getDisplayName() />
-		<cfset ViewArguments.Ingredients = Recipe.getIngredients() />
-		<cfset ViewArguments.Description = Recipe.getDescription() />
-		<cfset ViewArguments.Picture = Recipe.getPicture() />
-		<cfset ViewArguments.Instructions = Recipe.getInstructions() />
-		<!--- <cfset ViewArguments.Comments = Recipe.getComments() /> --->
+		<cfset ReturnData.RecipeID = Recipe.getID() />
+		<cfset ReturnData.Name = Recipe.getName() />
+		<cfset ReturnData.DateCreated = Recipe.getDateCreated() />
+		<cfset ReturnData.DateTimeLastModified = Recipe.getDateTimeLastModified() />
+		<cfset ReturnData.CreatedByUserName = Recipe.getCreatedByUser().getDisplayName() />
+		<cfset ReturnData.CreatedByUserID = Recipe.getCreatedByUser().getID() />
+		<cfset ReturnData.LastModifiedByUser = Recipe.getLastModifiedByUser().getDisplayName() />
+		<cfset ReturnData.Ingredients = Recipe.getIngredients() />
+		<cfset ReturnData.Description = Recipe.getDescription() />
+		<cfset ReturnData.Picture = Recipe.getPicture() />
+		<cfset ReturnData.Instructions = Recipe.getInstructions() />
+		<!--- <cfset ReturnData.Comments = Recipe.getComments() /> --->
 
-		<!--- NOTE TO SELF: Use forward slashes for cfmodule paths that use mappings, derp --->
-		<cfsavecontent variable="ReturnData" >
-			<cfmodule template="/Views/Recipe.cfm" attributecollection="#ViewArguments#" >
-		</cfsavecontent>
-
-		<cfheader name="Content-Type" value="text/html;charset=UTF-8" />
 		<cfreturn ReturnData />
 	</cffunction>
 

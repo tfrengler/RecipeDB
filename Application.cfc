@@ -131,7 +131,7 @@
 				<cfset session.authKey = application.securityManager.generateAuthKey() />
 			</cflock>
 
-			<cflocation url="Application/Views/Main.cfm" addtoken="false" />
+			<cflocation url="Application/index.cfm" addtoken="false" />
 		</cflogin>
 
 		<cfreturn true />

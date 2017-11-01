@@ -1,4 +1,5 @@
 <cfprocessingdirective pageEncoding="utf-8" />
+<cfoutput>
 
 <cfparam name="attributes.RecipeID" default="0" />
 <cfparam name="attributes.Name" type="string" default="[no name]" />
@@ -13,9 +14,7 @@
 <cfparam name="attributes.Instructions" type="string" default="[no instructions]" />
 <cfparam name="attributes.Comments" type="array" default="#arrayNew(1)#" />
 
-<cfoutput>
-
-<div id="Recipe-Container" class="row" >
+<section id="Recipe-Container" class="row" >
 
 	<div class="recipe col-md-6 col-md-offset-3" >
 
@@ -31,7 +30,7 @@
 				<!-- <div id="Recipe-Picture-Edit-Container" >
 					<div id="Recipe-Picture-Edit" >CLICK TO CHANGE</div>
 				</div> -->
-				<img id="Recipe-Picture" src="../Assets/Pictures/Standard/foodexample.jpg" class="img-responsive img-thumbnail" />
+				<img id="Recipe-Picture" src="Assets/Pictures/Standard/foodexample.jpg" class="img-responsive img-thumbnail" />
 			</div>
 		</div>
 		<br/>
@@ -135,26 +134,8 @@
 
 			</div>
 		</div>
-		<br/>
 
 	</div>
-
-	<section id="Notification-Container" >
-		<div id="Notification">
-			<img src='../Assets/Pictures/Standard/ajax-loader.gif' />
-		</div>
-	</section>
-
-</div>
+</section>
 
 </cfoutput>
-
-<script type="text/javascript">
-	$(document).ready(function() {
-		RecipeDB.Recipe.init();
-	});
-
-	$(document).resize(function() {
-		RecipeDB.Recipe.onResize();
-	});
-</script>
