@@ -208,11 +208,16 @@ RecipeDB.page.saveChanges = function() {
 			RecipeDB.main.onAJAXCallError(arguments);
 		},
 		beforeSend: function() {
+			RecipeDB.main.ajaxLoadButton(true, $('#' + RecipeDB.page.constants.SAVE_BUTTON_ID));
+
 			RecipeDB.main.removeAlertClasses(MessageBox);
 			MessageBox.addClass("yellow-warning-text");
 
 			RecipeDB.main.ajaxLoadInnerHTML(true, MessageBox);
 			MessageBox.show();
+		},
+		complete: function() {
+			RecipeDB.main.ajaxLoadButton(false, $('#' + RecipeDB.page.constants.SAVE_BUTTON_ID), "Save changes");
 		}
 	});	
 };

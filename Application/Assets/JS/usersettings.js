@@ -62,16 +62,16 @@ RecipeDB.page.saveChanges = function() {
 		dataType: "json",
 
 		beforeSend: function() {
-			RecipeDB.main.ajaxLoadButton(
-				true,
-				$('#' + RecipeDB.page.constants.SAVE_BUTTON_ID)
-			);
+			RecipeDB.main.ajaxLoadButton(true, $('#' + RecipeDB.page.constants.SAVE_BUTTON_ID));
 		},
 		error: function() {
 			RecipeDB.main.onAJAXCallError(arguments);
 		},
 		success: function() {
 			RecipeDB.page.onSaveChangesSuccess()
+		},
+		complete: function() {
+			RecipeDB.main.ajaxLoadButton(false, $('#' + RecipeDB.page.constants.SAVE_BUTTON_ID), "SAVE CHANGES");
 		}
 	});
 

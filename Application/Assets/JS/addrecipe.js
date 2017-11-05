@@ -51,11 +51,6 @@ RecipeDB.page.addNewRecipe = function() {
 		dataType: "json",
 
 		success: function(ResponseData) {
-			RecipeDB.main.ajaxLoadButton(
-				false,
-				$('#' + RecipeDB.page.constants.ADD_RECIPE_BUTTON_ID),
-				"OK"
-			);
 			RecipeDB.page.onAddRecipeSuccess(ResponseData);
 		},
 		error: function() {
@@ -63,11 +58,10 @@ RecipeDB.page.addNewRecipe = function() {
 		},
 		beforeSend: function() {
 			MessageBox.hide().html("");
-
-			RecipeDB.main.ajaxLoadButton(
-				true,
-				$('#' + RecipeDB.page.constants.ADD_RECIPE_BUTTON_ID)
-			);
+			RecipeDB.main.ajaxLoadButton(true, $('#' + RecipeDB.page.constants.ADD_RECIPE_BUTTON_ID));
+		},
+		complete: function() {
+			RecipeDB.main.ajaxLoadButton(false, $('#' + RecipeDB.page.constants.ADD_RECIPE_BUTTON_ID), "OK");
 		}
 	});
 };
