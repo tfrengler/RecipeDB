@@ -14,7 +14,7 @@ RecipeDB.page.init = function() {
 			columnDefs: [
 				{ targets: '_all', className: "dt-head-center dt-body-left" }, /* This is for adding classes that control the alignment of the data, in this case centered th-text and left aligned td-text */
 			],
-			order: [[2, "asc"]], /* Which column you want to order the table by, in this case the third colum (Created on) in ascending order */
+			order: [[2, "desc"]], /* Which column you want to order the table by, in this case the third colum (Created on) in ascending order */
 			paging: true, /* enabling or disabling pagination. Set this to false and the lengthChange and lengthMenu will be ignored. Enable this if you want to test pagination */
 			fixedHeader: false, /* A plugin for datatables that allows the header row to stay in place when scrolling*/
 			searching: true, /* Self-explanatory */
@@ -69,9 +69,17 @@ RecipeDB.page.init = function() {
 			],
 			ajax: {
 				dataSrc: "data",
-				url: "Controllers/Recipes.cfc?method=getRecipeListData",
-				type: "GET",
-				dataType: "json"
+				type: "post",
+				url: "Components/AjaxProxy.cfc",
+				data: {
+					method: "call",
+					argumentCollection: JSON.stringify({
+						component: "Recipes",
+						function: "getRecipeListData",
+						authKey: RecipeDB.main.constants.AUTH_KEY,
+						parameters: {}
+					})
+				}
 			}
 		}
 	);

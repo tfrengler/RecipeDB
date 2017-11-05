@@ -19,7 +19,7 @@
 			</section>
 		</body>
 
-		<div id="Notification-Box" class="notification-box col-lg-2 col-lg-offset-5" ></div>
+		<div id="Notification-Box" class="notification-box bottom-fixed-center col-lg-2" ></div>
 	</html>
 
 	<cfcatch>

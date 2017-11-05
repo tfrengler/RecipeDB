@@ -34,12 +34,12 @@ RecipeDB.page.saveChanges = function() {
 
 	if (NotificationMessage.length > 0) {
 
-		$(MessageBox).removeClass("success-box");
-		$(MessageBox).addClass("error-box");
+		RecipeDB.main.removeAlertClasses(MessageBox);
+		MessageBox.addClass("red-error-text");
 
-		$(MessageBox).html(NotificationMessage);
-		$(MessageBox).show();
-		$(MessageBox).delay(3000).fadeOut();
+		MessageBox.html(NotificationMessage);
+		MessageBox.fadeIn(1000);
+		MessageBox.delay(2000).fadeOut();
 
 		return false;
 	};
@@ -61,6 +61,12 @@ RecipeDB.page.saveChanges = function() {
 		},
 		dataType: "json",
 
+		beforeSend: function() {
+			RecipeDB.main.ajaxLoadButton(
+				true,
+				$('#' + RecipeDB.page.constants.SAVE_BUTTON_ID)
+			);
+		},
 		error: function() {
 			RecipeDB.main.onAJAXCallError(arguments);
 		},
@@ -77,11 +83,11 @@ RecipeDB.page.onSaveChangesSuccess = function() {
 	var MessageBox = $("#" + this.constants.NOTIFICATION_BOX_ID);
 	MessageBox.html("");
 
-	$(MessageBox).removeClass("red-error-text");
+	RecipeDB.main.removeAlertClasses(MessageBox);
 	$(MessageBox).addClass("green-success-text");
 
 	$(MessageBox).html("Changes saved");
 	$(MessageBox).fadeIn(1000);
-	$(MessageBox).delay(3000).fadeOut();
+	$(MessageBox).delay(2000).fadeOut();
 
 };

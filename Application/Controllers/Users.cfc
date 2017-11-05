@@ -1,7 +1,7 @@
 <cfcomponent output="false" >
 <cfprocessingdirective pageEncoding="utf-8" />
 
-	<cffunction name="getUserSettingsView" access="public" returntype="struct" returnformat="plain" output="false" hint="" >
+	<cffunction name="getUserSettingsView" access="public" returntype="struct" output="false" hint="" >
 
 		<cfset var ReturnData = structNew() />
 		<cfset var CurrentUser = session.CurrentUser />
@@ -60,7 +60,7 @@
 		<cfreturn ReturnData />
 	</cffunction>
 
-	<cffunction name="changeUserSettings" access="public" returntype="struct" returnformat="json" output="false" hint="" >
+	<cffunction name="changeUserSettings" access="public" returntype="struct" returnformat="JSON" output="false" hint="" >
 		<cfargument name="NewDisplayName" type="string" required="true" hint="" />
 		<cfargument name="NewUserName" type="string" required="true" hint="" />
 

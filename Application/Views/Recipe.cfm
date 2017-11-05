@@ -13,14 +13,15 @@
 <cfparam name="attributes.Picture" default="" />
 <cfparam name="attributes.Instructions" type="string" default="[no instructions]" />
 <cfparam name="attributes.Comments" type="array" default="#arrayNew(1)#" />
+<cfparam name="attributes.DisplayToolbar" type="boolean" default="false" />
 
 <section id="Recipe-Container" class="row" >
 
-	<div class="recipe col-md-6 col-md-offset-3" >
+	<div id="Recipe" class="col-lg-6 col-lg-offset-3" >
 
 		<input type="hidden" id="RecipeID" value="#attributes.RecipeID#" />
 
-		<div class="row">
+		<div>
 			<div id="Recipe-Title-Container" class="olive-text-color-center" >
 				<h3 id="Recipe-Title" name="ViewSection" >#encodeForHTML(attributes.Name)#</h3>
 				<input id="Recipe-Title-Edit" name="EditSection" class="h3 display-none" type="text" value="#attributes.Name#" />
@@ -36,8 +37,8 @@
 		<br/>
 
 		<cfif attributes.CreatedByUserID EQ session.CurrentUser.getID() >
-			<div class="row">
-				<div id="Toolbar-Header" class="recipe-section-header inline-block standard-top-radius" >TOOLBAR</div>
+			<div id="Toolbar-Row">
+				<div id="Toolbar-Header" class="standard-rounded-corners-top" >TOOLBAR</div>
 
 				<div id="Recipe-Toolbar" class="olive-wrapper-white-background" >
 					<span id="Edit-Recipe-Button" class="standard-button" >Make editable</span>
@@ -47,9 +48,9 @@
 			<br/>
 		</cfif>
 
-		<div class="row" >
-			<div name="Recipe-Header" id="Description-Header" class="recipe-section-header inline-block standard-top-radius" >DESCRIPTION</div>
-			<div id="Description-Body" class="recipe-section-body" >
+		<div>
+			<div name="Recipe-Header" id="Description-Header" class="recipe-section-header inline-block standard-rounded-corners-top" >DESCRIPTION</div>
+			<div id="Description-Body" class="recipe-section-body standard-olive-wrapper" >
 
 				<div id="Recipe-Description-Container" name="ViewSection" >
 					<cfif len(attributes.Description) IS 0 >
@@ -64,9 +65,9 @@
 		</div>
 		<br/>
 
-		<div class="row" >
-			<div name="Recipe-Header" id="Ingredients-Header" class="recipe-section-header inline-block standard-top-radius" >INGREDIENTS</div>
-			<div id="Ingredients-Body" class="recipe-section-body" >
+		<div>
+			<div name="Recipe-Header" id="Ingredients-Header" class="recipe-section-header inline-block standard-rounded-corners-top" >INGREDIENTS</div>
+			<div id="Ingredients-Body" class="recipe-section-body standard-olive-wrapper" >
 
 				<div id="Recipe-Ingredients-Container" name="ViewSection" >
 					<cfif len(attributes.Ingredients) IS 0 >
@@ -81,9 +82,9 @@
 		</div>
 		<br/>
 
-		<div class="row" >
-			<div name="Recipe-Header" id="Instructions-Header" class="recipe-section-header inline-block standard-top-radius" >INSTRUCTIONS</div>
-			<div id="Instructions-Body" class="recipe-section-body" >
+		<div>
+			<div name="Recipe-Header" id="Instructions-Header" class="recipe-section-header inline-block standard-rounded-corners-top" >INSTRUCTIONS</div>
+			<div id="Instructions-Body" class="recipe-section-body standard-olive-wrapper" >
 
 				<div id="Recipe-Instructions-Container" name="ViewSection" >
 					<cfif len(attributes.Instructions) IS 0 >
@@ -98,9 +99,9 @@
 		</div>
 		<br/>
 
-		<!--- <div class="row" >
-			<div name="Recipe-Header" id="Comments-Header" class="recipe-section-header inline-block standard-top-radius" >COMMENTS</div>
-			<div id="Comments-Body" class="recipe-section-body" >
+		<!--- <div>
+			<div name="Recipe-Header" id="Comments-Header" class="recipe-section-header inline-block standard-rounded-corners-top" >COMMENTS</div>
+			<div id="Comments-Body" class="recipe-section-body standard-olive-wrapper" >
 
 				<div id="Comments-Container" >
 					<p id="Comment_123456" >
@@ -120,9 +121,9 @@
 		</div>
 		<br/> --->
 
-		<div class="row" >
-			<div name="Recipe-Header" id="Status-Header" class="recipe-section-header inline-block standard-top-radius" >STATUS</div>
-			<div id="Status-Body" class="recipe-section-body" >
+		<div>
+			<div name="Recipe-Header" id="Status-Header" class="recipe-section-header inline-block standard-rounded-corners-top" >STATUS</div>
+			<div id="Status-Body" class="recipe-section-body standard-olive-wrapper" >
 
 				<div id="Recipe-Status-Container" >
 					<p>RecipeID: #attributes.RecipeID#</p>

@@ -21,19 +21,36 @@ a:hover {
 	border-radius: 0.3em;
 }
 
+.bottom-fixed-center {
+	position: fixed;
+	left: 0;
+	right: 0;
+	bottom: 1em;
+	margin: 0 auto;
+}
+
+.top-fixed-center {
+	position: fixed;
+	left: 0;
+	right: 0;
+	top: 1em;
+	margin: 0 auto;
+}
+
 .red-error-text {
 	color: #a94442;
 	background-color: #f2dede;
 }
 
 .yellow-warning-text {
-	color: #a94442;
-	background-color: #f2dede;
+	color: yellow;
+	background-color: orange;
 }
 
 .green-success-text {
 	color: lightgreen;
 	background-color: green;
+	border-color: green;
 }
 
 .ajax-loading {
@@ -50,12 +67,20 @@ a:hover {
 	display: none;
 }
 
+.standard-rounded-corners {
+	border-radius: 0.3em;
+}
+
+.standard-rounded-corners-top {
+	border-top-right-radius: 0.3em;
+	border-top-left-radius: 0.3em;
+}
+
 .standard-olive-wrapper {
 	border-style: solid;
 	border-width: 1px;
 	border-color: #92CD00;
 	padding: 0.5em;
-	border-radius: 0.3em;
 }
 
 .olive-wrapper-grey-background {
@@ -64,7 +89,6 @@ a:hover {
 	border-color: #92CD00;
 	background-color: #f2f2f2;
 	padding: 0.5em;
-	border-radius: 0.3em;
 }
 
 .olive-wrapper-white-background {
@@ -73,7 +97,6 @@ a:hover {
 	border-color: #92CD00;
 	background-color: white;
 	padding: 0.5em;
-	border-radius: 0.3em;
 }
 
 .standard-button {
@@ -82,8 +105,7 @@ a:hover {
 	border-color: #92CD00;
 	background-color: #92CD00;
 	color: white;
-	padding: 2px 2px 2px 2px;
-	border-radius: 0.3em;
+	padding: 0.1em;
 }
 
 .standard-button:hover, .recipe-section-header:hover {

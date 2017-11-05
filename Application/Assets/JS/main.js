@@ -2,22 +2,32 @@
 
 /* Main container, a namespace for all our functionality */
 var RecipeDB = {};
-RecipeDB.main = {}
+RecipeDB.main = {};
+RecipeDB.main.debug = false;
 
 RecipeDB.main.constants = {};
 RecipeDB.main.constants.AUTH_KEY = "";
-
-
-RecipeDB.main.onAJAXCallStart = function() {
-	// $('#' + ).html("<img class='center-block ajax-loader-container' src='../Assets/Pictures/Standard/ajax-loader.gif' />");
-};
+RecipeDB.main.constants.MAINCONTENT_CONTAINER_ID = "MainContent"
 
 RecipeDB.main.onAJAXCallError = function(AjaxResponse) {
-	document.getElementById("MainContent").innerHTML = AjaxResponse["0"].responseText;
-	// $('#' + RecipeDB.Main.DOM.ElementData.MainContentContainer.ID).html("<br/><div class='error-box col-md-2 col-md-offset-5' >Oh noes, something went wrong :( <br/>Please try again or contact the admin");
-	// $('.error-box').show();
+
+	var MainContentContainer = $("#" + RecipeDB.main.constants.MAINCONTENT_CONTAINER_ID);
+	var MessageBox = $("#Notification-Box");
+
+	if (RecipeDB.main.debug) {
+		MainContentContainer.html( AjaxResponse["0"].responseText );
+	} else {
+	
+		RecipeDB.main.removeAlertClasses(MessageBox);
+		MessageBox.removeClass("ajax-loading");
+		MessageBox.addClass("red-error-text");
+
+		MessageBox.html("Oops, something went wrong. Please try again and contact the admin if the problem persists");
+		MessageBox.fadeIn(1000);
+	};
+
 	console.warn("onAJAXCallError triggered");
-	console.warn(AjaxResponse);
+	console.warn(AjaxResponse["0"]);
 };
 
 RecipeDB.main.ajaxLoadButton = function(Enable, DOMPointer, Label) {
@@ -35,12 +45,21 @@ RecipeDB.main.ajaxLoadButton = function(Enable, DOMPointer, Label) {
 
 };
 
-RecipeDB.main.onNotificationSuccess = function() {
+RecipeDB.main.ajaxLoadInnerHTML = function(Enable, DOMPointer, Content) {
+
+	if (Enable) {
+		DOMPointer.html("");
+		DOMPointer.addClass("ajax-loading");
+	}
+	else {
+		DOMPointer.removeClass("ajax-loading");
+		DOMPointer.html( Content );
+	};
 
 };
 
-RecipeDB.main.onNotificationError = function() {
-
+RecipeDB.main.removeAlertClasses = function(DOMPointer) {
+	DOMPointer.removeClass("red-error-text yellow-warning-text green-success-text");
 };
 
 RecipeDB.main.init = function() {
@@ -54,28 +73,3 @@ RecipeDB.main.init = function() {
 
 	console.log("Main init complete");
 };
-/*
-$.ajax({
-	type: "post",
-	url: "../Components/AjaxProxy.cfc",
-	data: {
-		method: "call",
-		argumentCollection: JSON.stringify({
-			component: "1385A39A4884C42B25F4E2F24D4F52DC",
-			function: "getPatchNotesView",
-			authKey: RecipeDB.authKey
-		}),
-	},
-	dataType: "html",
-
-	beforeSend: function() {
-		RecipeDB.Main.Methods.onAJAXCallStart();
-	},
-	error: function() {
-		RecipeDB.Main.Methods.onAJAXCallError(arguments);
-	},
-	success: function(ResponseData) {
-		RecipeDB.Main.Methods.onGetViewSuccess(ResponseData);
-	}
-});
-*/

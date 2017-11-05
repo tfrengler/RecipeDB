@@ -1,20 +1,6 @@
 <cfcomponent output="false" >
 <cfprocessingdirective pageEncoding="utf-8" />
 
-	<cffunction name="getAddRecipeView" access="remote" returntype="string" returnformat="plain" output="false" hint="" >
-
-		<cfset var ReturnData = "" />
-		<cfset var ViewArguments = {} />
-
-		<!--- NOTE TO SELF: Use forward slashes for cfmodule paths that use mappings, derp --->
-		<cfsavecontent variable="ReturnData" >
-			<cfmodule template="/Views/AddRecipe.cfm" attributecollection="#ViewArguments#" >
-		</cfsavecontent>
-
-		<cfheader name="Content-Type" value="text/html;charset=UTF-8" />
-		<cfreturn ReturnData />
-	</cffunction>
-
 	<cffunction name="getRecipeView" access="public" returntype="struct" output="false" hint="" >
 		<cfargument name="RecipeID" type="numeric" required="true" />
 
@@ -41,7 +27,7 @@
 		<cfreturn ReturnData />
 	</cffunction>
 
-	<cffunction name="addNewRecipe" access="remote" returntype="struct" returnformat="JSON" output="false" hint="" >
+	<cffunction name="addNewRecipe" access="public" returntype="struct" returnformat="JSON" output="false" hint="" >
 		<cfargument name="Name" type="string" required="true" />
 		<cfargument name="CheckForDuplicates" type="boolean" required="false" default="true" />
 
@@ -131,20 +117,7 @@
 		<cfreturn ReturnData />
 	</cffunction>
 
-	<cffunction name="getRecipeListView" access="remote" returntype="string" returnformat="plain" output="false" hint="" >
-
-		<cfset var ReturnData = "" />
-
-		<cfsavecontent variable="ReturnData" >
-			<cfmodule template="/Views/RecipeList.cfm" >
-		</cfsavecontent>
-
-		<cfheader name="Content-Type" value="text/html;charset=UTF-8" />
-		<cfreturn ReturnData />
-
-	</cffunction>
-
-	<cffunction name="getRecipeListData" access="remote" returntype="struct" returnformat="JSON" output="false" hint="" >
+	<cffunction name="getRecipeListData" access="public" returntype="struct" returnformat="JSON" output="false" hint="" >
 		<!--- 
 			Looking further down, yes I realize that the formatting of the data for viewing should be done in the VIEW
 			rather than here in a backend CFC. Sadly we are not in control of the rendering of each table row since datables
@@ -233,25 +206,14 @@
 		<cfreturn ReturnData />
 	</cffunction>
 
-	<cffunction name="updateRecipe" access="remote" returntype="struct" returnformat="JSON" output="true" hint="" >
+	<cffunction name="updateRecipe" access="public" returntype="struct" returnformat="JSON" output="true" hint="" >
 		<cfargument name="RecipeID" type="numeric" required="true" />
-		<cfargument name="UpdateData" type="string" required="true" />
+		<cfargument name="UpdateData" type="struct" required="true" />
 
 		<cfset var ReturnData = {
 			status: "",
 			message: ""
 		} />
-
-		<cftry>
-			<cfset arguments.UpdateData = deserializeJSON(arguments.UpdateData) />
-		<cfcatch>
-
-			<cfset ReturnData.status = "NOK" />
-			<cfset ReturnData.message = cfcatch.message />
-			<cfreturn ReturnData />
-			
-		</cfcatch>
-		</cftry>
 
 		<cfset var Recipe = createObject("component", "Models.Recipe").init( 
 			ID=arguments.RecipeID,

@@ -20,7 +20,11 @@ RecipeDB.page.constants.PICTURE_ID = "Recipe-Picture";
 RecipeDB.page.constants.PICTURE_EDIT_ID = "Recipe-Picture-Edit";
 RecipeDB.page.constants.EDIT_BUTTON_ID = "Edit-Recipe-Button";
 RecipeDB.page.constants.SAVE_BUTTON_ID = "Save-Recipe-Button";
+RecipeDB.page.constants.RECIPE_TITLE_VIEW_ID = "Recipe-Title";
 RecipeDB.page.constants.RECIPE_TITLE_EDIT_ID = "Recipe-Title-Edit";
+RecipeDB.page.constants.RECIPE_DESCRIPTION_VIEW_ID = "Recipe-Description-Container";
+RecipeDB.page.constants.RECIPE_INGREDIENTS_VIEW_ID = "Recipe-Ingredients-Container";
+RecipeDB.page.constants.RECIPE_INSTRUCTIONS_VIEW_ID = "Recipe-Instructions-Container";
 RecipeDB.page.constants.RECIPE_DESCRIPTION_EDIT_ID = "Recipe-Description-Edit";
 RecipeDB.page.constants.RECIPE_INGREDIENTS_EDIT_ID = "Recipe-Ingredients-Edit";
 RecipeDB.page.constants.RECIPE_INSTRUCTIONS_EDIT_ID = "Recipe-Instructions-Edit";
@@ -170,6 +174,8 @@ RecipeDB.page.saveChanges = function() {
 	var RecipeTitle = document.getElementById(RecipeDB.page.constants.RECIPE_TITLE_EDIT_ID).value.trim();
 	var RecipeID = parseInt(document.getElementById(RecipeDB.page.constants.RECIPEID_ID).value);
 
+	var MessageBox = $("#" + RecipeDB.page.constants.NOTICATION_ELEMENT_ID);
+
 	var UpdatedRecipeData = {
 		name: RecipeTitle,
 		description: RecipeDescription,
@@ -179,12 +185,20 @@ RecipeDB.page.saveChanges = function() {
 
 	$.ajax({
 		type: "post",
-		url: "Controllers/Recipes.cfc",
+		url: "Components/AjaxProxy.cfc",
 		data: {
-			method: "updateRecipe",
-			recipeid: RecipeID,
-			updatedata: JSON.stringify(UpdatedRecipeData)
+			method: "call",
+			argumentCollection: JSON.stringify({
+				component: "Recipes",
+				function: "updateRecipe",
+				authKey: RecipeDB.main.constants.AUTH_KEY,
+				parameters: {
+					recipeid: RecipeID,
+					updatedata: UpdatedRecipeData
+				}
+			}),
 		},
+
 		dataType: "json",
 
 		success: function(ResponseData) {
@@ -194,7 +208,11 @@ RecipeDB.page.saveChanges = function() {
 			RecipeDB.main.onAJAXCallError(arguments);
 		},
 		beforeSend: function() {
-			$("#" + RecipeDB.page.constants.NOTICATION_ELEMENT_ID).show();
+			RecipeDB.main.removeAlertClasses(MessageBox);
+			MessageBox.addClass("yellow-warning-text");
+
+			RecipeDB.main.ajaxLoadInnerHTML(true, MessageBox);
+			MessageBox.show();
 		}
 	});	
 };
@@ -202,13 +220,23 @@ RecipeDB.page.saveChanges = function() {
 RecipeDB.page.onSavedChangesSuccess = function() {
 	var MessageBox = $("#" + RecipeDB.page.constants.NOTICATION_ELEMENT_ID);
 
-	MessageBox.removeClass("green-success-text");
-	MessageBox.html("Changes saved!");
-	tinyMCE.remove();
+	RecipeDB.main.ajaxLoadInnerHTML(false, MessageBox, "CHANGES SAVED");
+	RecipeDB.main.removeAlertClasses(MessageBox);
 
-	$("[name='" + RecipeDB.page.constants.EDIT_SECTION_NAME + "']").hide();
-	$("[name='" + RecipeDB.page.constants.VIEW_SECTION_NAME + "']").show();
+	MessageBox.addClass("green-success-text");
 
-	$("#" + RecipeDB.page.constants.SAVE_BUTTON_ID).show();
-	MessageBox.delay(3000).fadeOut();
+	$("#" + RecipeDB.page.constants.RECIPE_TITLE_VIEW_ID).html( 
+		$("#" + RecipeDB.page.constants.RECIPE_TITLE_EDIT_ID).val()
+	);
+	$("#" + RecipeDB.page.constants.RECIPE_DESCRIPTION_VIEW_ID).html(
+		tinyMCE.get(RecipeDB.page.constants.RECIPE_DESCRIPTION_EDIT_ID).getContent()
+	);
+	$("#" + RecipeDB.page.constants.RECIPE_INGREDIENTS_VIEW_ID).html(
+		tinyMCE.get(RecipeDB.page.constants.RECIPE_INGREDIENTS_EDIT_ID).getContent()
+	);
+	$("#" + RecipeDB.page.constants.RECIPE_INSTRUCTIONS_VIEW_ID).html(
+		tinyMCE.get(RecipeDB.page.constants.RECIPE_INSTRUCTIONS_EDIT_ID).getContent()
+	);
+
+	MessageBox.delay(2000).fadeOut();
 };

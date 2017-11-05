@@ -16,7 +16,7 @@
 				<cfmodule template="Views/Recipe.cfm" attributecollection=#viewData# >
 			</div>
 
-			<div id="Notification-Box" class="notification-box col-lg-2 col-lg-offset-5" ></div>
+			<div id="Notification-Box" class="notification-box bottom-fixed-center col-lg-2" ></div>
 		</body>
 	</html>
 

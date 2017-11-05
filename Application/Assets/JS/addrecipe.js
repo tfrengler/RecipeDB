@@ -11,75 +11,87 @@ RecipeDB.page.constants.MESSAGEBOX_ID = "Notification-Box";
 RecipeDB.page.constants.DUPLICATE_CHECK_CHECKBOX_ID = "DuplicateCheck";
 
 RecipeDB.page.addNewRecipe = function() {
-	var RecipeName = $("#" + RecipeDB.AddRecipe.DOM.ElementData.NewRecipeName.ID).val();
-	var CheckForDuplicates = $("#" + RecipeDB.AddRecipe.DOM.ElementData.DuplicateCheckBox.ID).prop("checked");
-	var AddNewRecipeAnyway = $("#" + RecipeDB.AddRecipe.DOM.ElementData.AddRecipeAnywayFlag.ID).val();;
+	var RecipeName = $("#" + RecipeDB.page.constants.NEW_RECIPE_NAME_ID).val();
+	var CheckForDuplicates = $("#" + RecipeDB.page.constants.DUPLICATE_CHECK_CHECKBOX_ID).prop("checked");
+	var AddNewRecipeAnyway = $("#" + RecipeDB.page.constants.ADD_RECIPE_ANYWAY_FLAG_ID).val();
+	var MessageBox = $("#" + RecipeDB.page.constants.MESSAGEBOX_ID);
 
 	if ( AddNewRecipeAnyway == 1) {
 		CheckForDuplicates = false;
 	};
 
-	$('#' + RecipeDB.AddRecipe.DOM.ElementData.DuplicateAlertBox.ID).hide();
+	$('#' + RecipeDB.page.constants.DUPLICATE_ALERT_BOX_ID).hide();
 
 	if (RecipeName.length === "" || RecipeName.length === 0) {
-		$("#" + RecipeDB.AddRecipe.DOM.ElementData.MessageBox.ID).html("The name of the recipe can't be blank. Please fill in something.");
-		$("#" + RecipeDB.AddRecipe.DOM.ElementData.MessageBox.ID).fadeIn(1000);
+
+		RecipeDB.main.removeAlertClasses(MessageBox);
+		MessageBox.addClass("red-error-text");
+		MessageBox.html("The name of the recipe can't be blank. Please fill in something.");
+		MessageBox.fadeIn(1000);
+
 		return false;
 	};
 
 	$.ajax({
 		type: "post",
-		url: "Controllers/Recipes.cfc",
+		url: "Components/AjaxProxy.cfc",
 		data: {
-			method: "addNewRecipe",
-			Name: RecipeName,
-			CheckForDuplicates: CheckForDuplicates
+			method: "call",
+			argumentCollection: JSON.stringify({
+				component: "Recipes",
+				function: "addNewRecipe",
+				authKey: RecipeDB.main.constants.AUTH_KEY,
+				parameters: {
+					name: RecipeName,
+					checkforduplicates: CheckForDuplicates
+				}
+			}),
 		},
+
 		dataType: "json",
 
 		success: function(ResponseData) {
-			RecipeDB.Utils.ajaxLoadButton(
+			RecipeDB.main.ajaxLoadButton(
 				false,
-				$('#' + RecipeDB.AddRecipe.DOM.ElementData.AddRecipeButton.ID),
+				$('#' + RecipeDB.page.constants.ADD_RECIPE_BUTTON_ID),
 				"OK"
 			);
-			RecipeDB.AddRecipe.Methods.onAddRecipeSuccess(ResponseData);
+			RecipeDB.page.onAddRecipeSuccess(ResponseData);
 		},
 		error: function() {
-			RecipeDB.Main.Methods.onAJAXCallError(arguments);
+			RecipeDB.main.onAJAXCallError(arguments);
 		},
 		beforeSend: function() {
-			$("#" + RecipeDB.AddRecipe.DOM.ElementData.MessageBox.ID).hide().html("");
+			MessageBox.hide().html("");
 
-			RecipeDB.Utils.ajaxLoadButton(
+			RecipeDB.main.ajaxLoadButton(
 				true,
-				$('#' + RecipeDB.AddRecipe.DOM.ElementData.AddRecipeButton.ID)
+				$('#' + RecipeDB.page.constants.ADD_RECIPE_BUTTON_ID)
 			);
-		},
-		complete: function() {
-
 		}
 	});
 };
 
 RecipeDB.page.onAddRecipeSuccess = function(AjaxResponse) {
 	if (AjaxResponse instanceof Object === false && typeof AjaxResponse.NewRecipeID === "undefined") {
-		RecipeDB.Main.onAJAXCallError();
+		RecipeDB.main.onAJAXCallError();
 	};
 
-	if (AjaxResponse.DuplicatesFound === true) {
-		$('#' + RecipeDB.AddRecipe.DOM.ElementData.DuplicateAlertBox.ID).html( AjaxResponse.DuplicatesView );
-		$('#' + RecipeDB.AddRecipe.DOM.ElementData.DuplicateAlertBox.ID).fadeIn(1000);
-		$("#" + RecipeDB.AddRecipe.DOM.ElementData.AddRecipeButton.ID).val("ADD ANYWAY");
-		$("#" + RecipeDB.AddRecipe.DOM.ElementData.AddRecipeAnywayFlag.ID).val(1);
-		return false;
-	}
+	var DuplicateAlertBox = $("#" + RecipeDB.page.constants.DUPLICATE_ALERT_BOX_ID);
 
-	RecipeDB.Recipe.Methods.viewRecipe( AjaxResponse.NewRecipeID );
+	if (AjaxResponse.DuplicatesFound === true) {
+		DuplicateAlertBox.html( AjaxResponse.DuplicatesView );
+		DuplicateAlertBox.fadeIn(1000);
+		$("#" + RecipeDB.page.constants.ADD_RECIPE_BUTTON_ID).val("ADD ANYWAY");
+		$("#" + RecipeDB.page.constants.ADD_RECIPE_ANYWAY_FLAG_ID).val(1);
+		return false;
+	};
+
+	window.location.href = "Recipe.cfm?RecipeID=" + AjaxResponse.NewRecipeID;
 };
 
 RecipeDB.page.init = function() {
-	$("#" + RecipeDB.AddRecipe.DOM.ElementData.AddRecipeButton.ID).click(function() {
-		RecipeDB.AddRecipe.Methods.addNewRecipe(false);
+	$("#" + RecipeDB.page.constants.ADD_RECIPE_BUTTON_ID).click(function() {
+		RecipeDB.page.addNewRecipe(false);
 	});
 };
