@@ -1,0 +1,54 @@
+<cfoutput>
+<cfparam name="attributes.pageJavascript" type="string" default="" />
+<cfparam name="attributes.pageStylesheet" type="string" default="" />
+<cfparam name="attributes.includeMenu" type="boolean" default="true" />
+
+<head>
+	<title>RecipeDB</title>
+
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+	<script type="text/javascript" src="Assets/Libs/jquery-base/jquery-min.js"></script>
+	<script type="text/javascript" src="Assets/Libs/tinymce/jquery.tinymce.min.js"></script>
+	<script type="text/javascript" src="Assets/Libs/tinymce/tinymce.min.js" ></script>
+	<script type="text/javascript" src="Assets/Libs/datatables/media/js/jquery.dataTables.min.js" ></script>
+	<script type="text/javascript" src="Assets/JS/main.js"></script>
+
+	<cfif attributes.includeMenu >
+		<script type="text/javascript" src="Assets/JS/menu.js"></script>
+	</cfif>
+
+	<cfif len(attributes.pageJavascript) GT 0 >
+		<script type="text/javascript" src="Assets/JS/#attributes.pageJavascript#.js"></script>
+	</cfif>
+
+	<link rel="stylesheet" type="text/css" href="Assets/Libs/bootstrap/css/bootstrap.min.css" />
+	<link rel="stylesheet" type="text/css" href="Assets/Libs/datatables/media/css/jquery.dataTables.min.css" />
+	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" />
+	<link rel="stylesheet" type="text/css" href="Assets/CSS/main.css" />
+
+	<cfif len(attributes.pageStylesheet) GT 0 >
+		<link rel="stylesheet" type="text/css" href="Assets/CSS/#attributes.pageStylesheet#.css" />
+	</cfif>
+	<cfif attributes.includeMenu >
+		<link rel="stylesheet" type="text/css" href="Assets/CSS/menu.css" />
+	</cfif>
+
+	<script type="text/javascript">
+		$(document).ready(function() {
+			RecipeDB.main.init();
+			<cfoutput>#toScript(session.AuthKey, "RecipeDB.main.constants.AUTH_KEY", false)#</cfoutput>
+			
+			if (RecipeDB.page !== undefined) {
+				RecipeDB.page.init();
+			};
+			
+			<cfif attributes.includeMenu >
+				RecipeDB.menu.init();
+			</cfif>
+		});
+	</script>
+</head>
+
+</cfoutput>

@@ -2,12 +2,12 @@
 
 <cfoutput>
 
-<section class="row" >
+<section>
 	<h1 id="RecipeList-Welcome" class="olive-text-color-center" >List of recipes</h1>
 </section>
 
-<section id="RecipeList-Container" class="row" >
-	<div class="col-md-8 col-md-offset-2 olive-wrapper-grey-background" >
+<section id="RecipeList-Container">
+	<div class="col-lg-8 col-lg-offset-2 olive-wrapper-grey-background standard-rounded-corners" >
 
 		<!--- <div id="Recipe-Toolbar" class="olive-wrapper-white-background" >
 			<span><b>TOOLBOX: </b></span>
@@ -34,11 +34,5 @@
 
 	</div>
 </section>
-
-<script type="text/javascript">
-	$(document).ready(function() {
-		RecipeDB.RecipeList.init();
-	});
-</script>
 
 </cfoutput>

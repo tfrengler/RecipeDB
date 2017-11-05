@@ -1,15 +1,14 @@
 <cfprocessingdirective pageEncoding="utf-8" />
-
 <cfoutput>
 
-<section class="row" >
+<section>
 	<h1 id="AddRecipe-Welcome" class="olive-text-color-center" >Add new recipe</h1>	
 </section>
 
 <br/>
 
-<section class="row" >
-	<form id="AddRecipe-Form" class="olive-wrapper-grey-background col-md-2 col-md-offset-5" >
+<section>
+	<form id="AddRecipe-Form" class="olive-wrapper-grey-background standard-rounded-corners col-lg-2 col-lg-offset-5" >
 
 		<input id="AddNewRecipe-Anyway" type="hidden" value="0" >
 
@@ -25,18 +24,8 @@
 
 <br/>
 
-<section class="row" >
-	<div id="AddRecipe-DuplicateAlertBox" class="col-md-4 col-md-offset-4" ></div>
+<section>
+	<div id="AddRecipe-DuplicateAlertBox" class="col-lg-4 col-lg-offset-4" ></div>
 </section>
-
-<section class="row" >
-	<div id="AddRecipe-MessageBox" class="error-box col-md-2 col-md-offset-5" ></div>
-</section>
-
-<script type="text/javascript">
-	$(document).ready(function() {
-		RecipeDB.AddRecipe.init();
-	});
-</script>
 
 </cfoutput>

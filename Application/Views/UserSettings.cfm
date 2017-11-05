@@ -1,17 +1,18 @@
 <cfprocessingdirective pageEncoding="utf-8" />
+<cfoutput>
 
 <cfparam name="attributes.Username" type="string" default="[unknown username]" />
 <cfparam name="attributes.DisplayName" type="string" default="[unknown display name]" />
 <cfparam name="attributes.AccountCreationDate" type="string" default="[unknown creation date]" />
-<cfparam name="attributes.TimesLoggedIn" default="[unknown login count]" />
+<cfparam name="attributes.TimesLoggedIn" type="numeric" default="[unknown login count]" />
 <cfparam name="attributes.BrowserLastUsed" type="string" default="[unknown browser]" />
 
-<cfoutput>
+<section>
+	<h1 id="UserSettings-Welcome" class="olive-text-color-center" >My Settings</h1>
+</section>
 
-<h1 id="UserSettings-Welcome" class="olive-text-color-center" >My Settings</h1>
-
-<section class="row" id="UserSettings-Form-Wrapper" >
-	<form id="UserSettings-Form" class="olive-wrapper-grey-background col-md-4 col-md-offset-4" >
+<section id="UserSettings-Form-Wrapper" >
+	<form id="UserSettings-Form" class="olive-wrapper-grey-background standard-rounded-corners col-lg-4 col-lg-offset-4" >
 
 		<span id="DisplayNameLegend">DISPLAY NAME:</span> 
 		<input id="DisplayName" class="form-control" type="text" value="#encodeForHTML( attributes.DisplayName )#" />
@@ -41,17 +42,5 @@
 
 	</form>
 </section>
-
-<br/>
-
-<section class="row" >
-	<div id="UserSettings-MessageBox" class="col-md-2 col-md-offset-5" ></div>
-</section>
-
-<script type="text/javascript">
-	$(document).ready(function() {
-		RecipeDB.UserSettings.init();
-	});
-</script>
 
 </cfoutput>

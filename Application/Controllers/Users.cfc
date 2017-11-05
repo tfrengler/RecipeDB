@@ -1,17 +1,16 @@
 <cfcomponent output="false" >
 <cfprocessingdirective pageEncoding="utf-8" />
 
-	<cffunction name="getUserSettingsView" access="remote" returntype="string" returnformat="plain" output="false" hint="" >
+	<cffunction name="getUserSettingsView" access="public" returntype="struct" output="false" hint="" >
 
-		<cfset var ReturnData = "" />
-		<cfset var ViewArguments = {} />
+		<cfset var ReturnData = structNew() />
 		<cfset var CurrentUser = session.CurrentUser />
 		<cfset var UserAgentStringResult = "" />
 		<cfset var UserAgentStringForView = CurrentUser.getBrowserLastUsed() />
 
-		<cfif structKeyExists(session, "UserAgent") IS false >
+		<!--- <cfif structKeyExists(session, "UserAgent") IS false >
 
-			<cfhttp url="http://useragentstring.com/" method="post" timeout="5" throwonerror="false" result="UserAgentStringResult" >
+			<cfhttp url="http://useragentstring.com/" method="post" timeout="2" throwonerror="false" result="UserAgentStringResult" >
 				<cfhttpparam type="formfield" name="uas" value="#CurrentUser.getBrowserLastUsed()#" />
 				<cfhttpparam type="formfield" name="getJSON" value="all" />
 			</cfhttp>
@@ -50,24 +49,18 @@
 				<cfset UserAgentStringForView = (UserAgentStringForView & ", running on an unknown OS") />
 			</cfif>
 
-		</cfif>
+		</cfif> --->
 
-		<cfset ViewArguments.Username = CurrentUser.getUsername() />
-		<cfset ViewArguments.DisplayName = CurrentUser.getDisplayName() />
-		<cfset ViewArguments.AccountCreationDate = CurrentUser.getDateCreated() />
-		<cfset ViewArguments.TimesLoggedIn = CurrentUser.getTimesLoggedIn() />
-		<cfset ViewArguments.BrowserLastUsed = UserAgentStringForView />
+		<cfset ReturnData.username = CurrentUser.getUsername() />
+		<cfset ReturnData.displayName = CurrentUser.getDisplayName() />
+		<cfset ReturnData.accountCreationDate = CurrentUser.getDateCreated() />
+		<cfset ReturnData.timesLoggedIn = CurrentUser.getTimesLoggedIn() />
+		<cfset ReturnData.browserLastUsed = UserAgentStringForView />
 
-		<!--- NOTE TO SELF: Use forward slashes for cfmodule paths that use mappings, derp --->
-		<cfsavecontent variable="ReturnData" >
-			<cfmodule template="/Views/UserSettings.cfm" attributecollection="#ViewArguments#" >
-		</cfsavecontent>
-
-		<cfheader name="Content-Type" value="text/html;charset=UTF-8" />
 		<cfreturn ReturnData />
 	</cffunction>
 
-	<cffunction name="changeUserSettings" access="public" returntype="struct" returnformat="json" output="false" hint="" >
+	<cffunction name="changeUserSettings" access="public" returntype="struct" returnformat="JSON" output="false" hint="" >
 		<cfargument name="NewDisplayName" type="string" required="true" hint="" />
 		<cfargument name="NewUserName" type="string" required="true" hint="" />
 

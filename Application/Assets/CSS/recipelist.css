@@ -1,0 +1,24 @@
+#RecipeList-Container {
+	margin-top: 2em;
+}
+
+#RecipeList-Table th {
+	background-color: #92CD00;
+	color: white;
+}
+
+#RecipeList-Table tbody tr:hover {
+	cursor: pointer;
+	background-color: #2C6700 !important;
+	color: white !important;
+}
+
+/*table.dataTable.order-column.stripe tbody tr.odd>.sorting_1 {
+	background-color: #2C6700 !important;
+	color: white !important;
+}
+
+table.dataTable.order-column tbody tr>.sorting_1 {
+	background-color: #2C6700 !important;
+	color: white !important;
+}*/

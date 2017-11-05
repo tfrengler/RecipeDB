@@ -3,9 +3,11 @@
 
 <cfparam name="attributes.roadMap" type="string" default="" />
 
-<h1 id="RoadMap-Welcome" class="olive-text-color-center" >Planned changes</h1>
+<section>
+	<h1 id="RoadMap-Welcome" class="olive-text-color-center" >Planned changes</h1>
+</section>
 
-<section id="RoadMapContainer" class="olive-wrapper-grey-background col-md-8 col-md-offset-2" >
+<section id="RoadMapContainer" class="olive-wrapper-grey-background standard-rounded-corners col-lg-8 col-lg-offset-2" >
 
 	<cfif len(attributes.roadMap) GT 0 >
 

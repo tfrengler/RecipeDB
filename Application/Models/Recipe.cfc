@@ -150,7 +150,8 @@
 						Ingredients = <cfqueryparam sqltype="LONGVARCHAR" value="#getIngredients()#" />,
 						Description = <cfqueryparam sqltype="LONGVARCHAR" value="#getDescription()#" />,
 						Picture = <cfqueryparam sqltype="BIGINT" value="#getPicture()#" />,
-						Instructions = <cfqueryparam sqltype="LONGVARCHAR" value="#getInstructions()#" />
+						Instructions = <cfqueryparam sqltype="LONGVARCHAR" value="#getInstructions()#" />,
+						Name = <cfqueryparam sqltype="LONGVARCHAR" value="#getName()#" />
 
 					WHERE #getTableKey()# = <cfqueryparam sqltype="CF_SQL_BIGINT" value="#getID()#" />;
 				</cfquery>

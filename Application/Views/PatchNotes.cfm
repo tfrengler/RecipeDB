@@ -3,9 +3,13 @@
 
 <cfparam name="attributes.patchNoteCollection" type="array" default="#arrayNew(1)#" />
 
-<h1 id="PatchNotes-Welcome" class="olive-text-color-center" >What has changed?</h1>
+<section>
+	<h1 id="PatchNotes-Welcome" class="olive-text-color-center" >What has changed?</h1>
+</section>
 
-<section id="PatchNotesContainer" class="olive-wrapper-grey-background col-md-8 col-md-offset-2" >
+<br/>
+
+<section id="PatchNotesContainer" class="olive-wrapper-grey-background standard-rounded-corners col-lg-8 col-lg-offset-2" >
 
 	<p>Source code and changes can also be found <a href="https://github.com/tfrengler/RecipeDB/commits/">on GitHub</a></p>
 
