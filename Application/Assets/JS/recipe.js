@@ -32,6 +32,9 @@ RecipeDB.page.constants.RECIPEID_ID = "RecipeID";
 RecipeDB.page.constants.NOTICATION_ELEMENT_ID = "Notification-Box";
 RecipeDB.page.constants.VIEW_SECTION_NAME = "ViewSection";
 RecipeDB.page.constants.EDIT_SECTION_NAME = "EditSection";
+RecipeDB.page.constants.PUBLISH_RECIPE_BUTTON_ID = "Publish-Recipe-Button";
+RecipeDB.page.constants.PUBLISHED_STATUS_ID = "Published-Status";
+RecipeDB.page.constants.DELETE_RECIPE_BUTTON = "Delete-Recipe-Button";
 
 RecipeDB.page.init = function() {
 	this.setSectionDimensions();
@@ -54,6 +57,14 @@ RecipeDB.page.init = function() {
 
 	$("#" + this.constants.SAVE_BUTTON_ID).click(
 		RecipeDB.page.saveChanges
+	);
+
+	$("#" + this.constants.PUBLISH_RECIPE_BUTTON_ID).click(
+		RecipeDB.page.changePublicStatus
+	);
+
+	$("#" + this.constants.DELETE_RECIPE_BUTTON).click(
+		RecipeDB.page.deleteRecipe
 	);
 
 	$(document).resize(function() {
@@ -208,7 +219,7 @@ RecipeDB.page.saveChanges = function() {
 			RecipeDB.main.onAJAXCallError(arguments);
 		},
 		beforeSend: function() {
-			RecipeDB.main.ajaxLoadButton(true, $('#' + RecipeDB.page.constants.SAVE_BUTTON_ID));
+			RecipeDB.main.ajaxLoadInnerHTML(true, $('#' + RecipeDB.page.constants.SAVE_BUTTON_ID));
 
 			RecipeDB.main.removeAlertClasses(MessageBox);
 			MessageBox.addClass("yellow-warning-text");
@@ -217,7 +228,7 @@ RecipeDB.page.saveChanges = function() {
 			MessageBox.show();
 		},
 		complete: function() {
-			RecipeDB.main.ajaxLoadButton(false, $('#' + RecipeDB.page.constants.SAVE_BUTTON_ID), "Save changes");
+			RecipeDB.main.ajaxLoadInnerHTML(false, $('#' + RecipeDB.page.constants.SAVE_BUTTON_ID), "Save changes");
 		}
 	});	
 };
@@ -244,4 +255,134 @@ RecipeDB.page.onSavedChangesSuccess = function() {
 	);
 
 	MessageBox.delay(2000).fadeOut();
+};
+
+RecipeDB.page.changePublicStatus = function() {
+
+	var MessageBox = $("#" + RecipeDB.page.constants.NOTICATION_ELEMENT_ID);
+	var RecipeID = parseInt(document.getElementById(RecipeDB.page.constants.RECIPEID_ID).value);
+
+	$.ajax({
+		type: "post",
+		url: "Components/AjaxProxy.cfc",
+		data: {
+			method: "call",
+			argumentCollection: JSON.stringify({
+				component: "Recipes",
+				function: "flipPublishedStatus",
+				authKey: RecipeDB.main.constants.AUTH_KEY,
+				parameters: {
+					recipeid: RecipeID
+				}
+			}),
+		},
+
+		dataType: "json",
+
+		success: function(ResponseData) {
+			RecipeDB.page.onChangedPublicStatusSuccess();
+		},
+		error: function() {
+			RecipeDB.main.onAJAXCallError(arguments);
+		},
+		beforeSend: function() {
+			RecipeDB.main.ajaxLoadInnerHTML(true, $('#' + RecipeDB.page.constants.PUBLISH_RECIPE_BUTTON_ID));
+
+			RecipeDB.main.removeAlertClasses(MessageBox);
+			MessageBox.addClass("yellow-warning-text");
+
+			RecipeDB.main.ajaxLoadInnerHTML(true, MessageBox);
+			MessageBox.show();
+		},
+		complete: function() {
+			RecipeDB.main.ajaxLoadInnerHTML(false, $('#' + RecipeDB.page.constants.PUBLISH_RECIPE_BUTTON_ID), "Change public status");
+		}
+	});	
+
+};
+
+RecipeDB.page.onChangedPublicStatusSuccess = function() {
+
+	var MessageBox = $("#" + RecipeDB.page.constants.NOTICATION_ELEMENT_ID);
+	var PublishedStatusElement = $("#" + RecipeDB.page.constants.PUBLISHED_STATUS_ID);
+
+	if (PublishedStatusElement.attr("class") === "true") {
+
+		PublishedStatusElement.removeClass();
+		PublishedStatusElement.addClass("false");
+		PublishedStatusElement.text("no");
+
+	} else {
+
+		PublishedStatusElement.removeClass();
+		PublishedStatusElement.addClass("true");
+		PublishedStatusElement.text("yes");
+
+	};
+
+	RecipeDB.main.ajaxLoadInnerHTML(false, MessageBox, "PUBLIC STATUS CHANGED");
+	RecipeDB.main.removeAlertClasses(MessageBox);
+
+	MessageBox.addClass("green-success-text");
+	MessageBox.delay(2000).fadeOut();
+};
+
+RecipeDB.page.deleteRecipe = function() {
+
+	var MessageBox = $("#" + RecipeDB.page.constants.NOTICATION_ELEMENT_ID);
+	var RecipeID = parseInt(document.getElementById(RecipeDB.page.constants.RECIPEID_ID).value);
+
+	if (window.confirm("Are you sure you want to delete this recipe?") === false ) {
+		return;
+	};
+
+	$.ajax({
+		type: "post",
+		url: "Components/AjaxProxy.cfc",
+		data: {
+			method: "call",
+			argumentCollection: JSON.stringify({
+				component: "Recipes",
+				function: "deleteRecipe",
+				authKey: RecipeDB.main.constants.AUTH_KEY,
+				parameters: {
+					recipeid: RecipeID
+				}
+			}),
+		},
+
+		dataType: "json",
+
+		success: function(ResponseData) {
+			RecipeDB.page.onDeleteSuccess();
+		},
+		error: function() {
+			RecipeDB.main.onAJAXCallError(arguments);
+		},
+		beforeSend: function() {
+			RecipeDB.main.ajaxLoadInnerHTML(true, $('#' + RecipeDB.page.constants.PUBLISH_RECIPE_BUTTON_ID));
+
+			RecipeDB.main.removeAlertClasses(MessageBox);
+			MessageBox.addClass("yellow-warning-text");
+
+			RecipeDB.main.ajaxLoadInnerHTML(true, MessageBox);
+			MessageBox.show();
+		},
+		complete: function() {
+			RecipeDB.main.ajaxLoadInnerHTML(false, $('#' + RecipeDB.page.constants.PUBLISH_RECIPE_BUTTON_ID), "Delete");
+		}
+	});	
+
+};
+
+RecipeDB.page.onDeleteSuccess = function() {
+	var MessageBox = $("#" + RecipeDB.page.constants.NOTICATION_ELEMENT_ID);
+
+	RecipeDB.main.ajaxLoadInnerHTML(false, MessageBox, "RECIPE DELETE");
+	RecipeDB.main.removeAlertClasses(MessageBox);
+
+	MessageBox.addClass("green-success-text");
+	MessageBox.delay(2000);
+
+	window.location.href = "FindRecipes.cfm";
 };

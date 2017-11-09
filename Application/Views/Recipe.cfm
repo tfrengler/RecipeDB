@@ -4,16 +4,17 @@
 <cfparam name="attributes.RecipeID" default="0" />
 <cfparam name="attributes.Name" type="string" default="[no name]" />
 <cfparam name="attributes.DateCreated" type="string" default="" />
-<cfparam name="attributes.DateTimeLastModified" default="" />
-<cfparam name="attributes.CreatedByUserName" type="string" default="[unknown owner]" />
-<cfparam name="attributes.CreatedByUserID" default=0 />
-<cfparam name="attributes.LastModifiedByUser" default="0" />
+<cfparam name="attributes.DateTimeLastModified" type="string" default="" />
+<cfparam name="attributes.CreatedByUserName" type="string" default="[unknown user]" />
+<cfparam name="attributes.CreatedByUserID" type="numeric" default=0 />
+<cfparam name="attributes.LastModifiedByUser" type="string" default="[unknown user]" />
 <cfparam name="attributes.Ingredients" type="string" default="[no ingredients]" />
 <cfparam name="attributes.Description" type="string" default="[no description]" />
 <cfparam name="attributes.Picture" default="" />
 <cfparam name="attributes.Instructions" type="string" default="[no instructions]" />
 <cfparam name="attributes.Comments" type="array" default="#arrayNew(1)#" />
 <cfparam name="attributes.DisplayToolbar" type="boolean" default="false" />
+<cfparam name="attributes.Published" type="boolean" default="false" />
 
 <section id="Recipe-Container" class="row" >
 
@@ -24,7 +25,7 @@
 		<div>
 			<div id="Recipe-Title-Container" class="olive-text-color-center" >
 				<h3 id="Recipe-Title" name="ViewSection" >#encodeForHTML(attributes.Name)#</h3>
-				<input id="Recipe-Title-Edit" name="EditSection" class="h3 display-none" type="text" value="#attributes.Name#" />
+				<input id="Recipe-Title-Edit" name="EditSection" class="h3 display-none" type="text" value="#attributes.Name#" maxlength="100" />
 			</div>
 			
 			<div id="Recipe-Picture-Container" class="center-block recipe-picture" >
@@ -43,6 +44,8 @@
 				<div id="Recipe-Toolbar" class="olive-wrapper-white-background" >
 					<span id="Edit-Recipe-Button" class="standard-button" >Make editable</span>
 					<span id="Save-Recipe-Button" class="standard-button display-none" >Save changes</span>
+					<span id="Publish-Recipe-Button" class="standard-button" >Change public status</span>
+					<span id="Delete-Recipe-Button" class="standard-button" >Delete</span>
 				</div>
 			</div>
 			<br/>
@@ -131,6 +134,14 @@
 					<p>Created on: #LSDateFormat(attributes.DateCreated, "dd-mm-yyyy")#</p>
 					<p>Modified by: #encodeForHTML(attributes.LastModifiedByUser)#</p>
 					<p>Last modified: #LSDateTimeFormat(attributes.DateTimeLastModified, "dd-mm-yyyy HH:nn:ss")#</p>
+					<p>
+						Available for others: 
+						<cfif attributes.Published >
+							<span id="Published-Status" class="true" >yes</span>
+						<cfelse>
+							<span id="Published-Status" class="false" >no</span>
+						</cfif>
+					</p>
 				</div>
 
 			</div>

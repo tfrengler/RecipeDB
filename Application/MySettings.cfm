@@ -15,7 +15,7 @@
 			<cfinclude template="Views/Menu.cfm" />
 
 			<section id="MainContent" class="container-fluid" >
-				<cfmodule template="Views/UserSettings.cfm" attributecollection=#viewData# >
+				<cfmodule template="Views/UserSettings.cfm" attributecollection=#viewData.data# >
 			</section>
 		</body>
 

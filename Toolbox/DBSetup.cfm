@@ -159,6 +159,13 @@
 			primary_key: false,
 			foreign_key: false,
 			references: structNew()
+		},
+		Published: {
+			type: "bool",
+			size: 0,
+			primary_key: false,
+			foreign_key: false,
+			references: structNew()
 		}
 	},
 

@@ -2,26 +2,42 @@
 <cfprocessingdirective pageEncoding="utf-8" />
 
 	<cffunction name="getRecipeView" access="public" returntype="struct" output="false" hint="" >
-		<cfargument name="RecipeID" type="numeric" required="true" />
+		<cfargument name="recipeID" type="numeric" required="true" />
+		<cfargument name="currentUser" type="Models.User" required="true" />
 
-		<cfset var ReturnData = {} />
+		<cfset var ReturnData = {
+			status: "",
+			errorcode: 0,
+			data: structNew()
+		} />
 
 		<cfset var Recipe = createObject("component", "Models.Recipe").init( 
 			ID=arguments.RecipeID,
 			Datasource=application.Settings.Datasource
 		) />
 
-		<cfset ReturnData.RecipeID = Recipe.getID() />
-		<cfset ReturnData.Name = Recipe.getName() />
-		<cfset ReturnData.DateCreated = Recipe.getDateCreated() />
-		<cfset ReturnData.DateTimeLastModified = Recipe.getDateTimeLastModified() />
-		<cfset ReturnData.CreatedByUserName = Recipe.getCreatedByUser().getDisplayName() />
-		<cfset ReturnData.CreatedByUserID = Recipe.getCreatedByUser().getID() />
-		<cfset ReturnData.LastModifiedByUser = Recipe.getLastModifiedByUser().getDisplayName() />
-		<cfset ReturnData.Ingredients = Recipe.getIngredients() />
-		<cfset ReturnData.Description = Recipe.getDescription() />
-		<cfset ReturnData.Picture = Recipe.getPicture() />
-		<cfset ReturnData.Instructions = Recipe.getInstructions() />
+		<cfif Recipe.getCreatedByUser().getId() IS NOT arguments.currentUser.getId() >
+			<cfif Recipe.getPublished() IS false >
+
+				<cfset ReturnData.status = "NOK" />
+				<cfset ReturnData.errorcode = 1 />
+				<cfreturn ReturnData />
+
+			</cfif>
+		</cfif>
+
+		<cfset ReturnData.data.RecipeID = Recipe.getID() />
+		<cfset ReturnData.data.Name = Recipe.getName() />
+		<cfset ReturnData.data.DateCreated = Recipe.getDateCreated() />
+		<cfset ReturnData.data.DateTimeLastModified = Recipe.getDateTimeLastModified() />
+		<cfset ReturnData.data.CreatedByUserName = Recipe.getCreatedByUser().getDisplayName() />
+		<cfset ReturnData.data.CreatedByUserID = Recipe.getCreatedByUser().getID() />
+		<cfset ReturnData.data.LastModifiedByUser = Recipe.getLastModifiedByUser().getDisplayName() />
+		<cfset ReturnData.data.Ingredients = Recipe.getIngredients() />
+		<cfset ReturnData.data.Description = Recipe.getDescription() />
+		<cfset ReturnData.data.Picture = Recipe.getPicture() />
+		<cfset ReturnData.data.Instructions = Recipe.getInstructions() />
+		<cfset ReturnData.data.Published = Recipe.getPublished() />
 		<!--- <cfset ReturnData.Comments = Recipe.getComments() /> --->
 
 		<cfreturn ReturnData />
@@ -126,7 +142,7 @@
 
 		<cfset var AllRecipes = createObject("component", "Models.Recipe").getData(
 			Datasource=application.Settings.Datasource,
-			ColumnList="RecipeID,Name,DateCreated,DateTimeLastModified,CreatedByUser,LastModifiedByUser,Ingredients"
+			ColumnList="RecipeID,Name,DateCreated,DateTimeLastModified,CreatedByUser,LastModifiedByUser,Ingredients,Published"
 		) >
 		<cfset var Users = createObject("component", "Models.User").getData( 
 			Datasource=application.Settings.Datasource,
@@ -146,6 +162,16 @@
 		} />
 
 		<cfloop query="AllRecipes" >
+
+			<!--- 
+				Yes, the bloody controller is not supposed to reach into the session-scope
+				but since this bloody thing is called by AJAX this is the most secure way
+			--->
+			<cfif AllRecipes["CreatedByUser"] IS NOT session.currentUser.getId() >
+				<cfif AllRecipes["Published"] IS false >
+					<cfcontinue />
+				</cfif>
+			</cfif>
 
 			<cfloop list=#ColumnNamesFromQuery# index="CurrentColumnName" >
 
@@ -234,6 +260,50 @@
 			<cfset ReturnData.status = "NOK" />
 		</cfif>
 
+		<cfreturn ReturnData />
+	</cffunction>
+
+	<cffunction name="flipPublishedStatus" access="public" returntype="struct" returnformat="JSON" output="true" hint="" >
+		<cfargument name="RecipeID" type="numeric" required="true" />
+
+		<cfset var ReturnData = {
+			status: "",
+			message: ""
+		} />
+
+		<cfset var Recipe = createObject("component", "Models.Recipe").init( 
+			ID=arguments.RecipeID,
+			Datasource=application.Settings.Datasource
+		) />
+
+		<cfif Recipe.getPublished() IS false >
+			<cfset Recipe.setPublished(status=true) />
+		<cfelse>
+			<cfset Recipe.setPublished(status=false) />
+		</cfif>
+
+		<cfset Recipe.save() />
+
+		<cfset ReturnData.status = "OK" />
+		<cfreturn ReturnData />
+	</cffunction>
+
+	<cffunction name="deleteRecipe" access="public" returntype="struct" returnformat="JSON" output="true" hint="" >
+		<cfargument name="recipeID" type="numeric" required="true" />
+
+		<cfset var ReturnData = {
+			status: "",
+			message: ""
+		} />
+
+		<cfset var Recipe = createObject("component", "Models.Recipe").init( 
+			ID=arguments.recipeID,
+			Datasource=application.Settings.Datasource
+		) />
+
+		<cfset Recipe.delete() />
+
+		<cfset ReturnData.status = "OK" />
 		<cfreturn ReturnData />
 	</cffunction>
 

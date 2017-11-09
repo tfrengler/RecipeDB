@@ -13,10 +13,15 @@
 	<cfset Picture = 0 />
 	<cfset Instructions = "" />
 	<cfset Name = "" />
+	<cfset Published = false />
 
 	<cfset TableName = "Recipes" />
 
 	<!--- Getters --->
+
+	<cffunction name="getPublished" access="public" output="false" returntype="boolean" >
+		<cfreturn variables.Published />
+	</cffunction>
 
 	<cffunction name="getID" access="public" output="false" returntype="numeric" >
 		<cfreturn variables.RecipeID />
@@ -63,6 +68,12 @@
 	</cffunction>
 
 	<!--- Setters --->
+
+	<cffunction name="setPublished" access="public" output="false" hint="" >
+		<cfargument name="status" type="boolean" required="true" hint="" />
+
+		<cfset variables.Published = arguments.status />
+	</cffunction>
 
 	<cffunction name="setID" access="private" output="false" hint="" >
 		<cfargument name="Value" type="numeric" required="true" hint="" />
@@ -151,7 +162,8 @@
 						Description = <cfqueryparam sqltype="LONGVARCHAR" value="#getDescription()#" />,
 						Picture = <cfqueryparam sqltype="BIGINT" value="#getPicture()#" />,
 						Instructions = <cfqueryparam sqltype="LONGVARCHAR" value="#getInstructions()#" />,
-						Name = <cfqueryparam sqltype="LONGVARCHAR" value="#getName()#" />
+						Name = <cfqueryparam sqltype="LONGVARCHAR" value="#getName()#" />,
+						Published = <cfqueryparam sqltype="BOOLEAN" value="#getPublished()#" />
 
 					WHERE #getTableKey()# = <cfqueryparam sqltype="CF_SQL_BIGINT" value="#getID()#" />;
 				</cfquery>
@@ -207,7 +219,8 @@
 						Description,
 						Picture,
 						Instructions,
-						Name
+						Name,
+						Published
 					)
 					VALUES (
 						<cfqueryparam sqltype="DATE" value="#getDateCreated()#" />,
@@ -218,7 +231,8 @@
 						<cfqueryparam sqltype="LONGVARCHAR" value="#getDescription()#" />,
 						<cfqueryparam sqltype="BIGINT" value="#getPicture()#" />,
 						<cfqueryparam sqltype="LONGVARCHAR" value="#getInstructions()#" />,
-						<cfqueryparam sqltype="LONGVARCHAR" value="#getName()#" />
+						<cfqueryparam sqltype="LONGVARCHAR" value="#getName()#" />,
+						<cfqueryparam sqltype="BOOLEAN" value="#getPublished()#" />
 					)
 					RETURNING #getTableKey()#; 
 				</cfquery>
@@ -258,6 +272,7 @@
 			<cfset setPicture( ID=GetRecipeData.Picture ) />
 			<cfset setInstructions( Data=GetRecipeData.Instructions ) />
 			<cfset setName( Data=GetRecipeData.Name ) />
+			<cfset setPublished( status=GetRecipeData.Published ) />
 
 		<cfelse>
 			<cfthrow message="Error when loading recipe data. There appears to be no recipe with this #getTableKey()#: #getID()#" />

@@ -24,6 +24,7 @@ CREATE TABLE Recipes(
 	Description text NOT NULL,
 	Picture bigint NOT NULL DEFAULT 0,
 	Instructions text NOT NULL,
+	Published boolean NOT NULL DEFAULT false,
 	PRIMARY KEY(RecipeID)
 );
 

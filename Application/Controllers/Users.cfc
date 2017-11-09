@@ -3,14 +3,19 @@
 
 	<cffunction name="getUserSettingsView" access="public" returntype="struct" output="false" hint="" >
 
-		<cfset var ReturnData = structNew() />
+		<cfset var ReturnData = {
+			status: "",
+			errorcode: 0,
+			data: structNew()
+		} />
+
 		<cfset var CurrentUser = session.CurrentUser />
 		<cfset var UserAgentStringResult = "" />
 		<cfset var UserAgentStringForView = CurrentUser.getBrowserLastUsed() />
 
 		<!--- <cfif structKeyExists(session, "UserAgent") IS false >
 
-			<cfhttp url="http://useragentstring.com/" method="post" timeout="2" throwonerror="false" result="UserAgentStringResult" >
+			<cfhttp url="http://useragentstring.com/" method="post" timeout="5" throwonerror="false" result="UserAgentStringResult" >
 				<cfhttpparam type="formfield" name="uas" value="#CurrentUser.getBrowserLastUsed()#" />
 				<cfhttpparam type="formfield" name="getJSON" value="all" />
 			</cfhttp>
@@ -51,11 +56,13 @@
 
 		</cfif> --->
 
-		<cfset ReturnData.username = CurrentUser.getUsername() />
-		<cfset ReturnData.displayName = CurrentUser.getDisplayName() />
-		<cfset ReturnData.accountCreationDate = CurrentUser.getDateCreated() />
-		<cfset ReturnData.timesLoggedIn = CurrentUser.getTimesLoggedIn() />
-		<cfset ReturnData.browserLastUsed = UserAgentStringForView />
+		<cfset ReturnData.status = "OK" />
+
+		<cfset ReturnData.data.username = CurrentUser.getUsername() />
+		<cfset ReturnData.data.displayName = CurrentUser.getDisplayName() />
+		<cfset ReturnData.data.accountCreationDate = CurrentUser.getDateCreated() />
+		<cfset ReturnData.data.timesLoggedIn = CurrentUser.getTimesLoggedIn() />
+		<cfset ReturnData.data.browserLastUsed = UserAgentStringForView />
 
 		<cfreturn ReturnData />
 	</cffunction>

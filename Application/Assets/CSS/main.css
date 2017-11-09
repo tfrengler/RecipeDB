@@ -45,6 +45,7 @@ a:hover {
 .yellow-warning-text {
 	color: yellow;
 	background-color: orange;
+	border-color: orange;
 }
 
 .green-success-text {

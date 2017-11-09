@@ -9,6 +9,9 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
+	<!--- <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+	<link rel="icon" href="/favicon.ico" type="image/x-icon"> --->
+
 	<script type="text/javascript" src="Assets/Libs/jquery-base/jquery-min.js"></script>
 	<script type="text/javascript" src="Assets/Libs/tinymce/jquery.tinymce.min.js"></script>
 	<script type="text/javascript" src="Assets/Libs/tinymce/tinymce.min.js" ></script>
