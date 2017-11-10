@@ -100,8 +100,8 @@ RecipeDB.page.openRecipe = function(Caller) {
 	RecipeID = Caller.children[ (Caller.children.length-1) ].innerHTML.trim();
 	RecipeID = parseInt(RecipeID);
 
-	if ( Number.isNaN(RecipeID) === true && RecipeID < 1) {
-		console.warn("openRecipe(): RecipeID is not a number or less than 1!");
+	if ( Number.isNaN(RecipeID) === true || RecipeID < 1) {
+		RecipeDB.main.onAJAXCallError([["openRecipe(): RecipeID is not a number or less than 1!"]])
 		return false;
 	};
 	

@@ -1,3 +1,5 @@
+<!--- MODULE --->
+
 <cfoutput>
 <cfparam name="attributes.pageJavascript" type="string" default="" />
 <cfparam name="attributes.pageStylesheet" type="string" default="" />
@@ -49,6 +51,10 @@
 			
 			<cfif attributes.includeMenu >
 				RecipeDB.menu.init();
+			</cfif>
+
+			<cfif isUserInRole("Admin") >
+				RecipeDB.main.debug = true;
 			</cfif>
 		});
 	</script>

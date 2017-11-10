@@ -43,94 +43,33 @@
 		<cfreturn ReturnData />
 	</cffunction>
 
+	<!--- AJAX METHOD --->
 	<cffunction name="addNewRecipe" access="public" returntype="struct" returnformat="JSON" output="false" hint="" >
 		<cfargument name="Name" type="string" required="true" />
-		<cfargument name="CheckForDuplicates" type="boolean" required="false" default="true" />
 
-		<cfif len(arguments.Name) IS 0 >
-			<cfthrow message="Error adding new recipe" detail="The name of the new recipe must not be empty. This should have been caught on the front end." />
-		</cfif>
-
-		<cfset var ReturnData = {
-			DuplicatesFound: false,
-			NewRecipeID: 0,
-			DuplicatesView: "",
-			NewRecipeView: ""
+		<cfset var returnData = {
+			status: "",
+			errorcode: 0,
+			data: 0
 		} />
 
-		<cfset var DuplicateViewArguments = {} />
-		<cfset var RecipeViewArguments = {} />
-		<cfset var MatchingRecipes = queryNew("RecipeID,Name") />
-		<cfset var RecipeInterface = createObject("component", "Models.Recipe") />
-		<cfset var RecipesByName = queryNew("RecipeID,Name") />
-		<cfset var DuplicateRecipes = arrayNew(1, true) />
-		<cfset var RecipeCounter = 0 />
-		<cfset var CurrentRecipeID = 0 />
-		<cfset var CurrentRecipe = "" />
-		<cfset var DuplicateRecipeData = structNew() />
-		<cfset var NewRecipe = "" />
-
-		<cfif arguments.CheckForDuplicates >
-
-			<cfset RecipesByName = RecipeInterface.getData(
-				ColumnList="RecipeID,Name,CreatedByUser",
-				Datasource="#application.Settings.Datasource#"
-			) />
-
-			<cfquery name="MatchingRecipes" dbtype="query" >
-				SELECT #RecipeInterface.getTableKey()#
-				FROM RecipesByName 
-				WHERE Name LIKE <cfqueryparam sqltype="LONGVARCHAR" value="%#trim(arguments.Name)#%" maxlength="100" />
-				ORDER BY #RecipeInterface.getTableKey()# ASC;
-			</cfquery>
-
-			<cfif MatchingRecipes.RecordCount GT 0 >
-				<cfset ReturnData.DuplicatesFound = true />
-				<cfset DuplicateViewArguments.DuplicateAmount = MatchingRecipes.RecordCount />
-
-				<cfloop list="#valueList(MatchingRecipes.RecipeID)#" index="CurrentRecipeID" >
-
-					<cfset DuplicateRecipeData = structNew() />
-
-					<cfif RecipeCounter GT 50 >
-						<cfset DuplicateViewArguments.ExcessDuplicateAmount = (MatchingRecipes.RecordCount - 50) />
-						<cfbreak/>
-					</cfif>
-
-					<!--- This feels ridiculously expensive in the long run. Might want to do something similar to getRecipeListData() instead --->
-					<!--- <cfset CurrentRecipe = createObject("component", "Models.Recipe").init( 
-						ID=CurrentRecipeID,
-						Datasource=application.Settings.Datasource
-					) />
-
-					<cfset DuplicateRecipeData.ID = CurrentRecipe.getID() />
-					<cfset DuplicateRecipeData.Name = CurrentRecipe.getName() />
-					<cfset DuplicateRecipeData.Owner = CurrentRecipe.getCreatedByUser().getDisplayName() /> --->
-
-					<cfset arrayAppend(DuplicateRecipes, DuplicateRecipeData) >
-					<cfset RecipeCounter = (RecipeCounter + 1) />
-
-				</cfloop>
-
-				<cfset DuplicateViewArguments.DuplicateRecipes = DuplicateRecipes />
-
-				<cfsavecontent variable="ReturnData.DuplicatesView" >
-					<cfmodule template="/Views/DuplicateRecipesList.cfm" attributecollection="#DuplicateViewArguments#" >
-				</cfsavecontent>
-
-				<cfreturn ReturnData />
-			</cfif>
+		<cfif len(arguments.Name) IS 0 >
+			<cfset returnData.errorcode = 2 />
+			<cfreturn returnData />
 		</cfif>
+
+		<cfset var recipeInterface = createObject("component", "Models.Recipe") />
+		<cfset var newRecipe = "" />
 
 		<cfset NewRecipe = RecipeInterface.create(
 			UserID=session.CurrentUser.getID(),
 			Name=trim(arguments.Name),
-			Datasource=application.Settings.Datasource
+			Datasource=application.settings.datasource
 		 ) />
 
-		<cfset ReturnData.NewRecipeID = NewRecipe.getID() />
+		<cfset returnData.data = NewRecipe.getID() />
 
-		<cfreturn ReturnData />
+		<cfreturn returnData />
 	</cffunction>
 
 	<cffunction name="getRecipeListData" access="public" returntype="struct" returnformat="JSON" output="false" hint="" >

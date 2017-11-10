@@ -1,7 +1,8 @@
 <cfprocessingdirective pageEncoding="utf-8" />
-<!--- CONTROLLER ACTIONS --->
 
 <cftry>
+	<cfparam name="URL.RecipeID" type="numeric" default="0" />
+
 	<cfset viewData = createObject("component", "Controllers.Recipes").getRecipeView(
 		recipeID=URL.RecipeID,
 		currentUser=session.currentUser
@@ -19,7 +20,7 @@
 
 				<cfif viewData.status IS "NOK" AND viewData.errorcode IS 1 >
 					<div id="Notification-Box" style="display: block" class="notification-box red-error-text top-fixed-center col-lg-2" >
-						This recipe is not owned by you or it's not published
+						Sorry, we can't let you access this recipe. It's not published or it doesn't belong to you.
 					</div>
 				<cfelse>
 					<cfmodule template="Views/Recipe.cfm" attributecollection=#viewData.data# >
@@ -32,7 +33,10 @@
 	</html>
 
 	<cfcatch>
-		<!--- <cfinclude template="Views/Error.cfm" /> --->
-		<cfthrow object=#cfcatch# />
+		<cfif isUserInRole("Admin") >
+			<cfthrow object=#cfcatch# />
+		<cfelse>
+			<cfinclude template="Views/Error.cfm" />
+		</cfif>
 	</cfcatch>
 </cftry>

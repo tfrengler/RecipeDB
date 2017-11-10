@@ -22,7 +22,7 @@ RecipeDB.main.onAJAXCallError = function(AjaxResponse) {
 		MessageBox.removeClass("ajax-loading");
 		MessageBox.addClass("red-error-text");
 
-		MessageBox.html("Oops, something went wrong. Please try again and contact the admin if the problem persists");
+		MessageBox.html("Ooops, something went wrong. Sorry about that! A team of highly trained monkeys has been dispatched to deal with the situation. If you see them tell them what you did when this happened.");
 		MessageBox.fadeIn(1000);
 	};
 

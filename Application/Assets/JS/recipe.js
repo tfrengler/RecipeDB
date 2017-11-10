@@ -378,11 +378,14 @@ RecipeDB.page.deleteRecipe = function() {
 RecipeDB.page.onDeleteSuccess = function() {
 	var MessageBox = $("#" + RecipeDB.page.constants.NOTICATION_ELEMENT_ID);
 
-	RecipeDB.main.ajaxLoadInnerHTML(false, MessageBox, "RECIPE DELETE");
+	RecipeDB.main.ajaxLoadInnerHTML(false, MessageBox, "RECIPE DELETED");
 	RecipeDB.main.removeAlertClasses(MessageBox);
-
 	MessageBox.addClass("green-success-text");
-	MessageBox.delay(2000);
 
-	window.location.href = "FindRecipes.cfm";
+	setTimeout(
+		function() {
+			window.location.href = "FindRecipes.cfm";
+		},
+		500
+	);
 };

@@ -12,8 +12,8 @@
 		<body class="roboto-font" >
 			<cfinclude template="Views/Menu.cfm" />
 
-			<section id="MainContent" class="container-fluid roboto-font" >
-				<cfmodule template="Views/PatchNotes.cfm" attributecollection=#viewData# >
+			<section id="MainContent" class="container-fluid" >
+				<cfmodule template="Views/PatchNotes.cfm" attributecollection=#viewData.data# >
 			</section>
 
 			<div id="Notification-Box" class="notification-box col-lg-2 col-lg-offset-5" ></div>
@@ -21,6 +21,10 @@
 	</html>
 
 	<cfcatch>
-		<cfthrow object=#cfcatch# />
+		<cfif isUserInRole("Admin") >
+			<cfthrow object=#cfcatch# />
+		<cfelse>
+			<cfinclude template="Views/Error.cfm" />
+		</cfif>
 	</cfcatch>
 </cftry>

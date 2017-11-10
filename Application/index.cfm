@@ -21,6 +21,10 @@
 	</html>
 
 	<cfcatch>
-		<cfthrow object=#cfcatch# />
+		<cfif isUserInRole("Admin") >
+			<cfthrow object=#cfcatch# />
+		<cfelse>
+			<cfinclude template="Views/Error.cfm" />
+		</cfif>
 	</cfcatch>
 </cftry>

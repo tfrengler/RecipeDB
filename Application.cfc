@@ -30,7 +30,7 @@
 			<cfset application.securityManager = createObject("component", "Components.SecurityManager") />
 		</cfif>
 
-		<cfset application.Settings.Datasource = "dev" />
+		<cfset application.settings.datasource = "dev" />
 
 		<cfreturn true />
 	</cffunction>
@@ -39,7 +39,7 @@
 		<cfargument type="string" name="targetPage" required=true />
 
 		<!--- For testing purposes, this nukes the session and restarts the application --->
-		<cfif structKeyExists(url, "Restart") >
+		<cfif structKeyExists(URL, "Restart") >
 
 			<cfset sessionInvalidate() />
 			<cfset applicationStop() />
@@ -61,7 +61,6 @@
 
 			<cfif isUserLoggedIn() >
 				<cflogout />
-				<cfset sessionInvalidate() />
 			</cfif>
 			<cfreturn true />
 
@@ -119,7 +118,11 @@
 				<!--- User account is blocked ---> 
 			</cfif>
 
-			<cfloginuser name="#LoggedInUser.getUserName()#" password="#LoggedInUser.getPassword()#" roles="User" />
+			<cfif LoggedInUser.getUserName() IS "tfrengler" >
+				<cfloginuser name="#LoggedInUser.getUserName()#" password="#LoggedInUser.getPassword()#" roles="Admin" />
+			<cfelse>
+				<cfloginuser name="#LoggedInUser.getUserName()#" password="#LoggedInUser.getPassword()#" roles="User" />
+			</cfif>
 
 			<cfset LoggedInUser.updateLoginStats(
 				UserAgentString=cgi.http_user_agent

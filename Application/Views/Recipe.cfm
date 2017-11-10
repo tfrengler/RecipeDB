@@ -135,7 +135,7 @@
 					<p>Modified by: #encodeForHTML(attributes.LastModifiedByUser)#</p>
 					<p>Last modified: #LSDateTimeFormat(attributes.DateTimeLastModified, "dd-mm-yyyy HH:nn:ss")#</p>
 					<p>
-						Available for others: 
+						Visible to other users: 
 						<cfif attributes.Published >
 							<span id="Published-Status" class="true" >yes</span>
 						<cfelse>

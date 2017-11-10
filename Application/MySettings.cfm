@@ -1,10 +1,7 @@
 <cfprocessingdirective pageEncoding="utf-8" />
-<!--- CONTROLLER ACTIONS --->
 
 <cftry>
 	<cfset viewData = createObject("component", "Controllers.Users").getUserSettingsView() />
-
-<!--- VIEW --->
 
 	<!DOCTYPE html>
 	<html lang="en" >
@@ -17,12 +14,16 @@
 			<section id="MainContent" class="container-fluid" >
 				<cfmodule template="Views/UserSettings.cfm" attributecollection=#viewData.data# >
 			</section>
-		</body>
 
-		<div id="Notification-Box" class="notification-box bottom-fixed-center col-lg-2" ></div>
+			<div id="Notification-Box" class="notification-box bottom-fixed-center col-lg-2" ></div>
+		</body>
 	</html>
 
 	<cfcatch>
-		<cfthrow object=#cfcatch# />
+		<cfif isUserInRole("Admin") >
+			<cfthrow object=#cfcatch# />
+		<cfelse>
+			<cfinclude template="Views/Error.cfm" />
+		</cfif>
 	</cfcatch>
 </cftry>

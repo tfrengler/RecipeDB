@@ -3,44 +3,52 @@
 
  	<cffunction name="getPatchNotesView" access="public" returntype="struct" output="false" hint="" >
  
- 		<cfset var ReturnData = {} />
- 		<cfset ReturnData.patchNoteCollection = arrayNew(1) />
+ 		<cfset var returnData = {
+ 			status: "",
+ 			errorcode: 0,
+ 			data: structNew()
+ 		} />
  
- 		<cfset var PatchNotesList = queryNew("") />
- 		<cfset var PatchNoteContents = "" />
+ 		<cfset var returnData.data.patchNoteCollection = arrayNew(1) />
+ 		<cfset var patchNotesList = queryNew("") />
+ 		<cfset var patchNoteContents = "" />
  
- 		<cfdirectory directory="#expandPath("/PatchNotes")#" action="list" filter="*.html" name="PatchNotesList" />
+ 		<cfdirectory directory="#expandPath("/PatchNotes")#" action="list" filter="*.html" name="patchNotesList" sort="desc" />
  
- 		<cfloop query="#PatchNotesList#" >
+ 		<cfloop query="#patchNotesList#" >
  
- 			<cfset PatchNoteContents = "" />
+ 			<cfset patchNoteContents = "" />
  
  			<cffile 
  				action="read" 
- 				file="#PatchNotesList.directory#\#PatchNotesList.name#"
+ 				file="#patchNotesList.directory#\#patchNotesList.name#"
  				variable="PatchNoteContents" 
  				charset="utf8"
  			/>
  
- 			<cfset arrayAppend(ReturnData.patchNoteCollection, PatchNoteContents) />
+ 			<cfset arrayAppend(returnData.data.patchNoteCollection, patchNoteContents) />
  
  		</cfloop>
  		
- 		<cfreturn ReturnData />
+ 		<cfreturn returnData />
 	</cffunction>
  
  	<cffunction name="getRoadmapView" access="public" returntype="struct" output="false" hint="" >
- 
- 		<cfset var ReturnData.roadMap = "" />
+
+ 		<cfset var returnData = {
+ 			status: "",
+ 			errorcode: 0,
+ 			data: structNew()
+ 		} />
  
  		<cffile 
  			action="read" 
  			file="#expandPath("/Roadmap")#/Roadmap.html" 
- 			variable="ReturnData.roadMap" 
+ 			variable="returnData.data.roadMap" 
  			charset="utf8"
  		/>
  		
- 		<cfreturn ReturnData />
+ 		<cfreturn returnData />
  	</cffunction>
  
  </cfcomponent> 

@@ -1,5 +1,4 @@
 <cfprocessingdirective pageEncoding="utf-8" />
-<!--- CONTROLLER ACTIONS --->
 
 <cftry>
 	<cfset viewData = createObject("component", "Controllers.Communication").getRoadmapView() />
@@ -13,7 +12,7 @@
 			<cfinclude template="Views/Menu.cfm" />
 
 			<div id="MainContent" class="container-fluid" >
-				<cfmodule template="Views/Roadmap.cfm" attributecollection=#viewData# >
+				<cfmodule template="Views/Roadmap.cfm" attributecollection=#viewData.data# >
 			</div>
 
 			<div id="Notification-Box" class="notification-box col-lg-2 col-lg-offset-5" ></div>
@@ -21,6 +20,10 @@
 	</html>
 
 	<cfcatch>
-		<cfthrow object=#cfcatch# />
+		<cfif isUserInRole("Admin") >
+			<cfthrow object=#cfcatch# />
+		<cfelse>
+			<cfinclude template="Views/Error.cfm" />
+		</cfif>
 	</cfcatch>
 </cftry>
