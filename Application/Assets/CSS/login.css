@@ -1,15 +1,10 @@
 #Login-Form {
-	margin-top: 5em;
 	margin-bottom: 5em;
 	border-radius: 0.3em;
 }
 
 #Login-Button {
 	font-size: 1.5em;
-}
-
-#Username {
-	margin-bottom: 0.2em;
 }
 
 #Login-Header {

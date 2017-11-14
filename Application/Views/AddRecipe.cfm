@@ -8,7 +8,7 @@
 <br/>
 
 <section>
-	<form id="AddRecipe-Form" class="olive-wrapper-grey-background standard-rounded-corners col-lg-2 col-lg-offset-5" >
+	<form id="AddRecipe-Form" class="olive-wrapper-grey-background standard-rounded-corners col-lg-2 col-lg-offset-5 col-sm-4 col-sm-offset-4" >
 
 		<input id="AddNewRecipe-Anyway" type="hidden" value="0" >
 

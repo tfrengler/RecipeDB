@@ -5,6 +5,12 @@ var RecipeDB = {};
 RecipeDB.main = {};
 RecipeDB.main.debug = false;
 
+RecipeDB.main.transient = {};
+RecipeDB.main.transient.ajaxCallInProgress = false;
+RecipeDB.main.transient.ajaxLoaderIconClass = "";
+RecipeDB.main.transient.ajaxLoaderInnerHTML = "";
+RecipeDB.main.transient.ajaxLoaderValue = "";
+
 RecipeDB.main.constants = {};
 RecipeDB.main.constants.AUTH_KEY = "";
 RecipeDB.main.constants.MAINCONTENT_CONTAINER_ID = "MainContent"
@@ -30,32 +36,56 @@ RecipeDB.main.onAJAXCallError = function(AjaxResponse) {
 	console.warn(AjaxResponse["0"]);
 };
 
-RecipeDB.main.ajaxLoadButton = function(Enable, DOMPointer, Label) {
+RecipeDB.main.ajaxLoadButton = function(Enable, DOMPointer, ) {
 
 	if (Enable) {
 		DOMPointer.prop("disabled", true);
+		this.transient.ajaxLoaderValue = DOMPointer.val();
 		DOMPointer.val("");
 		DOMPointer.addClass("ajax-loading");
 	}
 	else {
 		DOMPointer.prop("disabled", false);
 		DOMPointer.removeClass("ajax-loading");
-		DOMPointer.val( Label );
+		DOMPointer.val( this.transient.ajaxLoaderValue );
+		this.transient.ajaxLoaderValue = "";
 	};
+};
 
+RecipeDB.main.ajaxLoadIconButton = function(Enable, DOMPointer) {
+
+	if (Enable) {
+		DOMPointer.prop("disabled", true);
+		this.transient.ajaxLoaderIconClass = DOMPointer.children().attr("class");
+		DOMPointer.children().removeClass("");
+		DOMPointer.children().addClass("fa-cog fa-spin");
+	}
+	else {
+		DOMPointer.prop("disabled", false);
+		DOMPointer.children().removeClass("fa-cog fa-spin");
+		DOMPointer.children().addClass( this.transient.ajaxLoaderIconClass );
+		this.transient.ajaxLoaderIconClass = "";
+	};
+	
 };
 
 RecipeDB.main.ajaxLoadInnerHTML = function(Enable, DOMPointer, Content) {
 
 	if (Enable) {
+		this.transient.ajaxLoaderInnerHTML = DOMPointer.html();
 		DOMPointer.html("");
 		DOMPointer.addClass("ajax-loading");
 	}
 	else {
 		DOMPointer.removeClass("ajax-loading");
-		DOMPointer.html( Content );
+		if (Content !== undefined) {
+			DOMPointer.html(Content)
+		} else {
+			DOMPointer.html( this.transient.ajaxLoaderInnerHTML );
+			this.transient.ajaxLoaderInnerHTML = "";
+		}
 	};
-
+	
 };
 
 RecipeDB.main.removeAlertClasses = function(DOMPointer) {

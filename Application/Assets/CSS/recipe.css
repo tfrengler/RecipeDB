@@ -3,6 +3,7 @@
 }
 
 .recipe-section-header {
+	font-size: 1.2em;
 	border-style: solid;
 	border-width: 1px;
 	border-color: #92CD00;
@@ -27,6 +28,7 @@
 }
 
 #Toolbar-Header {
+	font-size: 1.2em;
 	border-style: solid;
 	border-width: 1px;
 	border-color: #2C6700;
@@ -65,4 +67,10 @@
 	vertical-align: middle;
 	color: white;
 	font-size: 2em;
+}
+
+.toolbar-button {
+	padding-left: 1em;
+	padding-right: 1em;
+	font-size: 1.2em;
 }

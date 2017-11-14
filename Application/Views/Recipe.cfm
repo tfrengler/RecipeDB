@@ -42,10 +42,10 @@
 				<div id="Toolbar-Header" class="standard-rounded-corners-top" >TOOLBAR</div>
 
 				<div id="Recipe-Toolbar" class="olive-wrapper-white-background" >
-					<span id="Edit-Recipe-Button" class="standard-button" >Make editable</span>
-					<span id="Save-Recipe-Button" class="standard-button display-none" >Save changes</span>
-					<span id="Publish-Recipe-Button" class="standard-button" >Change public status</span>
-					<span id="Delete-Recipe-Button" class="standard-button" >Delete</span>
+					<button type="button" id="Edit-Recipe-Button" class="toolbar-button standard-button" title="Edit the recipe" ><i class="fa fa-pencil-square-o"></i></button>
+					<button type="button" id="Delete-Recipe-Button" class="toolbar-button standard-button" title="Delete the recipe" ><i class="fa fa-times"></i></button>
+					<button type="button" id="Publish-Recipe-Button" class="toolbar-button standard-button" title="Change whether the recipe is visible to other users or not" >CHANGE VISIBILITY</button>
+					<button type="button" id="Save-Recipe-Button" class="toolbar-button standard-button display-none" title="Save changes"><i class="fa fa-floppy-o"></i></button>
 				</div>
 			</div>
 			<br/>
@@ -129,13 +129,13 @@
 			<div id="Status-Body" class="recipe-section-body standard-olive-wrapper" >
 
 				<div id="Recipe-Status-Container" >
-					<p>RecipeID: #attributes.RecipeID#</p>
-					<p>Created by: #encodeForHTML(attributes.CreatedByUserName)#</p>
-					<p>Created on: #LSDateFormat(attributes.DateCreated, "dd-mm-yyyy")#</p>
-					<p>Modified by: #encodeForHTML(attributes.LastModifiedByUser)#</p>
-					<p>Last modified: #LSDateTimeFormat(attributes.DateTimeLastModified, "dd-mm-yyyy HH:nn:ss")#</p>
+					<p><b>RecipeID: </b>#attributes.RecipeID#</p>
+					<p><b>Created by:</b> #encodeForHTML(attributes.CreatedByUserName)#</p>
+					<p><b>Created on:</b> #LSDateFormat(attributes.DateCreated, "dd-mm-yyyy")#</p>
+					<p><b>Modified by:</b> #encodeForHTML(attributes.LastModifiedByUser)#</p>
+					<p><b>Last modified:</b> #LSDateTimeFormat(attributes.DateTimeLastModified, "dd-mm-yyyy HH:nn:ss")#</p>
 					<p>
-						Visible to other users: 
+						<b>Visible to other users:</b>
 						<cfif attributes.Published >
 							<span id="Published-Status" class="true" >yes</span>
 						<cfelse>

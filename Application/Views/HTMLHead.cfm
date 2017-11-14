@@ -11,8 +11,8 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
-	<!--- <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
-	<link rel="icon" href="/favicon.ico" type="image/x-icon"> --->
+	<link rel="shortcut icon" href="Assets/Pictures/Standard/favicon.ico" type="image/x-icon" />
+	<link rel="icon" href="Assets/Pictures/Standard/favicon.ico" type="image/x-icon" />
 
 	<script type="text/javascript" src="Assets/Libs/jquery-base/jquery-min.js"></script>
 	<script type="text/javascript" src="Assets/Libs/tinymce/jquery.tinymce.min.js"></script>
@@ -31,6 +31,7 @@
 	<link rel="stylesheet" type="text/css" href="Assets/Libs/bootstrap/css/bootstrap.min.css" />
 	<link rel="stylesheet" type="text/css" href="Assets/Libs/datatables/media/css/jquery.dataTables.min.css" />
 	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" />
+	<link rel="stylesheet" href="Assets/Libs/font-awesome/css/font-awesome.min.css" />
 	<link rel="stylesheet" type="text/css" href="Assets/CSS/main.css" />
 
 	<cfif len(attributes.pageStylesheet) GT 0 >

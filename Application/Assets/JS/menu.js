@@ -2,7 +2,7 @@
 RecipeDB.menu = {};
 
 RecipeDB.menu.transient = {};
-RecipeDB.menuWidth = 0;
+RecipeDB.menu.transient.menuWidth = 0;
 
 RecipeDB.menu.constants = {};
 

@@ -42,31 +42,24 @@ RecipeDB.page.init = function() {
 	$( "[name='" + this.constants.SECTION_HEADERS_NAME + "']" ).click(function() {
 		RecipeDB.page.openCloseSection(this)
 	});
-
 	$("#" + this.constants.PICTURE_ID).load(function() {
 		RecipeDB.page.setPictureEditDimensions();
 	});
-
 	$(document).resize( function() {
 		RecipeDB.page.onResize();
 	});
-
 	$("#" + this.constants.EDIT_BUTTON_ID).click(
 		RecipeDB.page.enableEditing
 	);
-
 	$("#" + this.constants.SAVE_BUTTON_ID).click(
 		RecipeDB.page.saveChanges
 	);
-
 	$("#" + this.constants.PUBLISH_RECIPE_BUTTON_ID).click(
 		RecipeDB.page.changePublicStatus
 	);
-
 	$("#" + this.constants.DELETE_RECIPE_BUTTON).click(
 		RecipeDB.page.deleteRecipe
 	);
-
 	$(document).resize(function() {
 		RecipeDB.page.onResize();
 	});
@@ -84,19 +77,15 @@ RecipeDB.page.setSectionDimensions = function() {
 	this.transient.descriptionBodyHeight = parseFloat( 
 		$("#" + this.constants.DESCRIPTION_BODY_ID).css("height") 
 	);
-
 	this.transient.ingredientsBodyHeight = parseFloat( 
 		$("#" + this.constants.INGREDIENTS_BODY_ID).css("height") 
 	);
-
 	this.transient.instructionsBodyHeight = parseFloat( 
 		$("#" + this.constants.INSTRUCTIONS_BODY_ID).css("height") 
 	);
-
 	this.transient.commentsBodyHeight = parseFloat( 
 		$("#" + this.constants.COMMENTS_BODY_ID).css("height") 
 	);
-
 	this.transient.statusBodyHeight = parseFloat( 
 		$("#" + this.constants.STATUS_BODY_ID).css("height") 
 	);
@@ -149,7 +138,6 @@ RecipeDB.page.openCloseSection = function(Caller) {
 RecipeDB.page.enableEditing = function() {
 
 	$("#" + RecipeDB.page.constants.SAVE_BUTTON_ID).show();
-	$("#" + RecipeDB.page.constants.EDIT_BUTTON_ID).html("Disable editing");
 
 	$("[name='" + RecipeDB.page.constants.VIEW_SECTION_NAME + "']").hide();
 	$("[name='" + RecipeDB.page.constants.EDIT_SECTION_NAME + "']").show();
@@ -167,8 +155,8 @@ RecipeDB.page.enableEditing = function() {
 };
 
 RecipeDB.page.disableEditing = function() {
+	
 	$("#" + RecipeDB.page.constants.SAVE_BUTTON_ID).hide();
-	$("#" + RecipeDB.page.constants.EDIT_BUTTON_ID).html("Make editable");
 	tinyMCE.remove();
 
 	$("[name='" + RecipeDB.page.constants.VIEW_SECTION_NAME + "']").show();
@@ -179,6 +167,7 @@ RecipeDB.page.disableEditing = function() {
 };
 
 RecipeDB.page.saveChanges = function() {
+
 	var RecipeDescription = tinyMCE.get(RecipeDB.page.constants.RECIPE_DESCRIPTION_EDIT_ID).getContent();
 	var RecipeIngredients = tinyMCE.get(RecipeDB.page.constants.RECIPE_INGREDIENTS_EDIT_ID).getContent();
 	var RecipeInstructions = tinyMCE.get(RecipeDB.page.constants.RECIPE_INSTRUCTIONS_EDIT_ID).getContent();
@@ -219,7 +208,7 @@ RecipeDB.page.saveChanges = function() {
 			RecipeDB.main.onAJAXCallError(arguments);
 		},
 		beforeSend: function() {
-			RecipeDB.main.ajaxLoadInnerHTML(true, $('#' + RecipeDB.page.constants.SAVE_BUTTON_ID));
+			RecipeDB.main.ajaxLoadIconButton(true, $('#' + RecipeDB.page.constants.SAVE_BUTTON_ID));
 
 			RecipeDB.main.removeAlertClasses(MessageBox);
 			MessageBox.addClass("yellow-warning-text");
@@ -228,7 +217,7 @@ RecipeDB.page.saveChanges = function() {
 			MessageBox.show();
 		},
 		complete: function() {
-			RecipeDB.main.ajaxLoadInnerHTML(false, $('#' + RecipeDB.page.constants.SAVE_BUTTON_ID), "Save changes");
+			RecipeDB.main.ajaxLoadIconButton(false, $('#' + RecipeDB.page.constants.SAVE_BUTTON_ID));
 		}
 	});	
 };
@@ -295,7 +284,7 @@ RecipeDB.page.changePublicStatus = function() {
 			MessageBox.show();
 		},
 		complete: function() {
-			RecipeDB.main.ajaxLoadInnerHTML(false, $('#' + RecipeDB.page.constants.PUBLISH_RECIPE_BUTTON_ID), "Change public status");
+			RecipeDB.main.ajaxLoadInnerHTML(false, $('#' + RecipeDB.page.constants.PUBLISH_RECIPE_BUTTON_ID), "CHANGE VISIBILITY");
 		}
 	});	
 
@@ -320,7 +309,7 @@ RecipeDB.page.onChangedPublicStatusSuccess = function() {
 
 	};
 
-	RecipeDB.main.ajaxLoadInnerHTML(false, MessageBox, "PUBLIC STATUS CHANGED");
+	RecipeDB.main.ajaxLoadInnerHTML(false, MessageBox, "VISIBILITY CHANGED");
 	RecipeDB.main.removeAlertClasses(MessageBox);
 
 	MessageBox.addClass("green-success-text");
@@ -360,16 +349,13 @@ RecipeDB.page.deleteRecipe = function() {
 			RecipeDB.main.onAJAXCallError(arguments);
 		},
 		beforeSend: function() {
-			RecipeDB.main.ajaxLoadInnerHTML(true, $('#' + RecipeDB.page.constants.PUBLISH_RECIPE_BUTTON_ID));
+			RecipeDB.main.ajaxLoadIconButton(true, $('#' + RecipeDB.page.constants.PUBLISH_RECIPE_BUTTON_ID));
 
 			RecipeDB.main.removeAlertClasses(MessageBox);
 			MessageBox.addClass("yellow-warning-text");
 
 			RecipeDB.main.ajaxLoadInnerHTML(true, MessageBox);
 			MessageBox.show();
-		},
-		complete: function() {
-			RecipeDB.main.ajaxLoadInnerHTML(false, $('#' + RecipeDB.page.constants.PUBLISH_RECIPE_BUTTON_ID), "Delete");
 		}
 	});	
 

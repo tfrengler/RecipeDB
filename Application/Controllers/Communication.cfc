@@ -13,7 +13,7 @@
  		<cfset var patchNotesList = queryNew("") />
  		<cfset var patchNoteContents = "" />
  
- 		<cfdirectory directory="#expandPath("/PatchNotes")#" action="list" filter="*.html" name="patchNotesList" sort="desc" />
+ 		<cfdirectory directory="#expandPath("/PatchNotes")#" action="list" filter="*.html" name="patchNotesList" sort="name DESC" />
  
  		<cfloop query="#patchNotesList#" >
  

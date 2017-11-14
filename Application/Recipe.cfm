@@ -28,7 +28,7 @@
 
 			</div>
 
-			<div id="Notification-Box" class="notification-box bottom-fixed-center col-lg-2" ></div>
+			<div id="Notification-Box" class="notification-box bottom-fixed-center col-lg-2 col-sm-4" ></div>
 		</body>
 	</html>
 

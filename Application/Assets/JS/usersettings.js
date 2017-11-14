@@ -71,7 +71,7 @@ RecipeDB.page.saveChanges = function() {
 			RecipeDB.page.onSaveChangesSuccess()
 		},
 		complete: function() {
-			RecipeDB.main.ajaxLoadButton(false, $('#' + RecipeDB.page.constants.SAVE_BUTTON_ID), "SAVE CHANGES");
+			RecipeDB.main.ajaxLoadButton(false, $('#' + RecipeDB.page.constants.SAVE_BUTTON_ID));
 		}
 	});
 
