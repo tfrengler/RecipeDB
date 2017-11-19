@@ -8,7 +8,7 @@
 <br/>
 
 <section>
-	<form id="AddRecipe-Form" class="olive-wrapper-grey-background standard-rounded-corners col-lg-2 col-lg-offset-5 col-sm-4 col-sm-offset-4" >
+	<form id="AddRecipe-Form" class="olive-wrapper-grey-background standard-rounded-corners col-lg-2 col-lg-offset-5 col-sm-4 col-sm-offset-4 standard-box-shadow" >
 
 		<input id="AddNewRecipe-Anyway" type="hidden" value="0" >
 
@@ -17,7 +17,7 @@
 
 		<br/>
 
-		<input id="AddNewRecipe-Button" type="button" value="OK" class="standard-button btn-block center-block" />
+		<input id="AddNewRecipe-Button" type="button" value="ADD" class="standard-button btn-block center-block" />
 
 	</form>
 </section>

@@ -13,6 +13,7 @@ RecipeDB.menu.constants.OPEN_BUTTON_ID = "Open-Menu-Button";
 
 RecipeDB.menu.init = function() {
 	this.setMenuDimensions();
+	$("#" + this.constants.MENU_ID).css("width", 0);
 	
 	$(document).resize(function() {
 		this.onResize();

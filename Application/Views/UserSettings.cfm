@@ -12,7 +12,7 @@
 </section>
 
 <section id="UserSettings-Form-Wrapper" >
-	<form id="UserSettings-Form" class="olive-wrapper-grey-background standard-rounded-corners col-lg-4 col-lg-offset-4 col-sm-8 col-sm-offset-2 " >
+	<form id="UserSettings-Form" class="olive-wrapper-grey-background standard-rounded-corners col-lg-4 col-lg-offset-4 col-sm-8 col-sm-offset-2 standard-box-shadow" >
 
 		<span id="DisplayNameLegend">DISPLAY NAME:</span> 
 		<input id="DisplayName" class="form-control" type="text" maxlength="30"  value="#encodeForHTML( attributes.DisplayName )#" />
@@ -22,7 +22,7 @@
 		<input id="Username" class="form-control" type="text"  maxlength="20" value="#encodeForHTML( attributes.Username )#" />
 		<br/>
 
-		<span id="PasswordLegend">PASSWORD:&nbsp;</span><!--- <input id="Change-Password-Button" class="standard-button" type="button" value="CHANGE" /> --->
+		<span id="PasswordLegend">PASSWORD:&nbsp;</span><a href="ChangePassword.cfm"><input id="Change-Password-Button" class="standard-button" type="button" value="CHANGE" /></a>
 		<input id="ObscuredPassword" class="form-control" type="text" value="********" disabled="disabled" />
 		<br/>
 

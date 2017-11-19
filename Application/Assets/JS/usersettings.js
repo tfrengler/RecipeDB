@@ -6,11 +6,11 @@ RecipeDB.page.constants.DISPLAYNAME_BOX_ID = "DisplayName";
 RecipeDB.page.constants.USERNAME_BOX_ID = "Username";
 RecipeDB.page.constants.SAVE_BUTTON_ID = "Save-UserSettings-Button";
 RecipeDB.page.constants.NOTIFICATION_BOX_ID = "Notification-Box";
+RecipeDB.page.constants.CHANGE_PASSWORD_ID = "Change-Password-Button";
 
 RecipeDB.page.init = function() {
-	$("#" + this.constants.SAVE_BUTTON_ID).click(
-		RecipeDB.page.saveChanges
-	);
+	$("#" + this.constants.SAVE_BUTTON_ID).click(this.saveChanges);
+	console.log("Page init complete");
 };
 
 RecipeDB.page.saveChanges = function() {
@@ -44,6 +44,12 @@ RecipeDB.page.saveChanges = function() {
 		return false;
 	};
 
+	if (RecipeDB.main.transient.ajaxCallInProgress === false) {
+		RecipeDB.main.transient.ajaxCallInProgress = true
+	} else {
+		return false;
+	};
+
 	$.ajax({
 		type: "post",
 		url: "Components/AjaxProxy.cfc",
@@ -68,7 +74,8 @@ RecipeDB.page.saveChanges = function() {
 			RecipeDB.main.onAJAXCallError(arguments);
 		},
 		success: function() {
-			RecipeDB.page.onSaveChangesSuccess()
+			var MessageBox = $("#" + RecipeDB.page.constants.NOTIFICATION_BOX_ID);
+			RecipeDB.main.notifyUserOfSuccess( MessageBox, "CHANGES CHANGED", 2000 );
 		},
 		complete: function() {
 			RecipeDB.main.ajaxLoadButton(false, $('#' + RecipeDB.page.constants.SAVE_BUTTON_ID));
@@ -76,18 +83,4 @@ RecipeDB.page.saveChanges = function() {
 	});
 
 	return true;
-};
-
-RecipeDB.page.onSaveChangesSuccess = function() {
-
-	var MessageBox = $("#" + this.constants.NOTIFICATION_BOX_ID);
-	MessageBox.html("");
-
-	RecipeDB.main.removeAlertClasses(MessageBox);
-	$(MessageBox).addClass("green-success-text");
-
-	$(MessageBox).html("Changes saved");
-	$(MessageBox).fadeIn(1000);
-	$(MessageBox).delay(2000).fadeOut();
-
 };

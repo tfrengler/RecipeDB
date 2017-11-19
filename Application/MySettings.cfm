@@ -15,7 +15,7 @@
 				<cfmodule template="Views/UserSettings.cfm" attributecollection=#viewData.data# >
 			</section>
 
-			<div id="Notification-Box" class="notification-box bottom-fixed-center col-lg-2 col-sm-4 col-sm-offset-4" ></div>
+			<div id="Notification-Box" class="notification-box bottom-fixed-center col-lg-2 col-sm-4" ></div>
 		</body>
 	</html>
 

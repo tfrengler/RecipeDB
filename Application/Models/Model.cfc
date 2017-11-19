@@ -267,7 +267,7 @@
 		<cfreturn true />
 	</cffunction>
 
-	<cffunction name="exists" returntype="boolean" access="private" output="false" hint="" >
+	<cffunction name="exists" returntype="boolean" access="public" output="false" hint="" >
 		<cfargument name="ID" type="numeric" required="true" hint="" />
 		<cfargument name="Datasource" type="string" required="true" hint="The name of the datasource to use for queries." />
 

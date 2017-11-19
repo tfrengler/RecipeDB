@@ -22,7 +22,11 @@
 					<div id="Notification-Box" style="display: block" class="notification-box red-error-text top-fixed-center col-lg-2" >
 						Sorry, we can't let you access this recipe. It's not published or it doesn't belong to you.
 					</div>
-				<cfelse>
+				<cfelseif viewData.status IS "NOK" AND viewData.errorcode IS 2 >
+					<div id="Notification-Box" style="display: block" class="notification-box red-error-text top-fixed-center col-lg-2" >
+						We are very sorry, but we can't find a recipe for you with ID <cfoutput>#URL.RecipeID#</cfoutput>. Either it never existed or it has been deleted.
+					</div>
+				<cfelse >
 					<cfmodule template="Views/Recipe.cfm" attributecollection=#viewData.data# >
 				</cfif>
 

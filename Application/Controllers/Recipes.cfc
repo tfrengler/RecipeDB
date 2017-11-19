@@ -11,9 +11,19 @@
 			data: structNew()
 		} />
 
+		<cfset var RecipeInterface = createObject("component", "Models.Recipe") />
+
+		<cfif RecipeInterface.exists(ID=arguments.recipeID, Datasource=application.settings.datasource) IS false >
+
+			<cfset ReturnData.status = "NOK" />
+			<cfset ReturnData.errorcode = 2 />
+			<cfreturn ReturnData />
+
+		</cfif>
+
 		<cfset var Recipe = createObject("component", "Models.Recipe").init( 
 			ID=arguments.RecipeID,
-			Datasource=application.Settings.Datasource
+			Datasource=application.settings.datasource
 		) />
 
 		<cfif Recipe.getCreatedByUser().getId() IS NOT arguments.currentUser.getId() >
@@ -54,6 +64,7 @@
 		} />
 
 		<cfif len(arguments.Name) IS 0 >
+			<cfset returnData.status = "NOK" />
 			<cfset returnData.errorcode = 2 />
 			<cfreturn returnData />
 		</cfif>

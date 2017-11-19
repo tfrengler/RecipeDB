@@ -14,8 +14,6 @@
 	<link rel="icon" href="Application/Assets/Pictures/Standard/favicon.ico" type="image/x-icon" />
 
 	<script type="text/javascript" src="Application/Assets/Libs/jquery-base/jquery-min.js"></script>
-	<script type="text/javascript" src="Application/Assets/Libs/tinymce/jquery.tinymce.min.js"></script>
-	<script type="text/javascript" src="Application/Assets/Libs/tinymce/tinymce.min.js" ></script>
 	<script type="text/javascript" src="Application/Assets/JS/main.js"></script>
 	<script type="text/javascript" src="Application/Assets/JS/login.js" ></script>
 
@@ -33,17 +31,17 @@
 
 		<br/>
 
-		<form id="Login-Form" class="olive-wrapper-grey-background col-lg-2 col-lg-offset-5 col-sm-4 col-sm-offset-4" action="Login.cfm" method="POST" onsubmit="return false" >
+		<form id="Login-Form" class="olive-wrapper-grey-background col-lg-2 col-lg-offset-5 col-sm-4 col-sm-offset-4 standard-box-shadow" action="Login.cfm" method="POST" onsubmit="return false" >
 
 			<h3 id="Login-Header" class="form-signin-heading" >Please log in</h3>
 
 			<div class="input-group"> 
-				<span class="input-group-addon"><i class="fa fa-user-o fa-fw"></i></span>
+				<span class="input-group-addon olive-background-color"><i class="fa fa-user-o fa-fw"></i></span>
 				<input id="Username" name="j_username" class="form-control" type="text" placeholder="username" />
 			</div>
 
 			<div class="input-group"> 
-				<span class="input-group-addon"><i class="fa fa-lock fa-fw"></i></span>
+				<span class="input-group-addon olive-background-color"><i class="fa fa-lock fa-fw"></i></span>
 				<input id="Password" name="j_password" class="form-control" type="password" />
 			</div>
 
@@ -60,23 +58,14 @@
 			RecipeDB.page.init();
 
 		<cfif structKeyExists(COOKIE, "CFID") IS false AND structKeyExists(COOKIE, "CFTOKEN") IS false >
-			$('#' + RecipeDB.page.constants.MESSAGEBOX_ID).addClass("red-error-text");
-			$('#' + RecipeDB.page.constants.MESSAGEBOX_ID).html("Your browser doesn't support cookies or cookies are not enabled<br/><br/>Cookies are required if you want to use this application");
-			$('#' + RecipeDB.page.constants.MESSAGEBOX_ID).fadeIn(1000);
-
+			RecipeDB.main.notifyUserOfError( $('#' + RecipeDB.page.constants.MESSAGEBOX_ID), "Your browser doesn't support cookies or cookies are not enabled. Cookies are required if you want to use this application" );
 		<cfelseif URL.Reason GT 0 >
 			<cfif URL.Reason IS 5 >
-			$('#' + RecipeDB.page.constants.MESSAGEBOX_ID).addClass("red-error-text");
-			$('#' + RecipeDB.page.constants.MESSAGEBOX_ID).html("Your session has expired. You need to log in again");
-			$('#' + RecipeDB.page.constants.MESSAGEBOX_ID).fadeIn(1000);
+			RecipeDB.main.notifyUserOfError( $('#' + RecipeDB.page.constants.MESSAGEBOX_ID), "Your session has expired. You need to log in again");
 			<cfelseif URL.Reason IS 6 >
-			$('#' + RecipeDB.page.constants.MESSAGEBOX_ID).addClass("green-success-text");
-			$('#' + RecipeDB.page.constants.MESSAGEBOX_ID).html("You've been logged out");
-			$('#' + RecipeDB.page.constants.MESSAGEBOX_ID).fadeIn(1000);
+			RecipeDB.main.notifyUserOfSuccess( $('#' + RecipeDB.page.constants.MESSAGEBOX_ID), "You've been logged out");
 			<cfelse>
-			$('#' + RecipeDB.page.constants.MESSAGEBOX_ID).addClass("red-error-text");
-			$('#' + RecipeDB.page.constants.MESSAGEBOX_ID).html("Username or password is not correct");
-			$('#' + RecipeDB.page.constants.MESSAGEBOX_ID).fadeIn(1000);
+			RecipeDB.main.notifyUserOfError( $('#' + RecipeDB.page.constants.MESSAGEBOX_ID), "Username or password is not correct");
 		</cfif>
 
 		</cfif>

@@ -49,3 +49,4 @@ Temporary Items
 /WEB-INF/*
 Test.cfm
 test.cfm
+/Notes/**

@@ -7,7 +7,7 @@
 </section>
 
 <section id="RecipeList-Container">
-	<div class="col-lg-8 col-lg-offset-2 olive-wrapper-grey-background standard-rounded-corners" >
+	<div class="col-lg-8 col-lg-offset-2 olive-wrapper-grey-background standard-rounded-corners standard-box-shadow" >
 
 		<!--- <div id="Recipe-Toolbar" class="olive-wrapper-white-background" >
 			<span><b>TOOLBOX: </b></span>

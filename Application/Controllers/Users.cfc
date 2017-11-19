@@ -97,4 +97,32 @@
 		<cfreturn ReturnData />
 	</cffunction>
 
+	<cffunction name="changePassword" access="public" returntype="struct" returnformat="JSON" output="false" hint="" >
+		<cfargument name="newPassword" type="string" required="true" hint="" />
+
+		<cfset var ReturnData = {
+			status: "",
+			message: "",
+			data: ""
+		} />
+
+		<cfif len(arguments.newPassword) LT 4 >
+			<cfthrow message="Error when changing the user's password" detail="Password has to be 4 characters long" />
+		</cfif>
+
+		<cfif len(arguments.newPassword) GT 24 >
+			<cfthrow message="Error when changing the user's password" detail="Password is greater than 24 characters" />
+		</cfif>
+
+		<cfset session.currentUser.changePassword(
+			SecurityManager=application.securityManager,
+			Password=arguments.newPassword
+		) />
+
+		<cfset session.currentUser.save() />
+
+		<cfset ReturnData.status = "OK" />
+		<cfreturn ReturnData />
+	</cffunction>
+
 </cfcomponent>

@@ -15,35 +15,29 @@ RecipeDB.page.init = function() {
 		return false;
 	};
 
-	$("#" + this.constants.LOGIN_BUTTON_ID).click(function() {
-		RecipeDB.page.attemptLogin();
-	});
-
+	$("#" + this.constants.LOGIN_BUTTON_ID).click(RecipeDB.page.attemptLogin);
 };
 
 RecipeDB.page.attemptLogin = function() {
-	var MessageBox = $('#' + this.constants.MESSAGEBOX_ID);
-	var PasswordField = $('#' + this.constants.PASSWORD_FIELD_ID);
-	var UsernameField = $('#' + this.constants.USERNAME_FIELD_ID);
+
+	var MessageBox = $('#' + RecipeDB.page.constants.MESSAGEBOX_ID);
+	var PasswordField = $('#' + RecipeDB.page.constants.PASSWORD_FIELD_ID);
+	var UsernameField = $('#' + RecipeDB.page.constants.USERNAME_FIELD_ID);
 	var LoginButton = $('#' + RecipeDB.page.constants.LOGIN_BUTTON_ID);
 
-	MessageBox.removeClass("green-success-text");
-	MessageBox.addClass("red-error-text");
 	MessageBox.hide();
 
-	if ( UsernameField.val().length === 0 || UsernameField.val() === " " ) {
-		MessageBox.html("Please enter a username");
-		MessageBox.fadeIn(1000);
+	if ( UsernameField.val().trim().length === 0) {
+
+		RecipeDB.main.notifyUserOfError(MessageBox, "Please enter a username");
 		return false;
 	};
 
-	if ( PasswordField.val().length === 0 || PasswordField.val() === " " ) {
-		MessageBox.html("Please enter a password");
-		MessageBox.fadeIn(1000);
+	if ( PasswordField.val().trim().length === 0) {
+		RecipeDB.main.notifyUserOfError(MessageBox, "Please enter a password");
 		return false;
 	};
 
-	$('#' + RecipeDB.page.constants.LOGIN_BUTTON_ID).val("");
-	$('#' + RecipeDB.page.constants.LOGIN_BUTTON_ID).addClass("ajax-loading");
-	document.getElementById(this.constants.LOGIN_FORM_ID).submit();
+	RecipeDB.main.ajaxLoadButton(true, MessageBox);
+	document.getElementById(RecipeDB.page.constants.LOGIN_FORM_ID).submit();
 };

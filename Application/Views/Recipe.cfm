@@ -18,7 +18,7 @@
 
 <section id="Recipe-Container" class="row" >
 
-	<div id="Recipe" class="col-lg-6 col-lg-offset-3" >
+	<div id="Recipe" class="col-lg-6 col-lg-offset-3 standard-box-shadow" >
 
 		<input type="hidden" id="RecipeID" value="#attributes.RecipeID#" />
 
@@ -42,7 +42,7 @@
 				<div id="Toolbar-Header" class="standard-rounded-corners-top" >TOOLBAR</div>
 
 				<div id="Recipe-Toolbar" class="olive-wrapper-white-background" >
-					<button type="button" id="Edit-Recipe-Button" class="toolbar-button standard-button" title="Edit the recipe" ><i class="fa fa-pencil-square-o"></i></button>
+					<button type="button" id="Edit-Recipe-Button" class="toolbar-button standard-button" title="Toggle editing the recipe on or off" ><i class="fa fa-pencil-square-o"></i></button>
 					<button type="button" id="Delete-Recipe-Button" class="toolbar-button standard-button" title="Delete the recipe" ><i class="fa fa-times"></i></button>
 					<button type="button" id="Publish-Recipe-Button" class="toolbar-button standard-button" title="Change whether the recipe is visible to other users or not" >CHANGE VISIBILITY</button>
 					<button type="button" id="Save-Recipe-Button" class="toolbar-button standard-button display-none" title="Save changes"><i class="fa fa-floppy-o"></i></button>

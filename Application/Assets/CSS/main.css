@@ -129,8 +129,34 @@ a:hover {
 	text-align: center;
 }
 
+.dark-green-text-color {
+	color: #2C6700;
+}
+
+.dark-green-background-color {
+	background-color: #2C6700;
+}
+
 .roboto-font {
 	font-family: 'Roboto', sans-serif;
+}
+
+.standard-box-shadow {
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.ui-dialog-titlebar {
+	background-color: #92CD00;
+	color: white;
+}
+
+.ui-button {
+	background-color: #92CD00;
+	color: white;
+}
+
+.no-close .ui-dialog-titlebar-close {
+	display: none;
 }
 
 .background-image { 

@@ -15,6 +15,7 @@
 	<link rel="icon" href="Assets/Pictures/Standard/favicon.ico" type="image/x-icon" />
 
 	<script type="text/javascript" src="Assets/Libs/jquery-base/jquery-min.js"></script>
+	<script type="text/javascript" src="Assets/Libs/jquery-ui/jquery-ui.min.js"></script>
 	<script type="text/javascript" src="Assets/Libs/tinymce/jquery.tinymce.min.js"></script>
 	<script type="text/javascript" src="Assets/Libs/tinymce/tinymce.min.js" ></script>
 	<script type="text/javascript" src="Assets/Libs/datatables/media/js/jquery.dataTables.min.js" ></script>
@@ -29,6 +30,7 @@
 	</cfif>
 
 	<link rel="stylesheet" type="text/css" href="Assets/Libs/bootstrap/css/bootstrap.min.css" />
+	<link rel="stylesheet" type="text/css" href="Assets/Libs/jquery-ui/jquery-ui.min.css" />
 	<link rel="stylesheet" type="text/css" href="Assets/Libs/datatables/media/css/jquery.dataTables.min.css" />
 	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" />
 	<link rel="stylesheet" href="Assets/Libs/font-awesome/css/font-awesome.min.css" />
