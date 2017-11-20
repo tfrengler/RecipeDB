@@ -30,6 +30,7 @@ RecipeDB.page.addNewRecipe = function() {
 
 	$.ajax({
 		type: "post",
+		timeout: RecipeDB.main.constants.AJAX_TIMEOUT,
 		url: "Components/AjaxProxy.cfc",
 		data: {
 			method: "call",
@@ -45,7 +46,7 @@ RecipeDB.page.addNewRecipe = function() {
 
 		dataType: "json",
 
-		success: function() {
+		success: function(ResponseData) {
 			if (ResponseData instanceof Object === false && typeof ResponseData.data === "undefined") {
 				RecipeDB.main.onAJAXCallError(arguments);
 			};
@@ -66,6 +67,7 @@ RecipeDB.page.addNewRecipe = function() {
 			RecipeDB.main.ajaxLoadButton(true, $('#' + RecipeDB.page.constants.ADD_RECIPE_BUTTON_ID));
 		},
 		complete: function() {
+			RecipeDB.main.transient.ajaxCallInProgress = false;
 			RecipeDB.main.ajaxLoadButton(false, $('#' + RecipeDB.page.constants.ADD_RECIPE_BUTTON_ID));
 		}
 	});

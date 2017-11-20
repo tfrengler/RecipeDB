@@ -15,6 +15,7 @@ RecipeDB.main.constants = {};
 RecipeDB.main.constants.AUTH_KEY = "";
 RecipeDB.main.constants.MAINCONTENT_CONTAINER_ID = "MainContent"
 RecipeDB.main.constants.DIALOG_ID = "Popup-Dialog";
+RecipeDB.main.constants.AJAX_TIMEOUT = 30000;
 
 RecipeDB.main.onAJAXCallError = function(AjaxResponse) {
 
@@ -182,8 +183,6 @@ RecipeDB.main.notify = function(NotificationBoxPointer, Type, Message, FadeoutTi
 	};
 
 };
-// Deprecate the 3 functions below and use the one above
-// In: recipe.js, changepassword.js, usersettings.js, addrecipe.js, login.js
 
 RecipeDB.main.removeAlertClasses = function(DOMPointer) {
 	DOMPointer.removeClass("red-error-text yellow-warning-text green-success-text");

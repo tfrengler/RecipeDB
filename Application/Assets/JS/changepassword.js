@@ -93,6 +93,7 @@ RecipeDB.page.changePassword = function() {
 
 	$.ajax({
 		type: "post",
+		timeout: RecipeDB.main.constants.AJAX_TIMEOUT,
 		url: "Components/AjaxProxy.cfc",
 		data: {
 			method: "call",

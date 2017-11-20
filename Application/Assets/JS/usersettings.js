@@ -52,6 +52,7 @@ RecipeDB.page.saveChanges = function() {
 
 	$.ajax({
 		type: "post",
+		timeout: RecipeDB.main.constants.AJAX_TIMEOUT,
 		url: "Components/AjaxProxy.cfc",
 		data: {
 			method: "call",
@@ -78,6 +79,7 @@ RecipeDB.page.saveChanges = function() {
 			RecipeDB.main.notifyUserOfSuccess( MessageBox, "CHANGES CHANGED", 2000 );
 		},
 		complete: function() {
+			RecipeDB.main.transient.ajaxCallInProgress = false;
 			RecipeDB.main.ajaxLoadButton(false, $('#' + RecipeDB.page.constants.SAVE_BUTTON_ID));
 		}
 	});

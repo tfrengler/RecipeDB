@@ -10,7 +10,7 @@ RecipeDB.page.constants.LOGIN_FORM_ID = "Login-Form";
 
 RecipeDB.page.init = function() {
 
-	if ( document.querySelector("nav#side-menu") != null ) {
+	if ( document.querySelector("nav#side-menu") !== null ) {
 		window.location.replace("../Login.cfm");
 		return false;
 	};
@@ -38,6 +38,6 @@ RecipeDB.page.attemptLogin = function() {
 		return false;
 	};
 
-	RecipeDB.main.ajaxLoadButton(true, MessageBox);
+	RecipeDB.main.ajaxLoadButton(true, LoginButton);
 	document.getElementById(RecipeDB.page.constants.LOGIN_FORM_ID).submit();
 };

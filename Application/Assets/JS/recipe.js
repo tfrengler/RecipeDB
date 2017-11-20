@@ -157,8 +157,8 @@ RecipeDB.page.saveChanges = function() {
 	var RecipeDescription = tinyMCE.get(RecipeDB.page.constants.RECIPE_DESCRIPTION_EDIT_ID).getContent();
 	var RecipeIngredients = tinyMCE.get(RecipeDB.page.constants.RECIPE_INGREDIENTS_EDIT_ID).getContent();
 	var RecipeInstructions = tinyMCE.get(RecipeDB.page.constants.RECIPE_INSTRUCTIONS_EDIT_ID).getContent();
-	var RecipeTitle = document.getElementById(RecipeDB.page.constants.RECIPE_TITLE_EDIT_ID).value.trim();
-	var RecipeID = parseInt(document.getElementById(RecipeDB.page.constants.RECIPEID_ID).value);
+	var RecipeTitle = $("#" + RecipeDB.page.constants.RECIPE_TITLE_EDIT_ID).val().trim();
+	var RecipeID = parseInt($("#" + RecipeDB.page.constants.RECIPEID_ID).val());
 
 	var MessageBox = $("#" + RecipeDB.page.constants.NOTICATION_ELEMENT_ID);
 
@@ -177,6 +177,7 @@ RecipeDB.page.saveChanges = function() {
 
 	$.ajax({
 		type: "post",
+		timeout: RecipeDB.main.constants.AJAX_TIMEOUT,
 		url: "Components/AjaxProxy.cfc",
 		data: {
 			method: "call",
@@ -204,6 +205,7 @@ RecipeDB.page.saveChanges = function() {
 			RecipeDB.main.notifyUserOfLoading( MessageBox );
 		},
 		complete: function() {
+			RecipeDB.main.transient.ajaxCallInProgress = false;
 			RecipeDB.main.ajaxLoadIconButton(false, $('#' + RecipeDB.page.constants.SAVE_BUTTON_ID));
 		}
 	});	
@@ -242,6 +244,7 @@ RecipeDB.page.changePublicStatus = function() {
 	$.ajax({
 		type: "post",
 		url: "Components/AjaxProxy.cfc",
+		timeout: RecipeDB.main.constants.AJAX_TIMEOUT,
 		data: {
 			method: "call",
 			argumentCollection: JSON.stringify({
@@ -267,6 +270,7 @@ RecipeDB.page.changePublicStatus = function() {
 			RecipeDB.main.notifyUserOfLoading( MessageBox );
 		},
 		complete: function() {
+			RecipeDB.main.transient.ajaxCallInProgress = false;
 			RecipeDB.main.ajaxLoadInnerHTML(false, $('#' + RecipeDB.page.constants.PUBLISH_RECIPE_BUTTON_ID));
 		}
 	});	
@@ -312,6 +316,7 @@ RecipeDB.page.deleteRecipe = function() {
 
 	$.ajax({
 		type: "post",
+		timeout: RecipeDB.main.constants.AJAX_TIMEOUT,
 		url: "Components/AjaxProxy.cfc",
 		data: {
 			method: "call",
