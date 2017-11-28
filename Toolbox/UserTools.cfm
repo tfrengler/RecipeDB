@@ -18,7 +18,7 @@
 
 	<ul>
 		<li><a href="AddUser.cfm?token=#URL.token#" >Add user</a></li>
-		<li><a href="EditUser.cfm?token=#URL.token#" >Edit user</a></li>
+		<!--- <li><a href="EditUser.cfm?token=#URL.token#" >Edit user</a></li> --->
 		<li><a href="ListUsers.cfm?token=#URL.token#" >List users</a></li>
 	</ul>
 

@@ -19,7 +19,7 @@
 	<ul>
 		<li><a href="PatchNotes.cfm?token=#URL.token#" >Patch notes</a></li>
 		<li><a href="Roadmap.cfm?token=#URL.token#" >Roadmap</a></li>
-		<li><a href="Notfications.cfm?token=#URL.token#" >Notifications</a></li>
+		<!--- <li><a href="Notfications.cfm?token=#URL.token#" >Notifications</a></li> --->
 	</ul>
 
 </body>

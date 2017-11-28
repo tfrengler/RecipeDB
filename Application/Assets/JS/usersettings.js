@@ -34,13 +34,7 @@ RecipeDB.page.saveChanges = function() {
 
 	if (NotificationMessage.length > 0) {
 
-		RecipeDB.main.removeAlertClasses(MessageBox);
-		MessageBox.addClass("red-error-text");
-
-		MessageBox.html(NotificationMessage);
-		MessageBox.fadeIn(1000);
-		MessageBox.delay(2000).fadeOut();
-
+		RecipeDB.main.notifyUserOfError( MessageBox, NotificationMessage, 2000 );
 		return false;
 	};
 
@@ -76,7 +70,7 @@ RecipeDB.page.saveChanges = function() {
 		},
 		success: function() {
 			var MessageBox = $("#" + RecipeDB.page.constants.NOTIFICATION_BOX_ID);
-			RecipeDB.main.notifyUserOfSuccess( MessageBox, "CHANGES CHANGED", 2000 );
+			RecipeDB.main.notifyUserOfSuccess( MessageBox, "CHANGES SAVED", 2000 );
 		},
 		complete: function() {
 			RecipeDB.main.transient.ajaxCallInProgress = false;

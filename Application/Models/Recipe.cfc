@@ -148,6 +148,7 @@
 		<cfset variables.onStatic() />
 
 		<cfset var UpdateRecipe = queryNew("") />
+		<cfset setDateTimeLastModified(Date=createODBCDateTime(now())) />
 		
 		<cftransaction action="begin" >
 			<cftry>

@@ -40,6 +40,11 @@
 			<i class="fa fa-book fa-fw dark-green-text-color"></i>
 			Planned changes
 		</a></li>
+
+		<li><a id="About" href="About.cfm" >
+			<i class="fa fa-question-circle fa-fw dark-green-text-color"></i>
+			About / FAQ
+		</a></li>
 	</ul>
 </nav>
 

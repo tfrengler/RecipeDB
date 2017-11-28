@@ -22,15 +22,16 @@
 		<li><a href="DBInspection.cfm?token=#URL.token#" >DB Inspection</a></li>
 		<li><a href="DBHealthCheck.cfm?token=#URL.token#" >DB Health Check</a></li>
 		<li><a href="DBStructureChart.cfm?token=#URL.token#" >DB Structure Chart</a></li>
+		<li><a href="ListRecipes.cfm?token=#URL.token#" >List of recipes</a></li>
 	</ul>
 
-	<h3>Table manipulation</h3>
+	<!--- <h3>Table manipulation</h3>
 
 	<ul>
 		<li><a href="" >Add/remove table</a></li>
 		<li><a href="" >Add/remove column(s)</a></li>
 		<li><a href="" >Edit column(s)</a></li>
-	</ul>
+	</ul> --->
 
 </body>
 

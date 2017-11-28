@@ -40,7 +40,7 @@ RecipeDB.page.init = function() {
 	this.setSectionDimensions();
 
 	$( "[name='" + this.constants.SECTION_HEADERS_NAME + "']" ).click(function() {
-		this.openCloseSection(this)
+		RecipeDB.page.openCloseSection(this)
 	});
 	$(document).resize(this.onResize);
 
@@ -281,22 +281,23 @@ RecipeDB.page.onChangedPublicStatusSuccess = function() {
 
 	var MessageBox = $("#" + RecipeDB.page.constants.NOTICATION_ELEMENT_ID);
 	var PublishedStatusElement = $("#" + RecipeDB.page.constants.PUBLISHED_STATUS_ID);
+	var Message = "";
 
-	if (PublishedStatusElement.attr("class") === "true") {
+	if (PublishedStatusElement.attr("data-published") === "true") {
 
-		PublishedStatusElement.removeClass();
-		PublishedStatusElement.addClass("false");
+		PublishedStatusElement.attr("data-published", "false")
 		PublishedStatusElement.text("no");
+		Message = "RECIPE IS NOW PRIVATE";
 
 	} else {
 
-		PublishedStatusElement.removeClass();
-		PublishedStatusElement.addClass("true");
+		PublishedStatusElement.attr("data-published", "true")
 		PublishedStatusElement.text("yes");
+		Message = "RECIPE IS NOW PUBLIC";
 
 	};
 
-	RecipeDB.main.notifyUserOfSuccess( MessageBox, "VISIBILITY CHANGED", 2000 );
+	RecipeDB.main.notifyUserOfSuccess( MessageBox, Message, 2000 );
 };
 
 RecipeDB.page.deleteRecipe = function() {

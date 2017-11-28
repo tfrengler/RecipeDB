@@ -38,6 +38,13 @@
 	<cffunction name="onRequestStart" returnType="boolean" output="false" >
 		<cfargument type="string" name="targetPage" required=true />
 
+		<!--- For force refreshing static content programmatically, rather than using Shift + F5 or similar means --->
+		<cfif structKeyExists(URL, "Refresh") >
+			<cfheader name="Cache-Control" value="no-cache, no-store, must-revalidate" />
+			<cfheader name="Pragma" value="no-cache" />
+			<cfheader name="Expires" value="0" />
+		</cfif>
+
 		<!--- For testing purposes, this nukes the session and restarts the application --->
 		<cfif structKeyExists(URL, "Restart") >
 

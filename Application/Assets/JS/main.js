@@ -166,6 +166,7 @@ RecipeDB.main.notify = function(NotificationBoxPointer, Type, Message, FadeoutTi
 		ajax: "yellow-warning-text ajax-loading"
 	};
 
+	NotificationBoxPointer.hide();
 	this.removeAlertClasses(NotificationBoxPointer);
 	NotificationBoxPointer.removeClass("ajax-loading");
 

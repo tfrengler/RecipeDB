@@ -45,13 +45,13 @@ RecipeDB.page.init = function() {
 						"sort":"sortdata"
 					}
 				},
-				{
+			/*	{
 					"data":"LASTMODIFIEDBYUSER",
 					"render":{  
 						_:"display",
 						"sort":"sortdata"
 					}
-				},
+				},	*/
 				{
 					"data":"DATETIMELASTMODIFIED",
 					"render":{  

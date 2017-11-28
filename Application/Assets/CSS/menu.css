@@ -52,13 +52,6 @@
 	text-align: center;
 }
 
-/*#Open-Menu-Button {
-	position: fixed;
-	top: 0;
-	left: 0;
-	z-index: 90;
-}*/
-
 #Close-Menu-Button:hover, #Open-Menu-Button:hover, a {
 	cursor: pointer;
 }
