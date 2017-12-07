@@ -260,7 +260,7 @@ RecipeDB.page.changePublicStatus = function() {
 		dataType: "json",
 
 		success: function(ResponseData) {
-			RecipeDB.page.onChangedPublicStatusSuccess();
+			RecipeDB.page.onChangedPublicStatusSuccess(ResponseData.data);
 		},
 		error: function() {
 			RecipeDB.main.onAJAXCallError(arguments);
@@ -277,27 +277,33 @@ RecipeDB.page.changePublicStatus = function() {
 
 };
 
-RecipeDB.page.onChangedPublicStatusSuccess = function() {
+RecipeDB.page.onChangedPublicStatusSuccess = function(NewStatus) {
 
-	var MessageBox = $("#" + RecipeDB.page.constants.NOTICATION_ELEMENT_ID);
 	var PublishedStatusElement = $("#" + RecipeDB.page.constants.PUBLISHED_STATUS_ID);
+	var MessageBox = $("#" + RecipeDB.page.constants.NOTICATION_ELEMENT_ID);
 	var Message = "";
 
-	if (PublishedStatusElement.attr("data-published") === "true") {
+	if (NewStatus === false) {
 
-		PublishedStatusElement.attr("data-published", "false")
 		PublishedStatusElement.text("no");
 		Message = "RECIPE IS NOW PRIVATE";
 
-	} else {
+	} 
+	else if (NewStatus === true) {
 
-		PublishedStatusElement.attr("data-published", "true")
 		PublishedStatusElement.text("yes");
 		Message = "RECIPE IS NOW PUBLIC";
 
-	};
+	}
+	else {
+		PublishedStatusElement.text("yes");
+		Message = "RECIPE STATUS IS UNKNOWN";
+		RecipeDB.main.notifyUserOfError( MessageBox, Message, 2000 );
+		return false;
+	}
 
 	RecipeDB.main.notifyUserOfSuccess( MessageBox, Message, 2000 );
+	return true;
 };
 
 RecipeDB.page.deleteRecipe = function() {

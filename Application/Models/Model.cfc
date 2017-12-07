@@ -257,14 +257,12 @@
 
 					<cftransaction action="rollback" />
 					<cfthrow object="#cfcatch#" />
-					<cfreturn false />
 
 				</cfcatch>
 			</cftry>
 		</cftransaction>
 
 		<cfset variables.IsStatic = true />
-		<cfreturn true />
 	</cffunction>
 
 	<cffunction name="exists" returntype="boolean" access="public" output="false" hint="" >

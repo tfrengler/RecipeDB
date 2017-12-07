@@ -38,25 +38,26 @@ RecipeDB.main.onAJAXCallError = function(AjaxResponse) {
 	console.warn(AjaxResponse[0]);
 };
 
-RecipeDB.main.onJavascriptError = function(CatchObject, MethodName) {
-	
+RecipeDB.main.onJavascriptError = function(ErrorContent, MethodName) {
+
 	var MainContentContainer = $("#" + RecipeDB.main.constants.MAINCONTENT_CONTAINER_ID);
 	var MessageBox = $("#Notification-Box");
+	var DebugOutput = "";
+	var FriendlyErrorMessage = "Ooops, something went wrong! A team of highly trained monkeys has been dispatched to deal with the situation. If you see them tell them what you did when this happened."
+
+	if (typeof ErrorContent === "object") {
+		DebugOutput = JSON.stringify(ErrorContent);
+	};
 
 	if (RecipeDB.main.debug) {
-		MainContentContainer.html( "<code>" + CatchObject + "</code>" );
-	} else {
-	
-		RecipeDB.main.removeAlertClasses(MessageBox);
-		MessageBox.removeClass("ajax-loading");
-		MessageBox.addClass("red-error-text");
+		RecipeDB.main.notifyUserOfError( MessageBox, DebugOutput, 0 );
 
-		MessageBox.html("Ooops, something went wrong. Sorry about that! A team of highly trained monkeys has been dispatched to deal with the situation. If you see them tell them what you did when this happened.");
-		MessageBox.fadeIn(1000);
+	} else {
+		RecipeDB.main.notifyUserOfError( MessageBox, FriendlyErrorMessage, 0 );
 	};
 
 	console.warn("onJavascriptError triggered by " + MethodName);
-	console.warn(CatchObject);
+	console.warn(ErrorContent);
 };
 
 RecipeDB.main.ajaxLoadButton = function(Enable, DOMPointer, Value) {
@@ -185,6 +186,15 @@ RecipeDB.main.notify = function(NotificationBoxPointer, Type, Message, FadeoutTi
 
 };
 
+RecipeDB.main.onNavigate = function() {
+	var NotificationBox = $(".notification-box");
+	var Message = "<i class='fa fa-cog fa-spin'></i> LOADING";
+
+	if (NotificationBox.length > 0) {
+		RecipeDB.main.notify(NotificationBox, "success", Message);
+	};
+};
+
 RecipeDB.main.removeAlertClasses = function(DOMPointer) {
 	DOMPointer.removeClass("red-error-text yellow-warning-text green-success-text");
 };
@@ -222,6 +232,7 @@ RecipeDB.main.removeDialog = function() {
 };
 
 RecipeDB.main.init = function() {
+	// $("a").click(RecipeDB.main.onNavigate);
 
 	/* Polyfill for Number.isNan(), which is not supported by IE */
 	if (Number.isNan === "undefined") {

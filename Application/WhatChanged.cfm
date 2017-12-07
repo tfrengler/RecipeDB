@@ -12,11 +12,18 @@
 		<body class="roboto-font" >
 			<cfinclude template="Views/Menu.cfm" />
 
+
 			<section id="MainContent" class="container-fluid" >
-				<cfmodule template="Views/PatchNotes.cfm" attributecollection=#viewData.data# >
+
+				<cfif viewData.statuscode IS 0 >
+					<cfmodule template="Views/PatchNotes.cfm" attributecollection=#viewData.data# >
+				<cfelse>
+					<cfinclude template="Views/Error.cfm?ErrorCode=#viewData.statuscode#" />
+				</cfif>	
+
 			</section>
 
-			<div id="Notification-Box" class="notification-box col-lg-2 col-lg-offset-5 col-sm-4 col-sm-offset-4" ></div>
+			<div id="Notification-Box" class="notification-box bottom-fixed-center col-lg-2 col-lg-offset-5 col-sm-4 col-sm-offset-4" ></div>
 		</body>
 	</html>
 

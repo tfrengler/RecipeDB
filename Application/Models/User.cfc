@@ -176,11 +176,11 @@
 			<cfset NewPasswordHashed = arguments.SecurityManager.getHashedString( StringData=NewPassword ) />
 			<cfset NewFinalPassword = arguments.SecurityManager.getHashedString( StringData=(NewPasswordHashed & NewPasswordSalt) ) />
 
-			<cfset setPassword( Password=NewFinalPassword ) />
-			<cfset setPasswordSalt( Salt=NewPasswordSalt ) />
+			<cfset variables.setPassword( Password=NewFinalPassword ) />
+			<cfset variables.setPasswordSalt( Salt=NewPasswordSalt ) />
 
 		<cfelse>
-			<cfset setTempPassword( Password=NewPassword ) />
+			<cfset variables.setTempPassword( Password=NewPassword ) />
 		</cfif>
 	</cffunction>
 
@@ -211,15 +211,15 @@
 		<cfset variables.onStatic() />
 
 		<cfset var CurrentLoginCount = getTimesLoggedIn() />
-		<cfset setTimesLoggedIn( Count=CurrentLoginCount+1 ) />
+		<cfset variables.setTimesLoggedIn( Count=CurrentLoginCount+1 ) />
 
-		<cfset setDateTimePreviousLogin( Date=getDateTimeLastLogin() ) />
+		<cfset variables.setDateTimePreviousLogin( Date=getDateTimeLastLogin() ) />
 
-		<cfset setDateTimeLastLogin( Time=createODBCDateTime(now()) ) />
-		<cfset setBrowserLastUsed( UserAgentString=arguments.UserAgentString ) />
+		<cfset variables.setDateTimeLastLogin( Time=createODBCDateTime(now()) ) />
+		<cfset variables.setBrowserLastUsed( UserAgentString=arguments.UserAgentString ) />
 	</cffunction>
 
-	<cffunction name="save" returntype="boolean" access="public" output="false" hint="Persists the current state of the user to the db" >
+	<cffunction name="save" returntype="void" access="public" output="false" hint="Persists the current state of the user to the db" >
 
 		<cfset variables.onStatic() />
 
@@ -246,13 +246,11 @@
 
 				<cftransaction action="commit" />
 
-				<cfset load() />
-				<cfreturn true />
+				<cfset variables.load() />
 			<cfcatch>
 
 				<cftransaction action="rollback" />
 				<cfthrow object="#cfcatch#" />
-				<cfreturn false />
 
 			</cfcatch>
 			</cftry>
@@ -279,7 +277,7 @@
 
 		<cfset var CreateUser = queryNew("") />
 
-		<cfset setDateCreated( Date=createODBCdate(now()) ) />
+		<cfset variables.setDateCreated( Date=createODBCdate(now()) ) />
 
 		<cftransaction action="begin" >
 			<cftry>
@@ -327,7 +325,7 @@
 		) />
 	</cffunction>
 
-	<cffunction name="load" returntype="boolean" access="private" output="false" hint="Fills the instance with data from the db." >
+	<cffunction name="load" returntype="void" access="private" output="false" hint="Fills the instance with data from the db." >
 
 		<cfset var UserData = queryNew("") />
 
@@ -338,22 +336,19 @@
 		</cfquery>
 
 		<cfif UserData.RecordCount GT 0 >
-			<cfset setDateCreated( Date=UserData.DateCreated ) />
-			<cfset setDateTimeLastLogin( Time=UserData.DateTimeLastLogin ) />
-			<cfset setPassword( Password=UserData.Password ) />
-			<cfset setPasswordSalt( Salt=UserData.PasswordSalt ) />
-			<cfset setTempPassword( Password=UserData.TempPassword ) />
-			<cfset setUserName( Name=UserData.UserName ) />
-			<cfset setDisplayName( Name=UserData.DisplayName ) />
-			<cfset setTimesLoggedIn( Count=UserData.TimesLoggedIn ) />
-			<cfset setBrowserLastUsed( UserAgentString=UserData.BrowserLastUsed ) />
-			<cfset setBlocked( Blocked=UserData.Blocked ) />
+			<cfset variables.setDateCreated( Date=UserData.DateCreated ) />
+			<cfset variables.setDateTimeLastLogin( Time=UserData.DateTimeLastLogin ) />
+			<cfset variables.setPassword( Password=UserData.Password ) />
+			<cfset variables.setPasswordSalt( Salt=UserData.PasswordSalt ) />
+			<cfset variables.setTempPassword( Password=UserData.TempPassword ) />
+			<cfset variables.setUserName( Name=UserData.UserName ) />
+			<cfset variables.setDisplayName( Name=UserData.DisplayName ) />
+			<cfset variables.setTimesLoggedIn( Count=UserData.TimesLoggedIn ) />
+			<cfset variables.setBrowserLastUsed( UserAgentString=UserData.BrowserLastUsed ) />
+			<cfset variables.setBlocked( Blocked=UserData.Blocked ) />
 		<cfelse>
 			<cfthrow message="Error when loading user data. There appears to be no userdata with this #getTableKey()#: #getID()#" />
-			<cfreturn false />
 		</cfif>
-
-		<cfreturn true />
 	</cffunction>
 
 	<cffunction name="init" access="public" returntype="Models.User" output="false" hint="Constructor, returns an initialized user who is by default blocked." >
