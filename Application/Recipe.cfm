@@ -1,6 +1,8 @@
 <cfprocessingdirective pageEncoding="utf-8" />
 
 <cftry>
+	<cfparam name="URL.RecipeID" type="numeric" default="0" />
+
 	<cfset viewData = createObject("component", "Controllers.Recipes").getRecipeView(
 		recipeID=URL.RecipeID,
 		currentUser=session.currentUser
@@ -16,31 +18,21 @@
 
 			<div id="MainContent" class="container-fluid" >
 
-				<cfif viewData.statuscode IS 1 >
-
-					<div id="Error-Box" style="display: block" class="notification-box red-error-text top-fixed-center col-lg-2" >
+				<cfif viewData.status IS "NOK" AND viewData.errorcode IS 1 >
+					<div id="Notification-Box" style="display: block" class="notification-box red-error-text top-fixed-center col-lg-2" >
 						Sorry, we can't let you access this recipe. It's not published or it doesn't belong to you.
 					</div>
-
-				<cfelseif viewData.statuscode IS 2 >
-
-					<div id="Error-Box" style="display: block" class="notification-box red-error-text top-fixed-center col-lg-2" >
+				<cfelseif viewData.status IS "NOK" AND viewData.errorcode IS 2 >
+					<div id="Notification-Box" style="display: block" class="notification-box red-error-text top-fixed-center col-lg-2" >
 						We are very sorry, but we can't find a recipe for you with ID <cfoutput>#URL.RecipeID#</cfoutput>. Either it never existed or it has been deleted.
 					</div>
-
-				<cfelseif viewData.statuscode IS 3 >
-
-					<div id="Error-Box" style="display: block" class="notification-box red-error-text top-fixed-center col-lg-2" >
-						Sorry, but the RecipeID we received was 0 or less. That isn't supposed to be able to happen...
-					</div>
-
-				<cfelseif viewData.statuscode IS 0 >
+				<cfelse >
 					<cfmodule template="Views/Recipe.cfm" attributecollection=#viewData.data# >
 				</cfif>
 
 			</div>
 
-			<div id="Notification-Box" class="notification-box top-fixed-center col-lg-2 col-sm-4" ></div>
+			<div id="Notification-Box" class="notification-box bottom-fixed-center col-lg-2 col-sm-4" ></div>
 		</body>
 	</html>
 

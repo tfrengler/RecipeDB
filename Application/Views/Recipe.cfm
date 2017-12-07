@@ -133,13 +133,13 @@
 					<p><b>Created by:</b> #encodeForHTML(attributes.CreatedByUserName)#</p>
 					<p><b>Created on:</b> #LSDateFormat(attributes.DateCreated, "dd-mm-yyyy")#</p>
 					<!--- <p><b>Modified by:</b> #encodeForHTML(attributes.LastModifiedByUser)#</p> --->
-					<p><b>Last modified:</b> <span id="LastModifiedTime-Status" >#LSDateTimeFormat(attributes.DateTimeLastModified, "dd-mm-yyyy HH:nn:ss")#</span></p>
+					<p><b>Last modified:</b> #LSDateTimeFormat(attributes.DateTimeLastModified, "dd-mm-yyyy HH:nn:ss")#</p>
 					<p>
 						<b>Visible to other users:</b>
 						<cfif attributes.Published >
-							<span id="Published-Status" >yes</span>
+							<span id="Published-Status" data-published="true" >yes</span>
 						<cfelse>
-							<span id="Published-Status" >no</span>
+							<span id="Published-Status" data-published="false" >no</span>
 						</cfif>
 					</p>
 				</div>

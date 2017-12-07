@@ -31,28 +31,18 @@
 		<br/><br/>
 		A team of highly trained monkeys has been dispatched to deal with the situation.
 		<br>
-		If you see them, show them the information below the line.
-		<br/><br/>
-		Click <a href="##" onclick="window.history.go(-1)" >here</a> to go back.
+		If you see them, show them this information:
 	</section>
 	<hr/>
 	<code>
-		
-		<cfif isDefined("cfcatch") >
-
-			<div><u>MESSAGE:</u> #left(cfcatch.message, 200)#</div>
-			<div><u>DETAIL:</u> #cfcatch.detail#</div>
-			<br/>
-			<div><u>STACKTRACE:</u></div>
-			<cfloop array=#cfcatch.TagContext# index="currentContext" >
-				<div>#currentContext.codePrintHTML#</div>
-				<div>#currentContext.Raw_Trace#</div>
-			</cfloop>
-
-		<cfelse>
-			<div><u>GOBLIN ENGINEERING CODE:</u> 42</div>
-		</cfif>
-
+		<div><u>MESSAGE:</u> #left(cfcatch.message, 100)#</div>
+		<div><u>DETAIL:</u> #cfcatch.detail#</div>
+		<br/>
+		<div><u>STACKTRACE:</u></div>
+		<cfloop array=#cfcatch.TagContext# index="currentContext" >
+			<div>#currentContext.codePrintHTML#</div>
+			<div>#currentContext.Raw_Trace#</div>
+		</cfloop>
 	</code>
 </div>
 

@@ -50,21 +50,14 @@
 			
 			if (RecipeDB.page !== undefined) {
 				RecipeDB.page.init();
-			} else {
-				console.log("No page JS to init");
 			};
 			
 			<cfif attributes.includeMenu >
 				RecipeDB.menu.init();
-			<cfelse>
-				console.log("No menu to init");
 			</cfif>
 
 			<cfif isUserInRole("Admin") >
 				RecipeDB.main.debug = true;
-				console.log("Debugging is ON");
-			<cfelse>
-				console.log("Debugging is OFF");
 			</cfif>
 		});
 	</script>

@@ -80,8 +80,6 @@
 					<cfloop list=#TableColumnsList# index="CurrentColumnName" >
 						<cfif findNoCase("{ts", AllRecipes[CurrentColumnName]) GT 0 >
 							<td>#LSDateTimeFormat(AllRecipes[CurrentColumnName], "dd-mm-yyyy HH:nn:ss")#</td>
-						<cfelseif listFind("ingredients,instructions,description", CurrentColumnName) >
-							<td><textarea>#encodeForHTML(AllRecipes[CurrentColumnName])#</textarea>
 						<cfelse> 
 							<td>#encodeForHTML(AllRecipes[CurrentColumnName])#</td>
 						</cfif>
