@@ -143,12 +143,12 @@
 
 	<!--- Methods --->
 
-	<cffunction name="save" returntype="boolean" access="public" output="false" hint="Persists the current state of the recipe to the db." >
+	<cffunction name="save" returntype="void" access="public" output="false" hint="Persists the current state of the recipe to the db." >
 
 		<cfset variables.onStatic() />
 
 		<cfset var UpdateRecipe = queryNew("") />
-		<cfset setDateTimeLastModified(Date=createODBCDateTime(now())) />
+		<cfset variables.setDateTimeLastModified(Date=createODBCDateTime(now())) />
 		
 		<cftransaction action="begin" >
 			<cftry>
@@ -170,12 +170,10 @@
 				</cfquery>
 
 				<cftransaction action="commit" />
-				<cfreturn true />
 			<cfcatch>
 
 				<cftransaction action="rollback" />
 				<cfthrow object="#cfcatch#" />
-				<cfreturn false />
 
 			</cfcatch>
 			</cftry>
@@ -254,7 +252,7 @@
 		) />
 	</cffunction>
 
-	<cffunction name="load" returntype="boolean" access="private" output="false" hint="Fills this objects instance with data from the db" >
+	<cffunction name="load" returntype="void" access="private" output="false" hint="Fills this objects instance with data from the db" >
 
 		<cfset var GetRecipeData = queryNew("") />
 		<cfset var RecipeOwner = "" />
@@ -266,18 +264,17 @@
 		</cfquery>
 
 		<cfif GetRecipeData.RecordCount GT 0 >
-			<cfset setDateCreated( Date=GetRecipeData.DateCreated ) />
-			<cfset setDateTimeLastModified( Date=GetRecipeData.DateTimeLastModified ) />
-			<cfset setIngredients( Data=GetRecipeData.Ingredients ) />
-			<cfset setDescription( Data=GetRecipeData.Description ) />
-			<cfset setPicture( ID=GetRecipeData.Picture ) />
-			<cfset setInstructions( Data=GetRecipeData.Instructions ) />
-			<cfset setName( Data=GetRecipeData.Name ) />
-			<cfset setPublished( status=GetRecipeData.Published ) />
+			<cfset variables.setDateCreated( Date=GetRecipeData.DateCreated ) />
+			<cfset variables.setDateTimeLastModified( Date=GetRecipeData.DateTimeLastModified ) />
+			<cfset variables.setIngredients( Data=GetRecipeData.Ingredients ) />
+			<cfset variables.setDescription( Data=GetRecipeData.Description ) />
+			<cfset variables.setPicture( ID=GetRecipeData.Picture ) />
+			<cfset variables.setInstructions( Data=GetRecipeData.Instructions ) />
+			<cfset variables.setName( Data=GetRecipeData.Name ) />
+			<cfset variables.setPublished( status=GetRecipeData.Published ) />
 
 		<cfelse>
 			<cfthrow message="Error when loading recipe data. There appears to be no recipe with this #getTableKey()#: #getID()#" />
-			<cfreturn false />
 		</cfif>
 
 		<cfset RecipeOwner = createObject("component", "Models.User").init( 
@@ -285,13 +282,13 @@
 			Datasource=getDatasource()
 		) />
 
-		<cfset setCreatedByUser( UserInstance=RecipeOwner ) />
+		<cfset variables.setCreatedByUser( UserInstance=RecipeOwner ) />
 
 		<cfif GetRecipeData.LastModifiedByUser IS GetRecipeData.CreatedByUser >
-			<cfset setLastModifiedByUser( UserInstance=RecipeOwner ) />
+			<cfset variables.setLastModifiedByUser( UserInstance=RecipeOwner ) />
 		<cfelse>
 
-			<cfset setLastModifiedByUser( 
+			<cfset variables.setLastModifiedByUser( 
 				UserInstance = createObject("component", "Models.User").init( 
 					ID=GetRecipeData.LastModifiedByUser,
 					Datasource=getDatasource()
@@ -299,8 +296,6 @@
 			) />
 
 		</cfif>
-
-		<cfreturn true />
 	</cffunction>
 
 	<cffunction name="init" access="public" returntype="Models.Recipe" output="false" hint="Constructor, returns an initialized recipe." >

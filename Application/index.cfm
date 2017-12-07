@@ -26,7 +26,7 @@
 					</section>
 			</section>
 
-			<div id="Notification-Box" class="notification-box col-lg-2 col-lg-offset-5" ></div>
+			<div id="Notification-Box" class="notification-box top-fixed-center col-lg-2 col-lg-offset-5 col-sm-4 col-sm-offset-4" ></div>
 		</body>
 	</html>
 

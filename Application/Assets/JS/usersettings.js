@@ -69,8 +69,7 @@ RecipeDB.page.saveChanges = function() {
 			RecipeDB.main.onAJAXCallError(arguments);
 		},
 		success: function() {
-			var MessageBox = $("#" + RecipeDB.page.constants.NOTIFICATION_BOX_ID);
-			RecipeDB.main.notifyUserOfSuccess( MessageBox, "CHANGES SAVED", 2000 );
+			RecipeDB.page.onChangesSaved(arguments[0])
 		},
 		complete: function() {
 			RecipeDB.main.transient.ajaxCallInProgress = false;
@@ -79,4 +78,18 @@ RecipeDB.page.saveChanges = function() {
 	});
 
 	return true;
+};
+
+RecipeDB.page.onChangesSaved = function(ControllerResponse) {
+	var MessageBox = $("#" + RecipeDB.page.constants.NOTIFICATION_BOX_ID);
+
+	if (ControllerResponse.statuscode === 0) {
+		RecipeDB.main.notifyUserOfSuccess( MessageBox, "CHANGES SAVED", 2000 );
+	}
+	else if (ControllerResponse.statuscode === 2) {
+		RecipeDB.main.notifyUserOfWarning( MessageBox, "THERE'S ALREADY ANOTHER USER WITH THE USERNAME YOU CHOSE", 4000 );
+	}
+	else if (ControllerResponse.statuscode === 1) {
+		RecipeDB.main.onJavascriptError(ControllerResponse, "RecipeDB.page.onChangesSaved");
+	} 
 };
