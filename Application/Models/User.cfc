@@ -372,10 +372,8 @@
 		<cfset variables.load() />
 
 		<cfset variables.IsStatic = false />
-		<cfset var NewInstance = duplicate(this) />
-		<cfset variables.IsStatic = true />
 
-		<cfreturn NewInstance />
+		<cfreturn this />
 	</cffunction>
 
 </cfcomponent>

@@ -10,10 +10,6 @@
 
 	<!--- Define these in the child CFC
 
-	<cfset TableName = "" /> The table name this component models its data on
-	<cfset TableKey = "" /> The primary key of the table
-	<cfset TableColumns = "" /> Comma delimited list of all the table columns without the primary key
-
 	When adding new DB columns to a model don't forget to:
 	- Add the variable at the top with a blank default value
 	- Add getter and setter methods as appropriate
@@ -240,7 +236,7 @@
 		<cfreturn ObjectData />
 	</cffunction>
 
-	<cffunction name="delete" returntype="boolean" access="public" output="false" hint="Delete the db data belonging to this object instance" >
+	<cffunction name="delete" returntype="void" access="public" output="false" hint="Delete the db data belonging to this object instance" >
 		<cfset variables.onStatic() />
 
 		<cftransaction action="begin" >

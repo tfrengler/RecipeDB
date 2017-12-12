@@ -89,9 +89,12 @@
 			datasource="#application.settings.datasource#"
 		) />
 
+		<!--- If a user tries to change their username and it happens to already exist we need to inform them --->
 		<cfif session.CurrentUser.getUsername() NEQ arguments.NewUserName AND UserSearch.RecordCount GT 0 >
+
 			<cfset returnData.statuscode = 2 />
 			<cfreturn returnData />
+
 		</cfif>
 
 		<cfif session.CurrentUser.getDisplayName() NEQ arguments.NewDisplayName >

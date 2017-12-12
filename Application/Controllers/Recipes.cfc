@@ -12,7 +12,6 @@
 
  		<cfif arguments.recipeID LTE 0 >
 
- 			<cfheader statuscode="500" />
  			<cfset returnData.statuscode = 3 />
 			<cfreturn returnData />
 
@@ -22,7 +21,6 @@
 
 		<cfif RecipeInterface.exists(ID=arguments.recipeID, Datasource=application.settings.datasource) IS false >
 
-			<cfheader statuscode="500" />
 			<cfset returnData.statuscode = 2 />
 			<cfreturn returnData />
 
@@ -36,7 +34,6 @@
 		<cfif Recipe.getCreatedByUser().getId() IS NOT arguments.currentUser.getId() >
 			<cfif Recipe.getPublished() IS false >
 
-				<cfheader statuscode="500" />
 				<cfset returnData.statuscode = 1 />
 				<cfreturn returnData />
 
@@ -199,6 +196,14 @@
  			data: ""
  		} />
 
+ 		<cfif arguments.RecipeID LTE 0 >
+
+ 			<cfheader statuscode="500" />
+ 			<cfset returnData.statuscode = 1 />
+ 			<cfreturn returnData />
+
+ 		</cfif>
+
 		<cfset var Recipe = createObject("component", "Models.Recipe").init( 
 			ID=arguments.RecipeID,
 			Datasource=application.Settings.Datasource
@@ -211,6 +216,9 @@
 
 		<cfset Recipe.setDateTimeLastModified(Date=createODBCdatetime(now())) />
 		<cfset Recipe.setLastModifiedByUser(UserInstance=session.currentUser) />
+
+		<cfset Recipe.save() />
+		<cfset returnData.data = LSDateTimeFormat(Recipe.getDateTimeLastModified(), "dd-mm-yyyy HH:nn:ss") />
 
 		<cfreturn returnData />
 	</cffunction>
@@ -242,12 +250,13 @@
 		<cfreturn returnData />
 	</cffunction>
 
+	<!--- AJAX METHOD --->
 	<cffunction name="deleteRecipe" access="public" returntype="struct" returnformat="JSON" output="true" hint="" >
 		<cfargument name="recipeID" type="numeric" required="true" />
 
 		<cfset var returnData = {
  			statuscode: 0,
- 			data: structNew()
+ 			data: ""
  		} />
 
 		<cfset var Recipe = createObject("component", "Models.Recipe").init( 

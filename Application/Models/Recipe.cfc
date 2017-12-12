@@ -1,4 +1,4 @@
-<cfcomponent output="true" extends="Model" >
+<cfcomponent output="false" extends="Model" >
 <cfprocessingdirective pageEncoding="utf-8"  />
 
 	<cfset RecipeID = 0 />
@@ -319,10 +319,8 @@
 		<cfset variables.load() />
 
 		<cfset variables.IsStatic = false />
-		<cfset var NewInstance = duplicate(this) />
-		<cfset variables.IsStatic = true />
 
-		<cfreturn NewInstance />
+		<cfreturn this />
 	</cffunction>
 
 </cfcomponent>

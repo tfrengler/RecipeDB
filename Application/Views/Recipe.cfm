@@ -134,14 +134,17 @@
 					<p><b>Created on:</b> #LSDateFormat(attributes.DateCreated, "dd-mm-yyyy")#</p>
 					<!--- <p><b>Modified by:</b> #encodeForHTML(attributes.LastModifiedByUser)#</p> --->
 					<p><b>Last modified:</b> <span id="LastModifiedTime-Status" >#LSDateTimeFormat(attributes.DateTimeLastModified, "dd-mm-yyyy HH:nn:ss")#</span></p>
-					<p>
-						<b>Visible to other users:</b>
-						<cfif attributes.Published >
-							<span id="Published-Status" >yes</span>
-						<cfelse>
-							<span id="Published-Status" >no</span>
-						</cfif>
-					</p>
+					
+					<cfif attributes.CreatedByUserID EQ session.CurrentUser.getID() >
+						<p>
+							<b>Visible to other users:</b>
+							<cfif attributes.Published >
+								<span id="Published-Status" >yes</span>
+							<cfelse>
+								<span id="Published-Status" >no</span>
+							</cfif>
+						</p>
+					</cfif>
 				</div>
 
 			</div>
