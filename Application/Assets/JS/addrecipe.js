@@ -18,7 +18,7 @@ RecipeDB.page.addNewRecipe = function() {
 	var MessageBox = $("#" + RecipeDB.page.constants.MESSAGEBOX_ID);
 
 	if (RecipeName.trim().length === 0) {
-		RecipeDB.main.notifyUserOfError(MessageBox, "Please give the recipe a name", 2000);
+		RecipeDB.main.notifyUserOfError(MessageBox, "THE NAME OF THE NEW RECIPE CANNOT BE EMPTY", 4000);
 		return false;
 	};
 

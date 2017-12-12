@@ -35,6 +35,7 @@ RecipeDB.page.constants.EDIT_SECTION_NAME = "EditSection";
 RecipeDB.page.constants.PUBLISH_RECIPE_BUTTON_ID = "Publish-Recipe-Button";
 RecipeDB.page.constants.PUBLISHED_STATUS_ID = "Published-Status";
 RecipeDB.page.constants.DELETE_RECIPE_BUTTON = "Delete-Recipe-Button";
+RecipeDB.page.constants.LAST_MODIFIED_TIME_STATUS_ID = "LastModifiedTime-Status";
 
 RecipeDB.page.init = function() {
 	this.setSectionDimensions();
@@ -132,7 +133,8 @@ RecipeDB.page.enableEditing = function() {
 		{
 			selector: "textarea",
 			plugins: "paste,lists,code",
-			paste_as_text: true
+			paste_as_text: true,
+			hidden_input: false
 		}
 	);
 
@@ -194,8 +196,8 @@ RecipeDB.page.saveChanges = function() {
 
 		dataType: "json",
 
-		success: function(ResponseData) {
-			RecipeDB.page.onSavedChangesSuccess();
+		success: function() {
+			RecipeDB.page.onSavedChangesSuccess(arguments[0]);
 		},
 		error: function() {
 			RecipeDB.main.onAJAXCallError(arguments);
@@ -211,7 +213,7 @@ RecipeDB.page.saveChanges = function() {
 	});	
 };
 
-RecipeDB.page.onSavedChangesSuccess = function() {
+RecipeDB.page.onSavedChangesSuccess = function(ResponseData) {
 	var MessageBox = $("#" + RecipeDB.page.constants.NOTICATION_ELEMENT_ID);
 
 	RecipeDB.main.notifyUserOfSuccess( MessageBox, "CHANGES SAVED", 2000 );
@@ -228,6 +230,8 @@ RecipeDB.page.onSavedChangesSuccess = function() {
 	$("#" + RecipeDB.page.constants.RECIPE_INSTRUCTIONS_VIEW_ID).html(
 		tinyMCE.get(RecipeDB.page.constants.RECIPE_INSTRUCTIONS_EDIT_ID).getContent()
 	);
+
+	$("#" + RecipeDB.page.constants.LAST_MODIFIED_TIME_STATUS_ID).html(ResponseData.data);
 };
 
 RecipeDB.page.changePublicStatus = function() {
@@ -260,7 +264,7 @@ RecipeDB.page.changePublicStatus = function() {
 		dataType: "json",
 
 		success: function(ResponseData) {
-			RecipeDB.page.onChangedPublicStatusSuccess();
+			RecipeDB.page.onChangedPublicStatusSuccess(ResponseData.data);
 		},
 		error: function() {
 			RecipeDB.main.onAJAXCallError(arguments);
@@ -277,27 +281,33 @@ RecipeDB.page.changePublicStatus = function() {
 
 };
 
-RecipeDB.page.onChangedPublicStatusSuccess = function() {
+RecipeDB.page.onChangedPublicStatusSuccess = function(NewStatus) {
 
-	var MessageBox = $("#" + RecipeDB.page.constants.NOTICATION_ELEMENT_ID);
 	var PublishedStatusElement = $("#" + RecipeDB.page.constants.PUBLISHED_STATUS_ID);
+	var MessageBox = $("#" + RecipeDB.page.constants.NOTICATION_ELEMENT_ID);
 	var Message = "";
 
-	if (PublishedStatusElement.attr("data-published") === "true") {
+	if (NewStatus === false) {
 
-		PublishedStatusElement.attr("data-published", "false")
 		PublishedStatusElement.text("no");
 		Message = "RECIPE IS NOW PRIVATE";
 
-	} else {
+	} 
+	else if (NewStatus === true) {
 
-		PublishedStatusElement.attr("data-published", "true")
 		PublishedStatusElement.text("yes");
 		Message = "RECIPE IS NOW PUBLIC";
 
-	};
+	}
+	else {
+		PublishedStatusElement.text("yes");
+		Message = "RECIPE STATUS IS UNKNOWN";
+		RecipeDB.main.notifyUserOfError( MessageBox, Message, 2000 );
+		return false;
+	}
 
 	RecipeDB.main.notifyUserOfSuccess( MessageBox, Message, 2000 );
+	return true;
 };
 
 RecipeDB.page.deleteRecipe = function() {

@@ -2,21 +2,20 @@
 <cfprocessingdirective pageEncoding="utf-8" />
 
 	<cffunction name="getUserSettingsView" access="public" returntype="struct" output="false" hint="" >
+		<cfargument name="user" type="Models.User" required="true" hint="" />
 
-		<cfset var ReturnData = {
-			status: "",
-			errorcode: 0,
-			data: structNew()
-		} />
+		<cfset var returnData = {
+ 			statuscode: 0,
+ 			data: structNew()
+ 		} />
 
-		<cfset var CurrentUser = session.CurrentUser />
 		<cfset var UserAgentStringResult = "" />
-		<cfset var UserAgentStringForView = CurrentUser.getBrowserLastUsed() />
+		<cfset var UserAgentStringForView = arguments.user.getBrowserLastUsed() />
 
-		<!--- <cfif structKeyExists(session, "UserAgent") IS false >
+		<cfif structKeyExists(session, "UserAgent") IS false >
 
 			<cfhttp url="http://useragentstring.com/" method="post" timeout="5" throwonerror="false" result="UserAgentStringResult" >
-				<cfhttpparam type="formfield" name="uas" value="#CurrentUser.getBrowserLastUsed()#" />
+				<cfhttpparam type="formfield" name="uas" value="#arguments.user.getBrowserLastUsed()#" />
 				<cfhttpparam type="formfield" name="getJSON" value="all" />
 			</cfhttp>
 
@@ -54,30 +53,49 @@
 				<cfset UserAgentStringForView = (UserAgentStringForView & ", running on an unknown OS") />
 			</cfif>
 
-		</cfif> --->
+		</cfif>
 
-		<cfset ReturnData.status = "OK" />
+		<cfset returnData.data.username = arguments.user.getUsername() />
+		<cfset returnData.data.displayName = arguments.user.getDisplayName() />
+		<cfset returnData.data.accountCreationDate = arguments.user.getDateCreated() />
+		<cfset returnData.data.timesLoggedIn = arguments.user.getTimesLoggedIn() />
+		<cfset returnData.data.browserLastUsed = UserAgentStringForView />
 
-		<cfset ReturnData.data.username = CurrentUser.getUsername() />
-		<cfset ReturnData.data.displayName = CurrentUser.getDisplayName() />
-		<cfset ReturnData.data.accountCreationDate = CurrentUser.getDateCreated() />
-		<cfset ReturnData.data.timesLoggedIn = CurrentUser.getTimesLoggedIn() />
-		<cfset ReturnData.data.browserLastUsed = UserAgentStringForView />
-
-		<cfreturn ReturnData />
+		<cfreturn returnData />
 	</cffunction>
 
+	<!--- AJAX METHOD --->
 	<cffunction name="changeUserSettings" access="public" returntype="struct" returnformat="JSON" output="false" hint="" >
-		<cfargument name="NewDisplayName" type="string" required="true" hint="" />
-		<cfargument name="NewUserName" type="string" required="true" hint="" />
+		<cfargument name="newDisplayName" type="string" required="true" hint="" />
+		<cfargument name="newUserName" type="string" required="true" hint="" />
 
-		<cfset var ReturnData = {
-			status: "",
-			message: "",
-			data: ""
-		} />
+		<cfset var returnData = {
+ 			statuscode: 0,
+ 			data: ""
+ 		} />
+
+ 		<cfif trim(len(arguments.newDisplayName)) IS 0 AND trim(len(arguments.newUserName)) IS 0 >
+ 			<cfset returnData.statuscode = 1 />
+ 			<cfreturn returnData />
+ 		</cfif>
 
 		<cfset var ChangesMade = false />
+		<cfset var UserInterface = createObject("component", "Models.User") />
+
+		<cfset var UserSearch = UserInterface.getBy( 
+			columnToSearchOn="UserName",
+			searchOperator="equal to",
+			searchData=trim(arguments.newUserName),
+			datasource="#application.settings.datasource#"
+		) />
+
+		<!--- If a user tries to change their username and it happens to already exist we need to inform them --->
+		<cfif session.CurrentUser.getUsername() NEQ arguments.NewUserName AND UserSearch.RecordCount GT 0 >
+
+			<cfset returnData.statuscode = 2 />
+			<cfreturn returnData />
+
+		</cfif>
 
 		<cfif session.CurrentUser.getDisplayName() NEQ arguments.NewDisplayName >
 			<cfset session.CurrentUser.setDisplayName(Name=arguments.NewDisplayName) />
@@ -93,36 +111,42 @@
 			<cfset session.CurrentUser.save() />
 		</cfif>
 
-		<cfset ReturnData.status = "OK" />
-		<cfreturn ReturnData />
+		<cfreturn returnData />
 	</cffunction>
 
+	<!--- AJAX METHOD --->
 	<cffunction name="changePassword" access="public" returntype="struct" returnformat="JSON" output="false" hint="" >
 		<cfargument name="newPassword" type="string" required="true" hint="" />
 
-		<cfset var ReturnData = {
-			status: "",
-			message: "",
-			data: ""
-		} />
+		<cfset var returnData = {
+ 			statuscode: 0,
+ 			data: ""
+ 		} />
 
 		<cfif len(arguments.newPassword) LT 4 >
-			<cfthrow message="Error when changing the user's password" detail="Password has to be 4 characters long" />
+
+			<cfheader statuscode="500" />
+			<cfset returnData.statuscode = 1 />
+			<cfreturn returnData />
+
 		</cfif>
 
 		<cfif len(arguments.newPassword) GT 24 >
-			<cfthrow message="Error when changing the user's password" detail="Password is greater than 24 characters" />
+
+			<cfheader statuscode="500" />
+			<cfset returnData.statuscode = 2 />
+			<cfreturn returnData />
+
 		</cfif>
 
 		<cfset session.currentUser.changePassword(
-			SecurityManager=application.securityManager,
-			Password=arguments.newPassword
+			securityManager=application.securityManager,
+			password=arguments.newPassword
 		) />
 
-		<cfset session.currentUser.save() />
+		<cfset session.currentUser.save() >
 
-		<cfset ReturnData.status = "OK" />
-		<cfreturn ReturnData />
+		<cfreturn returnData />
 	</cffunction>
 
 </cfcomponent>

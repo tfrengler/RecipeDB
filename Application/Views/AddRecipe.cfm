@@ -15,7 +15,7 @@
 		<input id="AddRecipe-Name" class="form-control" type="text" value="" placeholder="name" maxlength="100" />
 		<!--- <input id="DuplicateCheck" type="checkbox" /><span> Warn me about potential duplicate recipes</span> --->
 
-		<br/>
+		<p>Give your new recipe a name. It can be up to 100 characters long.</p>
 
 		<input id="AddNewRecipe-Button" type="button" value="ADD" class="standard-button btn-block center-block" />
 
