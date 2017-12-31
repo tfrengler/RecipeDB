@@ -199,36 +199,44 @@ RecipeDB.main.removeAlertClasses = function(DOMPointer) {
 	DOMPointer.removeClass("red-error-text yellow-warning-text green-success-text");
 };
 
-RecipeDB.main.createDialog = function(Title, IsAnAlert, CallBackOnInit) {
+RecipeDB.main.createDialog = function(Options) {
+
+	if (typeof Options !== "object") {
+		this.onJavascriptError("Argument 'Options' is not an object", "RecipeDB.main.createDialog");
+		return {};
+	};
 
 	var InitializedDialog = {};
 	var DialogElement = document.createElement("div");
 	DialogElement.setAttribute("id", RecipeDB.main.constants.DIALOG_ID);
 
 	document.getElementsByTagName("body")[0].appendChild(DialogElement);
-	
-	InitializedDialog = $("#" + RecipeDB.main.constants.DIALOG_ID).dialog({
-		dialogClass: "no-close",
-		buttons: [
-		{
-			text: "DONE",
-			click: function() {
-				RecipeDB.main.removeDialog()
-			}
-		}
-		],
-		modal: true,
-		title: Title
-	});
+	InitializedDialog = $("#" + RecipeDB.main.constants.DIALOG_ID).dialog(Options);
 
 	return InitializedDialog;
 };
 
-RecipeDB.main.removeDialog = function() {
-	var DialogElement = $("#" + RecipeDB.main.constants.DIALOG_ID);
-
+RecipeDB.main.removeDialog = function(DialogElement) {
 	DialogElement.dialog("destroy");
-	document.getElementsByTagName("body")[0].removeChild( DialogElement[0] );
+	DialogElement.remove();
+
+	return true;
+};
+
+RecipeDB.main.AJAXFileSubmitSupported = function() {
+	if (	typeof Blob !== "undefined"
+			&& typeof File !== "undefined"
+			&& typeof FileList !== "undefined"
+			&& typeof FormData !== "undefined"
+		) {
+		return true
+	} else {
+		return false
+	}
+};
+
+RecipeDB.page.onPictureNotLoaded = function(IMGElement) {
+	IMGElement.src = "../Assets/Pictures/Standard/ImageNotFound.jpeg";
 };
 
 RecipeDB.main.init = function() {

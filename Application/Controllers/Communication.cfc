@@ -12,7 +12,7 @@
 		<cfset var patchNotesList = queryNew("") />
 		<cfset var patchNoteContents = "" />
 
-		<cfdirectory directory="#expandPath("/PatchNotes")#" action="list" filter="*.html" name="patchNotesList" sort="name DESC" />
+		<cfdirectory directory=#application.settings.files.patchnotes# action="list" filter="*.html" name="patchNotesList" sort="name DESC" />
 
 		<cfloop query="#patchNotesList#" >
 
@@ -41,7 +41,7 @@
 
 		<cffile
 			action="read" 
-			file="#expandPath("/Roadmap")#/Roadmap.html" 
+			file="#application.settings.files.roadmap#/Roadmap.html" 
 			variable="returnData.data.roadMap" 
 			charset="utf8"
 		/>

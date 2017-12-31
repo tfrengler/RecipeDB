@@ -49,7 +49,7 @@
 		<cfset returnData.data.LastModifiedByUser = Recipe.getLastModifiedByUser().getDisplayName() />
 		<cfset returnData.data.Ingredients = Recipe.getIngredients() />
 		<cfset returnData.data.Description = Recipe.getDescription() />
-		<cfset returnData.data.Picture = Recipe.getPicture() />
+		<cfset returnData.data.Picture = "Controllers/RecipeImageDownloader.cfm?fileName=#Recipe.getPicture()#.png" />
 		<cfset returnData.data.Instructions = Recipe.getInstructions() />
 		<cfset returnData.data.Published = Recipe.getPublished() />
 		<!--- <cfset returnData.Comments = Recipe.getComments() /> --->
@@ -187,7 +187,7 @@
 	</cffunction>
 
 	<!--- AJAX METHOD --->
-	<cffunction name="updateRecipe" access="public" returntype="struct" returnformat="JSON" output="true" hint="" >
+	<cffunction name="updateRecipe" access="public" returntype="struct" returnformat="JSON" output="false" hint="" >
 		<cfargument name="RecipeID" type="numeric" required="true" />
 		<cfargument name="UpdateData" type="struct" required="true" />
 
@@ -224,7 +224,7 @@
 	</cffunction>
 
 	<!--- AJAX METHOD --->
-	<cffunction name="flipPublishedStatus" access="public" returntype="struct" returnformat="JSON" output="true" hint="" >
+	<cffunction name="flipPublishedStatus" access="public" returntype="struct" returnformat="JSON" output="false" hint="" >
 		<cfargument name="RecipeID" type="numeric" required="true" />
 
 		<cfset var returnData = {
@@ -251,7 +251,7 @@
 	</cffunction>
 
 	<!--- AJAX METHOD --->
-	<cffunction name="deleteRecipe" access="public" returntype="struct" returnformat="JSON" output="true" hint="" >
+	<cffunction name="deleteRecipe" access="public" returntype="struct" returnformat="JSON" output="false" hint="" >
 		<cfargument name="recipeID" type="numeric" required="true" />
 
 		<cfset var returnData = {

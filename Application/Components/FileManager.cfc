@@ -1,10 +1,12 @@
 <cfcomponent output="false" >
 <cfprocessingdirective pageEncoding="utf-8"  />
 
-	<cfset recipePicturePath = "#expandPath("/")#/Pictures/Recipes" />
-	<cfset tempDirectory = "C:\Server\tempFiles" />
+	<cfset recipePicturePath = "" />
+	<cfset recipeThumbnailPath = "" />
+	<cfset tempDirectory = "" />
 	<cfset maxUploadSizeInBytes = "5242880" />
 	<cfset validImageMimeTypes = "image/gif,image/png,image/jpeg" />
+	<cfset alphaNumericOnlyRegex = "[^A-Za-z0-9_]" />
 
 	<cfset recipeImageDimensions = {
 		width: 450,
@@ -16,126 +18,73 @@
 		height: 50
 	} />
 
-	<cfset alphaNumericOnlyRegex = "[^A-Za-z0-9_]" />
+	<cffunction name="uploadImage" access="public" returntype="string" output="false" hint="" >
+		<cfargument name="fileName" type="string" required="true" />
 
-	<cffunction name="getRecipePath" access="public" output="false" hint="" >
-		<cfreturn true />
-	</cffunction>
+		<cfset var newFileName = "#createUUID()#.png" />
+		<cfset var newImage = "" />
+		<cfset var newFileAttempts = 0 />
+		<cfset var maxNewFileAttempts = 50 />
+		<cfset var fullTempFilePathAndName = "#variables.tempDirectory#\#arguments.fileName#" />
 
-	<cffunction name="getStandardPath" access="public" output="false" hint="" >
-		<cfreturn true />
-	</cffunction>
-
-	<cffunction name="uploadImage" access="public" returntype="struct" output="false" hint="" >
-		<cfargument name="pathToTempFile" type="string" required="true" />
-
-		<cfset var ReturnData = {
-			status: "",
-			message: "",
-			data: ""
-		} />
-
-		<cfif fileExists(pathToTempFile) IS false >
-
-			<cfset ReturnData.status = "NOK" />
-			<cfset ReturnData.message = "Argument 'pathToTempFile' does not point to a valid file" />
-			<cfreturn ReturnData />
-
+		<cfif fileExists(fullTempFilePathAndName) IS false >
+			<cfthrow message="Error uploading image" detail="The image file appears not to exist: #fullTempFilePathAndName#" />
 		</cfif>
 
-		<cfset var NewFileName = "#createUUID()#.png" />
-		<cfset var UploadedFile = "" />
-		<cfset var NewImage = "" />
-		<cfset var NewFileAttempts = 0 />
-		<cfset var MaxNewFileAttempts = 50 />
+		<cfimage action="read" source=#fullTempFilePathAndName# name="newImage" />
+		<cfset imageScaleTofit(newImage, variables.recipeImageDimensions.width, variables.recipeImageDimensions.height) />
 
-		<cfif listFind(variables.validImageMimeTypes, fileGetMimeType(pathToTempFile)) IS 0 AND isImageFile(pathToTempFile) IS false >
+		<cfloop from="1" to=#maxNewFileAttempts# index="newFileAttempts" >
 
-			<cfset ReturnData.status = "NOK" />
-			<cfset ReturnData.message = "File type is not allowed or the file is not actually an image. Allowed types are: #validImageMimeTypes#. The mime type of the uploaded file is: #fileGetMimeType(pathToTempFile)#" />
-			<cfreturn ReturnData />
-
-		</cfif>
-	
-		<cffile 
-			action="upload"
-			filefield="file1"
-			accept="image/gif,image/jpeg,image/png"
-			destination=#TempDirectory#
-			attributes="readonly"
-			nameconflict="makeunique"
-			result="UploadedFile"
-		/>
-
-		<cfset FullTempFilePathAndName = "#UploadedFile.serverDirectory#/#UploadedFile.serverFileName#.#UploadedFile.serverFileExt#" />
-
-		<cfimage action="read" source=#FullTempFilePathAndName# name="NewImage" />
-		<cfset imageScaleTofit(NewImage, variables.recipeImageDimensions.width, variables.recipeImageDimensions.height) />
-
-		<cfloop from="1" to=#MaxNewFileAttempts# index="NewFileAttempts" >
-
-			<cfif fileExists("#recipePicturePath#/#NewFileName#") IS true >
-				<cfset NewFileName = "#createUUID()#.png" />
+			<cfif fileExists(fullTempFilePathAndName) IS true >
+				<cfset newFileName = "#createUUID()#.png" />
 			<cfelse>
 				<cfbreak />
 			</cfif>
 
 		</cfloop>
 
-		<cfif NewFileAttempts EQ MaxNewFileAttempts >
-
-			<cfset ReturnData.status = "NOK" />
-			<cfset ReturnData.message = "Unable to create a unique name for the new image file" />
-			<cfreturn ReturnData />
-
+		<cfif newFileAttempts EQ maxNewFileAttempts >
+			<cffile action="delete" file=#fullTempFilePathAndName# />
+			<cfthrow message="Error uploading image" detail="Unable to create a unique name for the new image file" />
 		</cfif>
 
-		<cfimage action="write" source=#NewImage# destination="#variables.recipePicturePath#/#NewFileName#" />
-		<cffile action="delete" file=#FullTempFilePathAndName# />
+		<cfimage action="write" source=#newImage# destination="#variables.recipePicturePath#/#newFileName#" />
+		<cffile action="delete" file=#fullTempFilePathAndName# />
 
-		<cfset ReturnData.status = "OK" />
-		<cfset ReturnData.data = NewFileName />
-
-		<cfreturn ReturnData />
+		<cfreturn newFileName />
 	</cffunction>
 
-	<!--- function fncFileSize(size) {
-		if (size lt 1024) return "#size# b";
-		if (size lt 1024^2) return "#round(size / 1024)# Kb";
-		if (size lt 1024^3) return "#decimalFormat(size/1024^2)# Mb";
-		return "#decimalFormat(size/1024^3)# Gb";
-	} --->
+	<cffunction name="getMaxFileSize" access="public" returntype="numeric" output="false" hint="" >
+		<cfreturn variables.maxUploadSizeInBytes />
+	</cffunction>
 
-<!--- 	function TotalSize() {
-		var oFileElements = document.querySelectorAll("input[type='file']");
-		var nCombinedFileSizeInBytes = 0;
-		var nCombinedFileSizeInMegabytes = 0;
-		var oCurrentFile = {};
-		var nIterator = 0;
+	<cffunction name="getAcceptedMimeTypes" access="public" returntype="string" output="false" hint="" >
+		<cfreturn variables.validImageMimeTypes />
+	</cffunction>
 
-		if (typeof oFileElements == "undefined") {
-			return false;
-		};
+	<cffunction name="init" access="public" returntype="Components.FileManager" output="false" hint="" >
+		<cfargument name="recipePicturePath" type="string" required="true" />
+		<cfargument name="recipeThumbnailPath" type="string" required="true" />
+		<cfargument name="tempDirectory" type="string" required="true" />
 
-		for (; nIterator < oFileElements.length; nIterator++) {
+		<cfif len(arguments.recipePicturePath) IS 0 >
+			<cfthrow message="Error initializing file manager" detail="Argument 'recipePicturePath' appears to be empty!" />
+		</cfif>
 
-			if (oFileElements[nIterator].files.length > 0) {
-				oCurrentFile = oFileElements[nIterator].files[0];
-				nCombinedFileSizeInBytes += oCurrentFile.size;
-			};
-		};
+		<cfif len(arguments.recipeThumbnailPath) IS 0 >
+			<cfthrow message="Error initializing file manager" detail="Argument 'recipeThumbnailPath' appears to be empty!" />
+		</cfif>
 
-		if (nCombinedFileSizeInBytes > 0) {
+		<cfif len(arguments.tempDirectory) IS 0 >
+			<cfthrow message="Error initializing file manager" detail="Argument 'tempDirectory' appears to be empty!" />
+		</cfif>
 
-			// Converting from bytes to megabytes
-			nCombinedFileSizeInMegabytes = nCombinedFileSizeInBytes / 1048576;
-			/* Rounding the number down to the nearest two decimal points. This will give weird results with float numbers
-			but for what we are using this for (file sizes) we know we are always going to get integers */
-			nCombinedFileSizeInMegabytes = Math.round(nCombinedFileSizeInMegabytes * 100) / 100; 
-		
-			alert("Total attachment size: " + nCombinedFileSizeInMegabytes + " MB");
-		};
+		<cfset variables.recipePicturePath = arguments.recipePicturePath />
+		<cfset variables.recipeThumbnailPath = arguments.recipeThumbnailPath />
+		<cfset variables.tempDirectory = arguments.tempDirectory />
 
-	}; --->
+		<cfreturn this />
+	</cffunction>
 
 </cfcomponent>
