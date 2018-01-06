@@ -16,7 +16,7 @@ RecipeDB.menu.init = function() {
 	$("#" + this.constants.MENU_ID).css("width", 0);
 	
 	$(document).resize(function() {
-		this.onResize();
+		RecipeDB.menu.onResize();
 	});
 	$("#" + this.constants.CLOSE_BUTTON_ID).click(function() {
 		RecipeDB.menu.hide();
@@ -25,9 +25,9 @@ RecipeDB.menu.init = function() {
 		RecipeDB.menu.show();
 	});
 
-	$(document).resize(function() {
-		RecipeDB.menu.onResize();
-	});
+	// $(document).resize(function() {
+	// 	RecipeDB.menu.onResize();
+	// });
 
 	console.log("Menu init complete");
 };

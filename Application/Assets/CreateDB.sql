@@ -22,7 +22,7 @@ CREATE TABLE Recipes(
 	LastModifiedByUser bigint REFERENCES Users(UserID) NOT NULL,
 	Ingredients text NOT NULL,
 	Description text NOT NULL,
-	Picture bigint NOT NULL DEFAULT 0,
+	Picture varchar(128) NOT NULL,
 	Instructions text NOT NULL,
 	Published boolean NOT NULL DEFAULT false,
 	PRIMARY KEY(RecipeID)

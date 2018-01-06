@@ -147,8 +147,8 @@
 			references: structNew()
 		},
 		Picture: {
-			type: "int8",
-			size: 0,
+			type: "text",
+			size: 128,
 			primary_key: false,
 			foreign_key: false,
 			references: structNew()

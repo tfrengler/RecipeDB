@@ -19,18 +19,59 @@
 	<cfset this.mappings["/Assets"] = (this.appdirectory & "Assets/") />
 	<cfset this.mappings["/Views"] = (this.appdirectory & "Views/") />
 	<cfset this.mappings["/Controllers"] = (this.appdirectory & "Controllers/") />
-	<cfset this.mappings["/Modules"] = (this.appdirectory & "Modules/") />
-	<cfset this.mappings["/PatchNotes"] = (this.root & "Notes/Patch/") />
-	<cfset this.mappings["/Roadmap"] = (this.root & "Notes/Roadmap/") />
-	<cfset this.mappings["/RecipeImage"] = (this.root & "Assets/Pictures/Recipes") />
 
 	<cffunction name="onApplicationStart" returnType="boolean" output="false">
 
+		<cfset var configXML = "" />
+
+		<!--- Set up paths based on config file --->
+		<cffile action="read" file="Application/Assets/config.xml" charset="utf-8" variable="configXML" accept="application/xml" />
+		<cfset configXML = xmlParse(configXML) />
+
+		<cfif directoryExists(configXML.envelope.files.patchnotes.xmlText) >
+			<cfset application.settings.files.patchnotes = configXML.envelope.files.patchnotes.xmlText />
+		<cfelse>
+			<cfthrow message="Error setting up the application" detail="Patchnote directory '#settings.files.patchnotes#' does not exist!" />
+		</cfif>
+
+		<cfif directoryExists(configXML.envelope.files.roadmap.xmlText) >
+			<cfset application.settings.files.roadmap = configXML.envelope.files.roadmap.xmlText />
+		<cfelse>
+			<cfthrow message="Error setting up the application" detail="Roadmap directory '#settings.files.roadmap#' does not exist!" />
+		</cfif>
+
+		<cfif directoryExists(configXML.envelope.files.recipe_pictures.xmlText) >
+			<cfset application.settings.files.recipe.standard = configXML.envelope.files.recipe_pictures.xmlText />
+		<cfelse>
+			<cfthrow message="Error setting up the application" detail="Recipe picture directory '#settings.files.recipe.standard#' does not exist!" />
+		</cfif>
+
+		<cfif directoryExists(configXML.envelope.files.recipe_thumbnails.xmlText) >
+			<cfset application.settings.files.recipe.thumbnails = configXML.envelope.files.recipe_thumbnails.xmlText />
+		<cfelse>
+			<cfthrow message="Error setting up the application" detail="Recipe thumbnail directory '#settings.files.recipe.thumbnails#' does not exist!" />
+		</cfif>
+
+		<cfif directoryExists(configXML.envelope.files.temp_folder.xmlText) >
+			<cfset application.settings.files.temp = configXML.envelope.files.temp_folder.xmlText />
+		<cfelse>
+			<cfthrow message="Error setting up the application" detail="Temp directory '#configXML.envelope.files.temp_folder.xmlText#' does not exist!" />
+		</cfif>
+
+		<cfset application.settings.datasource = "dev" />
+
+		<!--- Set up singletons --->
 		<cfif structKeyExists(application, "securityManager") IS false >
 			<cfset application.securityManager = createObject("component", "Components.SecurityManager") />
 		</cfif>
 
-		<cfset application.settings.datasource = "dev" />
+		<cfif structKeyExists(application, "fileManager") IS false >
+			<cfset application.fileManager = createObject("component", "Components.FileManager").init(
+					recipePicturePath = application.settings.files.recipe.standard,
+					recipeThumbnailPath = application.settings.files.recipe.thumbnails,
+					tempDirectory = application.settings.files.temp
+			) />
+		</cfif>
 
 		<cfreturn true />
 	</cffunction>

@@ -133,7 +133,7 @@
 			<cfset ShouldBeForeignKey = true />
 
 			<cfif CurrentColumnData.IS_FOREIGNKEY IS false >
-				<span class="error" >FOREIGN KEY ERROR:</span> Column <u>#CurrentTableColumnName#</u> from table <u>#CurrentTableName#</u> is not a foreign key as expected.</p>
+				<span class="error" >FOREIGN KEY ERROR:</span> Column <u>#CurrentTableColumnName#</u> from table <u>#CurrentTableName#</u> is not a foreign key as expected.</span>
 				<cfcontinue/>
 			</cfif>
 
@@ -156,23 +156,23 @@
 
 		<cfif MissingColumnError IS false >
 
-			<li><p class="success" >Column <u>#CurrentTableColumnName#</u> is not missing and:</p></li>
+			<li><span class="success" >Column <u>#CurrentTableColumnName#</u> is not missing and:</span></li>
 
 			<ul>
 				<cfif DataTypeError IS false >
-					<li><p class="success" >...its DATA TYPE is correct (#CurrentColumnCheckData.type#)</p></li>
+					<li><p class="success" >...its DATA TYPE is correct (#CurrentColumnCheckData.type#)</span></li>
 				</cfif>
 
 				<cfif PrimaryKeyError IS false AND ShouldBePrimaryKey IS true >
-					<li><p class="success" >...it is the PRIMARY KEY as expected</p></li>
+					<li><p class="success" >...it is the PRIMARY KEY as expected</span></li>
 				</cfif>
 
 				<cfif ColumnSizeError IS false AND ShouldHaveSizeChecked IS true >
-					<li><p class="success" >...its SIZE is correct (#CurrentColumnCheckData.size#)</p></li>
+					<li><p class="success" >...its SIZE is correct (#CurrentColumnCheckData.size#)</span></li>
 				</cfif>
 
 				<cfif ForeignKeyError IS false AND ShouldBeForeignKey IS true >
-					<li><p class="success" >...it is a FOREIGN KEY and is referencing the correct table and column (#CurrentColumnCheckData.references.key# in #CurrentColumnCheckData.references.table#)</p></li>
+					<li><p class="success" >...it is a FOREIGN KEY and is referencing the correct table and column (#CurrentColumnCheckData.references.key# in #CurrentColumnCheckData.references.table#)</span></li>
 				</cfif>
 			</ul>
 

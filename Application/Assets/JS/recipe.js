@@ -36,6 +36,7 @@ RecipeDB.page.constants.PUBLISH_RECIPE_BUTTON_ID = "Publish-Recipe-Button";
 RecipeDB.page.constants.PUBLISHED_STATUS_ID = "Published-Status";
 RecipeDB.page.constants.DELETE_RECIPE_BUTTON = "Delete-Recipe-Button";
 RecipeDB.page.constants.LAST_MODIFIED_TIME_STATUS_ID = "LastModifiedTime-Status";
+RecipeDB.page.constants.RECIPE_PICTURE_EDIT_ID = "Recipe-Picture-Edit-Container";
 
 RecipeDB.page.init = function() {
 	this.setSectionDimensions();
@@ -43,13 +44,18 @@ RecipeDB.page.init = function() {
 	$( "[name='" + this.constants.SECTION_HEADERS_NAME + "']" ).click(function() {
 		RecipeDB.page.openCloseSection(this)
 	});
-	$(document).resize(this.onResize);
+	// $(document).resize(this.onResize);
 
 	$("#" + this.constants.PICTURE_ID).load(this.setPictureEditDimensions);
 	$("#" + this.constants.EDIT_BUTTON_ID).click(this.enableEditing);
 	$("#" + this.constants.SAVE_BUTTON_ID).click(this.saveChanges);
 	$("#" + this.constants.PUBLISH_RECIPE_BUTTON_ID).click(this.changePublicStatus);
 	$("#" + this.constants.DELETE_RECIPE_BUTTON).click(this.deleteRecipe);
+	$("#" + this.constants.PICTURE_EDIT_ID).click(this.changePicture);
+	
+	$("img").error(function(){
+		RecipeDB.main.onPictureNotLoaded(this)
+	});
 
 	console.log("Page init complete");
 };
@@ -125,6 +131,7 @@ RecipeDB.page.openCloseSection = function(Caller) {
 RecipeDB.page.enableEditing = function() {
 
 	$("#" + RecipeDB.page.constants.SAVE_BUTTON_ID).show();
+	$("#" + RecipeDB.page.constants.RECIPE_PICTURE_EDIT_ID).show();
 
 	$("[name='" + RecipeDB.page.constants.VIEW_SECTION_NAME + "']").hide();
 	$("[name='" + RecipeDB.page.constants.EDIT_SECTION_NAME + "']").show();
@@ -145,6 +152,7 @@ RecipeDB.page.enableEditing = function() {
 RecipeDB.page.disableEditing = function() {
 	
 	$("#" + RecipeDB.page.constants.SAVE_BUTTON_ID).hide();
+	$("#" + RecipeDB.page.constants.RECIPE_PICTURE_EDIT_ID).hide();
 	tinyMCE.remove();
 
 	$("[name='" + RecipeDB.page.constants.VIEW_SECTION_NAME + "']").show();
@@ -362,4 +370,34 @@ RecipeDB.page.deleteRecipe = function() {
 		}
 	});	
 
+};
+
+RecipeDB.page.changePicture = function() {
+
+	var Dialog, DialogMinWidth;
+
+	RecipeDB.main.ajaxLoadInnerHTML(true, $("#" + RecipeDB.page.constants.PICTURE_EDIT_ID));
+
+	if (window.innerWidth < 500) {
+		DialogMinWidth = 0;
+	} else {
+		DialogMinWidth = 500;
+	};
+
+	Dialog = RecipeDB.main.createDialog(
+		{
+			modal: true,
+			title: "CHANGE PICTURE",
+			autoOpen: false,
+			minWidth: DialogMinWidth,
+			position: {my: "center", at: "top"},
+			close: function() {
+				RecipeDB.main.removeDialog(Dialog);
+				RecipeDB.main.ajaxLoadInnerHTML(false, $("#" + RecipeDB.page.constants.PICTURE_EDIT_ID));
+			}
+		}
+	);
+
+	Dialog.load("Views/ChangeRecipePicture.cfm");
+	Dialog.dialog("open");
 };

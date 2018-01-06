@@ -10,7 +10,7 @@
 	<cfset Comments = arrayNew(1) /> <!--- An array of Comment.cfc's --->
 	<cfset Ingredients = "" />
 	<cfset Description = "" />
-	<cfset Picture = 0 />
+	<cfset Picture = "" />
 	<cfset Instructions = "" />
 	<cfset Name = "" />
 	<cfset Published = false />
@@ -55,7 +55,7 @@
 		<cfreturn variables.Description />
 	</cffunction>
 
-	<cffunction name="getPicture" access="public" output="false" returntype="numeric" >
+	<cffunction name="getPicture" access="public" output="false" returntype="string" >
 		<cfreturn variables.Picture />
 	</cffunction> 
 
@@ -124,7 +124,7 @@
 	</cffunction>
 
 	<cffunction name="setPicture" access="public" output="false" hint="" >
-		<cfargument name="ID" type="numeric" required="true" hint="" />
+		<cfargument name="ID" type="string" required="true" hint="" />
 
 		<cfset variables.Picture = arguments.ID />
 	</cffunction> 
@@ -161,12 +161,12 @@
 						LastModifiedByUser = <cfqueryparam sqltype="BIGINT" value="#getLastModifiedByUser().getID()#" />,
 						Ingredients = <cfqueryparam sqltype="LONGVARCHAR" value="#getIngredients()#" />,
 						Description = <cfqueryparam sqltype="LONGVARCHAR" value="#getDescription()#" />,
-						Picture = <cfqueryparam sqltype="BIGINT" value="#getPicture()#" />,
+						Picture = <cfqueryparam sqltype="LONGVARCHAR" value="#getPicture()#" />,
 						Instructions = <cfqueryparam sqltype="LONGVARCHAR" value="#getInstructions()#" />,
 						Name = <cfqueryparam sqltype="LONGVARCHAR" value="#getName()#" />,
 						Published = <cfqueryparam sqltype="BOOLEAN" value="#getPublished()#" />
 
-					WHERE #getTableKey()# = <cfqueryparam sqltype="CF_SQL_BIGINT" value="#getID()#" />;
+					WHERE #getTableKey()# = <cfqueryparam sqltype="BIGINT" value="#getID()#" />;
 				</cfquery>
 
 				<cftransaction action="commit" />
@@ -228,7 +228,7 @@
 						<cfqueryparam sqltype="BIGINT" value="#arguments.UserID#" />,
 						<cfqueryparam sqltype="LONGVARCHAR" value="#getIngredients()#" />,
 						<cfqueryparam sqltype="LONGVARCHAR" value="#getDescription()#" />,
-						<cfqueryparam sqltype="BIGINT" value="#getPicture()#" />,
+						<cfqueryparam sqltype="LONGVARCHAR" value="#getPicture()#" />,
 						<cfqueryparam sqltype="LONGVARCHAR" value="#getInstructions()#" />,
 						<cfqueryparam sqltype="LONGVARCHAR" value="#getName()#" />,
 						<cfqueryparam sqltype="BOOLEAN" value="#getPublished()#" />
