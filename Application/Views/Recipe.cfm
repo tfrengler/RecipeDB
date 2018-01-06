@@ -10,7 +10,7 @@
 <cfparam name="attributes.LastModifiedByUser" type="string" default="[unknown user]" />
 <cfparam name="attributes.Ingredients" type="string" default="[no ingredients]" />
 <cfparam name="attributes.Description" type="string" default="[no description]" />
-<cfparam name="attributes.Picture" type="string" default="Assets/Pictures/Standard/foodexample.jpg" />
+<cfparam name="attributes.Picture" type="string" default="" />
 <cfparam name="attributes.Instructions" type="string" default="[no instructions]" />
 <cfparam name="attributes.Comments" type="array" default="#arrayNew(1)#" />
 <cfparam name="attributes.DisplayToolbar" type="boolean" default="false" />
