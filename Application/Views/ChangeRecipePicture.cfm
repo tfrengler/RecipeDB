@@ -41,7 +41,7 @@
 </section>
 
 <script type="text/javascript">
-	<cfoutput>#toScript(application.fileManager.getMaxFileSize(), "RecipeDB.changepicture.constants.MAX_FILE_SIZE", false)#</cfoutput>
-	<cfoutput>#toScript(application.fileManager.getAcceptedMimeTypes(), "RecipeDB.changepicture.constants.ACCEPTED_MIME_TYPES", false)#</cfoutput>
-	$(document).ready(RecipeDB.changepicture.init);
+	<cfoutput>#toScript(application.fileManager.getMaxFileSize(), "RecipeDB.dialog.constants.MAX_FILE_SIZE", false)#</cfoutput>
+	<cfoutput>#toScript(application.fileManager.getAcceptedMimeTypes(), "RecipeDB.dialog.constants.ACCEPTED_MIME_TYPES", false)#</cfoutput>
+	$(document).ready(RecipeDB.dialog.init);
 </script>

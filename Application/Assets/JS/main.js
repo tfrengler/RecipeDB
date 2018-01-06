@@ -2,8 +2,10 @@
 
 /* Main container, a namespace for all our functionality */
 var RecipeDB = {};
+
 RecipeDB.main = {};
 RecipeDB.main.debug = false;
+RecipeDB.dialog = {};
 
 RecipeDB.main.transient = {};
 RecipeDB.main.transient.ajaxCallInProgress = false;
@@ -217,8 +219,10 @@ RecipeDB.main.createDialog = function(Options) {
 };
 
 RecipeDB.main.removeDialog = function(DialogElement) {
+
 	DialogElement.dialog("destroy");
 	DialogElement.remove();
+	RecipeDB.dialog = {};
 
 	return true;
 };
@@ -235,8 +239,9 @@ RecipeDB.main.AJAXFileSubmitSupported = function() {
 	}
 };
 
-RecipeDB.page.onPictureNotLoaded = function(IMGElement) {
-	IMGElement.src = "../Assets/Pictures/Standard/ImageNotFound.jpeg";
+RecipeDB.main.onPictureNotLoaded = function(IMGElement) {
+	// This pathing should be safe because we're always related to the application-root folder
+	$(IMGElement).attr("src", "Assets/Pictures/Standard/ImageNotFound.jpeg");
 };
 
 RecipeDB.main.init = function() {
