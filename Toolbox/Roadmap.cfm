@@ -57,7 +57,7 @@
 	<p><a href="CommunicationTools.cfm?token=#URL.token#" >Back to Communcation Tools</a></p>
 	<h1>Roadmap</h1>
 
-	<cfset RoadmapDirectory = "#expandPath("/")#Notes\Roadmap" />
+	<cfset RoadmapDirectory = application.settings.files.roadmap />
 
 	<cfif directoryExists(RoadmapDirectory) >
 		<cfset RoadmapDirNotExists = false />

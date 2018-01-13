@@ -8,7 +8,7 @@ CREATE TABLE Users(
 	UserName varchar(20) NOT NULL,
 	DisplayName varchar(30) NOT NULL,
 	TimesLoggedIn int NOT NULL DEFAULT 0,
-	BrowserLastUsed varchar(200) NOT NULL,
+	BrowserLastUsed varchar(300) NOT NULL,
 	Blocked boolean NOT NULL DEFAULT false,
 	PRIMARY KEY(UserID)
 );

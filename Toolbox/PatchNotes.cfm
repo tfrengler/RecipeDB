@@ -57,9 +57,11 @@
 	<p><a href="CommunicationTools.cfm?token=#URL.token#" >Back to Communcation Tools</a></p>
 	<h1>Patch notes</h1>
 
-	<cfset PatchNoteDirectory = "#expandPath("/")#Notes\Patch" />
+	<cfset PatchNoteDirectory = application.settings.files.patchnotes />
 
 	<cfif directoryExists(PatchNoteDirectory) >
+
+		<cfdirectory directory=#application.settings.files.patchnotes# filter="*.html" action="list" name="ExistingPatchNotes" type="file" >
 		<cfset PatchDirDoesNotExist = false />
 
 		<cfif structIsEmpty(FORM) IS false >
@@ -105,7 +107,12 @@
 
 		<form name="Load_Existing_PatchNotes_Form" action="PatchNotes.cfm?token=#URL.token#" method="post" >
 
-			<input type="file" name="PatchNote_FileName" value="" />
+			<cfloop query=#ExistingPatchNotes# >
+				<input type="checkbox" name="PatchNote_FileName" value=#ExistingPatchNotes.name# />
+				<span>#ExistingPatchNotes.name#</span>
+				<br/>
+			</cfloop>
+
 			<br/>
 			<input type="submit" value="LOAD" />
 
