@@ -87,7 +87,7 @@ RecipeDB.page.onChangesSaved = function(ControllerResponse) {
 		RecipeDB.main.notifyUserOfSuccess( MessageBox, "CHANGES SAVED", 2000 );
 	}
 	else if (ControllerResponse.statuscode === 2) {
-		RecipeDB.main.notifyUserOfError( MessageBox, "THAT USERNAME IS ALREADY IN USE", 4000 );
+		RecipeDB.main.notifyUserOfError( MessageBox, "That username is already in use. Please choose another", 4000 );
 	}
 	else if (ControllerResponse.statuscode === 1) {
 		RecipeDB.main.onJavascriptError(ControllerResponse, "RecipeDB.page.onChangesSaved");

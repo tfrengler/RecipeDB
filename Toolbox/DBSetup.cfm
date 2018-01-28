@@ -147,7 +147,7 @@
 			references: structNew()
 		},
 		Picture: {
-			type: "text",
+			type: "varchar",
 			size: 128,
 			primary_key: false,
 			foreign_key: false,

@@ -6,38 +6,41 @@
 	<h1 id="RecipeList-Welcome" class="olive-text-color-center" >List of recipes</h1>
 </section>
 
+<section id="Open-Filter-Menu" class="standard-button display-none" >
+	<i class="fa fa-filter" aria-hidden="true"></i>
+	FILTERS&nbsp;
+</section>
+
+<section id="Filter-Menu" >
+	<div id="Filter-Menu-Header" >
+		<i id="Close-Filter-Menu" class="fa fa-window-close fa-lg" aria-hidden="true"></i>
+		<b class="olive-text-color" >FILTER RECIPES:</b>
+	</div>
+
+	<br/>
+
+	<div class="inline-block" >
+		<input type="checkbox" name="FilterOption" id="Filter-Mine" >mine only</input><br/>
+		<input type="checkbox" name="FilterOption" id="Filter-MinePublic" >mine only that are public</input><br/>
+		<input type="checkbox" name="FilterOption" id="Filter-MinePrivate" >mine only that are private</input><br/>
+	</div>
+
+	<div class="inline-block" >
+		<input type="checkbox" name="FilterOption" id="Filter-MineEmpty" >mine only that are empty</input><br/>
+		<input type="checkbox" name="FilterOption" id="Filter-MineNoPicture" >mine only without a picture</input><br/>
+		<input type="checkbox" name="FilterOption" id="Filter-Others" >from other users only</input><br/>
+	</div>
+
+	<br/><br/>
+	<span><i>By default the list shows all recipes that belong to you and all public recipes from other users</i></span>
+	<br/><br/>
+
+	<span id="ApplyFilter" class="standard-button" >APPLY FILTER</span>
+	<span id="ClearFilter" class="standard-button" >DE-SELECT ALL</span>
+</section>
+
 <section id="RecipeList-Container">
 	<div class="col-lg-8 col-lg-offset-2 olive-wrapper-grey-background standard-rounded-corners standard-box-shadow" >
-
-		<!--- <div id="Recipe-Toolbar" class="olive-wrapper-white-background" >
-			<span><b>FILTER BY:&nbsp;</b></span><br/>
-
-			<input type="checkbox" id="" value="" >Recipes owned by me</input>
-			<input type="checkbox" id="" value="" >My recipes that are public</input>
-			<input type="checkbox" id="" value="" >My recipes that are private</input>
-			<input type="checkbox" id="" value="" >My recipes that are empty</input>
-			<input type="checkbox" id="" value="" >My recipes without a picture</input>
-			<input type="checkbox" id="" value="" >Recipes by other users</input>
-
-			<br/>
-			<span id="" class="standard-button" >APPLY</span>
-			<span id="" class="standard-button" >CLEAR</span>
-			
-			<hr/>
-
-			<span><b>QUICK FILTERS:</b></span>
-			<select>
-				<option>All</option>
-				<option>Recipes owned by me</option>
-				<option>My recipes that are public</option>
-				<option>My recipes that are private</option>
-				<option>My recipes that are empty</option>
-				<option>My recipes without a picture</option>
-				<option>Recipes by other users</option>
-			</select>
-		</div> --->
-
-		<br/>
 
 		<table id="RecipeList-Table" border="0" class="row-border order-column stripe" >
 			<thead>

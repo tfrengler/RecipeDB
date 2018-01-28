@@ -4,98 +4,92 @@ RecipeDB.page.transient = {};
 RecipeDB.page.constants = {};
 
 RecipeDB.page.constants.RECIPE_LIST_TABLE_ID = "RecipeList-Table";
+RecipeDB.page.constants.OPEN_FILTER_MENU_BUTTON_ID = "Open-Filter-Menu";
+RecipeDB.page.constants.CLOSE_FILTER_MENU_BUTTON_ID = "Close-Filter-Menu";
+RecipeDB.page.constants.FILTER_MENU_ID = "Filter-Menu";
+RecipeDB.page.constants.FILTER_CHECKBOXES_NAME = "FilterOption";
+RecipeDB.page.constants.FILTER_MINE_ID = "Filter-Mine";
+RecipeDB.page.constants.FILTER_MINE_PUBLIC_ID = "Filter-MinePublic";
+RecipeDB.page.constants.FILTER_MINE_PRIVATE_ID = "Filter-MinePrivate";
+RecipeDB.page.constants.FILTER_MINE_EMPTY_ID = "Filter-MineEmpty";
+RecipeDB.page.constants.FILTER_MINE_NO_PICTURE_ID = "Filter-MineNoPicture";
+RecipeDB.page.constants.FILTER_OTHER_ID = "Filter-Others";
+RecipeDB.page.constants.CLEAR_FILTER_BUTTON_ID = "ClearFilter";
+RecipeDB.page.constants.APPLY_FILTER_BUTTON_ID = "ApplyFilter";
+
+RecipeDB.page.constants.RECIPE_LIST_COLUMNS_SETUP = [
+	{
+		data: "NAME",
+		render: {
+			_:"display"
+		}
+	},
+	{
+		data: "CREATEDBYUSER",
+		render: {
+			_:"display"
+		}
+	},
+	{
+		data: "DATECREATED",
+		render: {  
+			_:"display",
+			sort: "sortdata"
+		}
+	},
+	{
+		data: "DATETIMELASTMODIFIED",
+		render: {
+			_:"display",
+			sort: "sortdata"
+		}
+	},
+	{
+		data: "PUBLISHED",
+		render: function(data, type, row, meta) {
+			if (type === "sort") {
+				return parseInt(data.display);
+			}
+
+			if (data.display == 0) {
+				return "no"
+			}
+			else if (data.display == 1) {
+				return "yes"
+			} else {
+				return data.display
+			}
+		}
+	},
+	{
+		data: "RECIPEID",
+		render: {  
+			_:"display"
+		}
+	}					
+];
 
 RecipeDB.page.init = function() {
-	var CatchError;
 
-	try {
-		$("#" + this.constants.RECIPE_LIST_TABLE_ID).DataTable(
-			{
-				// initComplete: RecipeDB.RecipeList.Methods.onListUpdated,
-				drawCallback: RecipeDB.page.onListUpdated,
-				columnDefs: [
-					{ targets: '_all', className: "dt-head-center dt-body-left" }, /* This is for adding classes that control the alignment of the data, in this case centered th-text and left aligned td-text */
-				],
-				order: [[2, "desc"]], /* Which column you want to order the table by, in this case the third colum (Created on) in ascending order */
-				paging: true, /* enabling or disabling pagination. Set this to false and the lengthChange and lengthMenu will be ignored. Enable this if you want to test pagination */
-				fixedHeader: false, /* A plugin for datatables that allows the header row to stay in place when scrolling*/
-				searching: true, /* Self-explanatory */
-				lengthChange: true, /* Whether to allow users to change the amount of rows shown */
-				lengthMenu: [10,20,30,40,50], /* The options shown in the length menu */
-				autoWidth: true, /* Auto scales the cell sizes based on content, if false it divides the cell width equally among all the cells */
-				sPaginationType: "simple_numbers", /* The type of pagination, see the manual for more examples */
+	$("#" + this.constants.CLOSE_FILTER_MENU_BUTTON_ID).click(function() {
+		RecipeDB.page.openCloseFilterMenu(false);
+	});
 
-				columns: [
-					{
-						data: "NAME",
-						render: {
-							_:"display"
-						}
-					},
-					{
-						data: "CREATEDBYUSER",
-						render: {
-							_:"display"
-						}
-					},
-					{
-						data: "DATECREATED",
-						render: {  
-							_:"display",
-							sort: "sortdata"
-						}
-					},
-					{
-						data: "DATETIMELASTMODIFIED",
-						render: {
-							_:"display",
-							sort: "sortdata"
-						}
-					},
-					{
-						data: "PUBLISHED",
-						render: function(data, type, row, meta) {
-							if (type === "sort") {
-								return parseInt(data.display);
-							}
+	$("#" + this.constants.OPEN_FILTER_MENU_BUTTON_ID).click(function() {
+		RecipeDB.page.openCloseFilterMenu(true);
+	});
 
-							if (data.display == 0) {
-								return "no"
-							}
-							else if (data.display == 1) {
-								return "yes"
-							} else {
-								return data.display
-							}
-						}
-					},
-					{
-						data: "RECIPEID",
-						render: {  
-							_:"display"
-						}
-					}					
-				],
-				ajax: {
-					dataSrc: "data",
-					type: "post",
-					url: "Components/AjaxProxy.cfc",
-					data: {
-						method: "call",
-						argumentCollection: JSON.stringify({
-							component: "Recipes",
-							function: "getRecipeListData",
-							authKey: RecipeDB.main.constants.AUTH_KEY,
-							parameters: {}
-						})
-					}
-				}
-			}
-		);
-	}
-	catch(CatchError) {
-		RecipeDB.main.onJavascriptError(CatchError, "RecipeDB.page.init");
-	};
+	$("[name='" + this.constants.FILTER_CHECKBOXES_NAME + "']").click(function() {
+		RecipeDB.page.onSelectFilterOption(this)
+	});
+
+	$("#" + this.constants.CLEAR_FILTER_BUTTON_ID).click(function() {
+		$("[name='" + RecipeDB.page.constants.FILTER_CHECKBOXES_NAME + "']").prop("checked", false);
+	});
+
+	$("#" + this.constants.APPLY_FILTER_BUTTON_ID).click(this.applyFilter);
+
+	this.setupRecipeList();
 
 	console.log("Page init complete");
 };
@@ -119,4 +113,109 @@ RecipeDB.page.openRecipe = function(Caller) {
 	};
 	
 	window.location.href = "Recipe.cfm?RecipeID=" + RecipeID;
+};
+
+RecipeDB.page.openCloseFilterMenu = function(action) {
+	var FilterMenu = $("#" + RecipeDB.page.constants.FILTER_MENU_ID);
+	
+	if (action === true) {
+		FilterMenu.show();
+	}
+	else if (action === false) {
+		FilterMenu.hide();
+	}
+
+};
+
+RecipeDB.page.onSelectFilterOption = function(FilterOption) {
+	FilterOption = $(FilterOption);
+
+	if (FilterOption.prop("checked") === false) {
+		return;
+	}
+
+	if (FilterOption.attr("id") === RecipeDB.page.constants.FILTER_MINE_ID || FilterOption.attr("id") === RecipeDB.page.constants.FILTER_OTHER_ID) {
+		$("[name='" + RecipeDB.page.constants.FILTER_CHECKBOXES_NAME + "']").prop("checked", false);
+		FilterOption.prop("checked", true);
+	}
+
+	if (FilterOption.attr("id") !== RecipeDB.page.constants.FILTER_MINE_ID && FilterOption.attr("id") !== RecipeDB.page.constants.FILTER_OTHER_ID) {
+		$("#" + RecipeDB.page.constants.FILTER_MINE_ID).prop("checked", false);
+		$("#" + RecipeDB.page.constants.FILTER_OTHER_ID).prop("checked", false);
+	}
+};
+
+RecipeDB.page.setupRecipeList = function() {
+	var CatchError = {};
+	try {
+		$("#" + RecipeDB.page.constants.RECIPE_LIST_TABLE_ID).DataTable(
+			{
+				// initComplete: RecipeDB.RecipeList.Methods.onListUpdated,
+				drawCallback: RecipeDB.page.onListUpdated,
+				columnDefs: [
+					{ targets: '_all', className: "dt-head-center dt-body-left" }, /* This is for adding classes that control the alignment of the data, in this case centered th-text and left aligned td-text */
+				],
+				order: [[2, "desc"]], /* Which column you want to order the table by, in this case the third colum (Created on) in ascending order */
+				paging: true, /* enabling or disabling pagination. Set this to false and the lengthChange and lengthMenu will be ignored. Enable this if you want to test pagination */
+				fixedHeader: false, /* A plugin for datatables that allows the header row to stay in place when scrolling*/
+				searching: true, /* Self-explanatory */
+				lengthChange: true, /* Whether to allow users to change the amount of rows shown */
+				lengthMenu: [10,20,30,40,50], /* The options shown in the length menu */
+				autoWidth: true, /* Auto scales the cell sizes based on content, if false it divides the cell width equally among all the cells */
+				sPaginationType: "simple_numbers", /* The type of pagination, see the manual for more examples */
+				columns: RecipeDB.page.constants.RECIPE_LIST_COLUMNS_SETUP,
+
+				ajax: {
+					dataSrc: "data",
+					type: "post",
+					url: "Components/AjaxProxy.cfc",
+					data: this.getAJAXData
+				}
+			}
+		);
+	}
+	catch(CatchError) {
+		RecipeDB.main.onJavascriptError(CatchError, "RecipeDB.page.setupRecipeList");
+	};
+
+};
+
+RecipeDB.page.getFilter = function() {
+
+	var Filter = {
+		mineOnly: false,
+		minePublic: false,
+		minePrivate: false,
+		mineEmpty: false,
+		mineNoPicture: false,
+		othersOnly: false
+	};
+
+	Filter.mineOnly = $("#" + RecipeDB.page.constants.FILTER_MINE_ID).prop("checked");
+	Filter.minePublic = $("#" + RecipeDB.page.constants.FILTER_MINE_PUBLIC_ID).prop("checked");
+	Filter.minePrivate = $("#" + RecipeDB.page.constants.FILTER_MINE_PRIVATE_ID).prop("checked");
+	Filter.mineEmpty = $("#" + RecipeDB.page.constants.FILTER_MINE_EMPTY_ID).prop("checked");
+	Filter.mineNoPicture = $("#" + RecipeDB.page.constants.FILTER_MINE_NO_PICTURE_ID).prop("checked");
+	Filter.othersOnly = $("#" + RecipeDB.page.constants.FILTER_OTHER_ID).prop("checked");
+
+	return Filter;
+};
+
+RecipeDB.page.applyFilter = function() {
+
+	$("#" + RecipeDB.page.constants.RECIPE_LIST_TABLE_ID).DataTable().ajax.reload();
+
+};
+
+RecipeDB.page.getAJAXData = function() {
+
+	return {
+		method: "call2",
+		argumentCollection: JSON.stringify({
+			controller: "GetRecipeListData",
+			authKey: RecipeDB.main.constants.AUTH_KEY,
+			parameters: RecipeDB.page.getFilter()
+		})
+	}
+
 };
