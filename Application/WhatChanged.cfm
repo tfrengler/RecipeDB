@@ -2,7 +2,7 @@
 <!--- CONTROLLER ACTIONS --->
 
 <cftry>
-	<cfset viewData = createObject("component", "Controllers.Communication").getPatchNotesView() />
+	<cfset viewData = createObject("component", "Controllers.GetPatchNotesView").main() />
 
 	<!DOCTYPE html>
 	<html lang="en" >

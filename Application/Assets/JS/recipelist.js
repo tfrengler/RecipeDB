@@ -210,7 +210,7 @@ RecipeDB.page.applyFilter = function() {
 RecipeDB.page.getAJAXData = function() {
 
 	return {
-		method: "call2",
+		method: "call",
 		argumentCollection: JSON.stringify({
 			controller: "GetRecipeListData",
 			authKey: RecipeDB.main.constants.AUTH_KEY,

@@ -1,7 +1,7 @@
 <cfprocessingdirective pageEncoding="utf-8" />
 
 <cftry>
-	<cfset viewData = createObject("component", "Controllers.Recipes").getRecipeView(
+	<cfset viewData = createObject("component", "Controllers.GetRecipeView").main(
 		recipeID=URL.RecipeID,
 		currentUser=session.currentUser
 	) />

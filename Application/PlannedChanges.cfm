@@ -1,7 +1,7 @@
 <cfprocessingdirective pageEncoding="utf-8" />
 
 <cftry>
-	<cfset viewData = createObject("component", "Controllers.Communication").getRoadmapView() />
+	<cfset viewData = createObject("component", "Controllers.GetRoadmapView").main() />
 
 	<!DOCTYPE html>
 	<html lang="en" >

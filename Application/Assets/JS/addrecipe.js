@@ -35,8 +35,7 @@ RecipeDB.page.addNewRecipe = function() {
 		data: {
 			method: "call",
 			argumentCollection: JSON.stringify({
-				component: "Recipes",
-				function: "addNewRecipe",
+				controller: "AddNewRecipe",
 				authKey: RecipeDB.main.constants.AUTH_KEY,
 				parameters: {
 					name: RecipeName

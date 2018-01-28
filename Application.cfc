@@ -23,6 +23,8 @@
 	<cffunction name="onApplicationStart" returnType="boolean" output="false">
 
 		<cfset var configXML = "" />
+		<cfset var queryListOfControllers = queryNew("") />
+		<cfset application.allowedAJAXControllers = "" />
 
 		<!--- Set up paths based on config file --->
 		<cffile action="read" file="Application/Assets/config.xml" charset="utf-8" variable="configXML" accept="application/xml" />
@@ -72,6 +74,13 @@
 					tempDirectory = application.settings.files.temp
 			) />
 		</cfif>
+
+		<!--- SETTING UP ALLOWED AJAX PROXY CFC TARGETS --->
+		<cfdirectory directory="/Controllers" action="list" filter="*.cfc" listinfo="name" name="queryListOfControllers" >
+
+		<cfloop query=#queryListOfControllers# >
+			<cfset application.allowedAJAXControllers = listAppend(application.allowedAJAXControllers, queryListOfControllers.name) />
+		</cfloop>
 
 		<cfreturn true />
 	</cffunction>

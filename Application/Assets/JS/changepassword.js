@@ -98,8 +98,7 @@ RecipeDB.page.changePassword = function() {
 		data: {
 			method: "call",
 			argumentCollection: JSON.stringify({
-				component: "Users",
-				function: "changePassword",
+				controller: "ChangePassword",
 				authKey: RecipeDB.main.constants.AUTH_KEY,
 				parameters: {
 					newPassword: NewPasswordField2.val().trim()

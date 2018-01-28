@@ -192,8 +192,7 @@ RecipeDB.page.saveChanges = function() {
 		data: {
 			method: "call",
 			argumentCollection: JSON.stringify({
-				component: "Recipes",
-				function: "updateRecipe",
+				controller: "UpdateRecipe",
 				authKey: RecipeDB.main.constants.AUTH_KEY,
 				parameters: {
 					recipeid: RecipeID,
@@ -260,8 +259,7 @@ RecipeDB.page.changePublicStatus = function() {
 		data: {
 			method: "call",
 			argumentCollection: JSON.stringify({
-				component: "Recipes",
-				function: "flipPublishedStatus",
+				controller: "FlipPublishedStatus",
 				authKey: RecipeDB.main.constants.AUTH_KEY,
 				parameters: {
 					recipeid: RecipeID
@@ -340,8 +338,7 @@ RecipeDB.page.deleteRecipe = function() {
 		data: {
 			method: "call",
 			argumentCollection: JSON.stringify({
-				component: "Recipes",
-				function: "deleteRecipe",
+				controller: "DeleteRecipe",
 				authKey: RecipeDB.main.constants.AUTH_KEY,
 				parameters: {
 					recipeid: RecipeID

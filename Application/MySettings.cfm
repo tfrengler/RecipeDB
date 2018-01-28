@@ -1,7 +1,7 @@
 <cfprocessingdirective pageEncoding="utf-8" />
 
 <cftry>
-	<cfset viewData = createObject("component", "Controllers.Users").getUserSettingsView(
+	<cfset viewData = createObject("component", "Controllers.GetUserSettingsView").main(
 		user=session.currentUser
 	) />
 

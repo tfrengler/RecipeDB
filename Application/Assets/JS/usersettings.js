@@ -51,8 +51,7 @@ RecipeDB.page.saveChanges = function() {
 		data: {
 			method: "call",
 			argumentCollection: JSON.stringify({
-				component: "Users",
-				function: "changeUserSettings",
+				controller: "ChangeUserSettings",
 				authKey: RecipeDB.main.constants.AUTH_KEY,
 				parameters: {
 					newusername: Username,
