@@ -2,7 +2,7 @@
 <cfprocessingdirective pageencoding="utf-8" />
 
 	<cfset this.name="RecipeDB" />
-	<cfset this.applicationtimeout = CreateTimeSpan(1,0,0,0) />
+	<cfset this.applicationtimeout = CreateTimeSpan(14,0,0,0) />
 	<cfset this.sessionmanagement = true />
 	<cfset this.sessiontimeout = CreateTimeSpan(0,0,35,0) />
 	<cfset this.loginstorage = "session" />
@@ -197,13 +197,13 @@
 		<cfreturn true />
 	</cffunction>
 
-	<cffunction name="onSessionEnd" returntype="boolean" output="false">
+	<cffunction name="onSessionEnd" returntype="void" output="false">
+		<cfargument name="SessionScope" required=true /> 
+    	<cfargument name="ApplicationScope" required=false /> 
 
 		<cfcookie name="CFID" value="" expires="NOW" />
 		<cfcookie name="CFTOKEN" value="" expires="NOW" />
-		<cfset sessionInvalidate() />
-		
-		<cfreturn true />
-		
+		<cfset structClear(arguments.SessionScope) />
 	</cffunction>
+
 </cfcomponent>

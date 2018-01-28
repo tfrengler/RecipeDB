@@ -69,7 +69,7 @@
 		},
 		BrowserLastUsed: {
 			type: "varchar",
-			size: 200,
+			size: 300,
 			primary_key: false,
 			foreign_key: false,
 			references: structNew()

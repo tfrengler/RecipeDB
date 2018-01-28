@@ -49,10 +49,15 @@
 		<cfset returnData.data.LastModifiedByUser = Recipe.getLastModifiedByUser().getDisplayName() />
 		<cfset returnData.data.Ingredients = Recipe.getIngredients() />
 		<cfset returnData.data.Description = Recipe.getDescription() />
-		<cfset returnData.data.Picture = "Modules/RecipeImageDownloader.cfm?fileName=#Recipe.getPicture()#.png" />
 		<cfset returnData.data.Instructions = Recipe.getInstructions() />
 		<cfset returnData.data.Published = Recipe.getPublished() />
 		<!--- <cfset returnData.Comments = Recipe.getComments() /> --->
+
+		<cfif len(Recipe.getPicture()) IS 0 >
+			<cfset returnData.data.Picture = "Assets/Pictures/Standard/foodexample.jpg" />
+		<cfelse>
+			<cfset returnData.data.Picture = "Controllers/RecipeImageDownloader.cfm?fileName=#Recipe.getPicture()#.png" />
+		</cfif>
 
 		<cfreturn returnData />
 	</cffunction>
