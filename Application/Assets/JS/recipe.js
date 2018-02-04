@@ -139,7 +139,7 @@ RecipeDB.page.enableEditing = function() {
 	tinyMCE.init(
 		{
 			selector: "textarea",
-			plugins: "paste,lists,code",
+			plugins: "paste,lists,code,charmap",
 			paste_as_text: true,
 			hidden_input: false
 		}
