@@ -15,6 +15,14 @@
 			Datasource=application.Settings.Datasource
 		) />
 
+		<cfif Recipe.getCreatedByUser().getId() IS NOT session.currentUser.getId() >
+			
+			<cfheader statuscode="500" />
+			<cfset returnData.statuscode = 1 />
+			<cfreturn returnData />
+
+		</cfif>
+
 		<cfif Recipe.getPublished() IS false >
 			<cfset Recipe.setPublished(status=true) />
 			<cfset returnData.data = true />

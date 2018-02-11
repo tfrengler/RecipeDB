@@ -4,7 +4,7 @@
 	<!DOCTYPE html>
 	<html lang="en" >
 
-		<cfmodule template="Views/HTMLHead.cfm" pageJavascript="changepassword" pageStylesheet="changepassword" >
+		<cfmodule template="Modules/HTMLHead.cfm" pageJavascript="changepassword" pageStylesheet="changepassword" >
 
 		<body class="roboto-font" >
 			<cfinclude template="Views/Menu.cfm" />

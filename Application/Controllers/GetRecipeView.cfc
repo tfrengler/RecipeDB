@@ -56,7 +56,7 @@
 		<cfif len(Recipe.getPicture()) IS 0 >
 			<cfset returnData.data.Picture = "Assets/Pictures/Standard/foodexample.jpg" />
 		<cfelse>
-			<cfset returnData.data.Picture = "Controllers/RecipeImageDownloader.cfm?fileName=#Recipe.getPicture()#.png" />
+			<cfset returnData.data.Picture = "Modules/RecipeImageDownloader.cfm?fileName=#Recipe.getPicture()#.png" />
 		</cfif>
 
 		<cfreturn returnData />

@@ -38,13 +38,15 @@ RecipeDB.dialog.init = function() {
 
 RecipeDB.dialog.uploadPicture = function() {
 
+	var AjaxQueryString = "";
 	var RecipeID = parseInt($("#" + RecipeDB.page.constants.RECIPEID_ID).val());
 	var FormToPost = new FormData(
 		document.getElementById(RecipeDB.dialog.constants.PICTURE_UPLOAD_FORM_ID)
 	);
 
-	FormToPost.append("recipeID", RecipeID);
-	FormToPost.append("authKey", RecipeDB.main.constants.AUTH_KEY);
+	var ControllerArguments = {
+		recipeID: RecipeID
+	};
 
 	if (RecipeDB.main.transient.ajaxCallInProgress === false) {
 		RecipeDB.main.transient.ajaxCallInProgress = true
@@ -52,14 +54,18 @@ RecipeDB.dialog.uploadPicture = function() {
 		return false;
 	};
 
+	AjaxQueryString = "Components/AjaxProxy.cfc?method=callWithFileUpload&controller=ChangeRecipePicture";
+	AjaxQueryString = AjaxQueryString + "&authKey=" + RecipeDB.main.constants.AUTH_KEY;
+	AjaxQueryString = AjaxQueryString + "&parameters=" + encodeURIComponent(JSON.stringify(ControllerArguments));
+
 	$.ajax({
 		type: "POST",
 		timeout: RecipeDB.main.constants.AJAX_TIMEOUT,
-		url: "Controllers/UploadRecipePicture.cfm",
+		url: AjaxQueryString,
 		dataType: "json",
 		enctype: "multipart/form-data",
-		processData: false, /* These two are required for file posting via AJAX to work */
-		contentType: false, /* These two are required for file posting via AJAX to work */
+		processData: false, // These two are required for file posting via AJAX to work
+		contentType: false, // These two are required for file posting via AJAX to work
 		data: FormToPost,
 
 		complete: function() {
@@ -78,7 +84,6 @@ RecipeDB.dialog.uploadPicture = function() {
 		}
 
 	});
-
 };
 
 RecipeDB.dialog.onChangeFile = function() {
@@ -170,7 +175,7 @@ RecipeDB.dialog.onPictureUploaded = function(ControllerResponse) {
 
 	if (ControllerResponse.statuscode === 0) {
 
-		$("#" + RecipeDB.page.constants.PICTURE_ID).attr("src", "Controllers/RecipeImageDownloader.cfm?fileName=" + ControllerResponse.data);
+		$("#" + RecipeDB.page.constants.PICTURE_ID).attr("src", "Modules/RecipeImageDownloader.cfm?fileName=" + ControllerResponse.data);
 		RecipeDB.main.notifyUserOfSuccess( MessageBox, "PICTURE CHANGED", 2000);
 		$("#" + RecipeDB.main.constants.DIALOG_ID).dialog("close");
 

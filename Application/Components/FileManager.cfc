@@ -18,6 +18,30 @@
 		height: 50
 	} />
 
+	<cffunction name="deleteTempFile" access="public" returntype="void" output="false" hint="" >
+		<cfargument name="file" type="string" required="true" />
+
+		<cfset var fullPathToFile = variables.tempDirectory & "\" & arguments.file />
+
+		<cfif fileExists( fullPathToFile ) >
+			<cfset fileDelete(fullPathToFile) />
+		<cfelse>
+			<cfthrow message="Error deleting temp file" detail="File '#fullPathToFile#' does not exist" />
+		</cfif>
+	</cffunction>
+
+	<cffunction name="deleteImage" access="public" returntype="void" output="false" hint="" >
+		<cfargument name="file" type="string" required="true" />
+
+		<cfset var fullPathToFile = variables.recipePicturePath & "\" & arguments.file />
+
+		<cfif fileExists( fullPathToFile ) >
+			<cfset fileDelete(fullPathToFile) />
+		<cfelse>
+			<cfthrow message="Error deleting image" detail="File '#fullPathToFile#' does not exist" />
+		</cfif>
+	</cffunction>
+
 	<cffunction name="uploadImage" access="public" returntype="string" output="false" hint="" >
 		<cfargument name="fileName" type="string" required="true" />
 

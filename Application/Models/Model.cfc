@@ -247,6 +247,7 @@
 					WHERE #variables.getTableKey()# = <cfqueryparam sqltype="BIGINT" value="#variables.getID()#" />
 				</cfquery>
 
+				<cfset structClear(this) />
 				<cftransaction action="commit" />
 
 				<cfcatch>
@@ -257,8 +258,6 @@
 				</cfcatch>
 			</cftry>
 		</cftransaction>
-
-		<cfset variables.IsStatic = true />
 	</cffunction>
 
 	<cffunction name="exists" returntype="boolean" access="public" output="false" hint="" >

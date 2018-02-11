@@ -15,6 +15,18 @@
 			Datasource=application.Settings.Datasource
 		) />
 
+		<cfif Recipe.getCreatedByUser().getId() IS NOT session.currentUser.getId() >
+
+			<cfheader statuscode="500" />
+			<cfset returnData.statuscode = 1 />
+			<cfreturn returnData />
+			
+		</cfif>
+
+		<cfif len(Recipe.getPicture()) GT 0 >
+			<cfset application.fileManager.deleteImage(file=Recipe.getPicture() & ".png") />
+		</cfif>
+		
 		<cfset Recipe.delete() />
 
 		<cfreturn returnData />

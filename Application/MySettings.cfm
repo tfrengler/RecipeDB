@@ -8,7 +8,7 @@
 	<!DOCTYPE html>
 	<html lang="en" >
 
-		<cfmodule template="Views/HTMLHead.cfm" pageJavascript="usersettings" >
+		<cfmodule template="Modules/HTMLHead.cfm" pageJavascript="usersettings" >
 
 		<body class="roboto-font" >
 			<cfinclude template="Views/Menu.cfm" />

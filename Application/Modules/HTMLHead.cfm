@@ -47,9 +47,11 @@
 		$(document).ready(function() {
 			RecipeDB.main.init();
 			<cfoutput>#toScript(session.AuthKey, "RecipeDB.main.constants.AUTH_KEY", false)#</cfoutput>
+			RecipeDB.main.constants = Object.freeze(RecipeDB.main.constants);
 			
 			if (RecipeDB.page !== undefined) {
 				RecipeDB.page.init();
+				RecipeDB.page.constants = Object.freeze(RecipeDB.page.constants);
 			} else {
 				console.log("No page JS to init");
 			};

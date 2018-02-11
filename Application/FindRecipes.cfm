@@ -4,7 +4,7 @@
 	<!DOCTYPE html>
 	<html lang="en" >
 
-		<cfmodule template="Views/HTMLHead.cfm" pageJavascript="recipelist" pageStylesheet="recipelist" >
+		<cfmodule template="Modules/HTMLHead.cfm" pageJavascript="recipelist" pageStylesheet="recipelist" >
 
 		<body class="roboto-font" >
 			<cfinclude template="Views/Menu.cfm" />

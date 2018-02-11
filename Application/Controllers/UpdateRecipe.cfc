@@ -24,6 +24,14 @@
 			Datasource=application.Settings.Datasource
 		) />
 
+		<cfif Recipe.getCreatedByUser().getId() IS NOT session.currentUser.getId() >
+
+			<cfheader statuscode="500" />
+			<cfset returnData.statuscode = 2 />
+			<cfreturn returnData />
+			
+		</cfif>
+
 		<cfset Recipe.setIngredients(Data=arguments.UpdateData.ingredients) />
 		<cfset Recipe.setDescription(Data=arguments.UpdateData.description) />
 		<cfset Recipe.setInstructions(Data=arguments.UpdateData.instructions) />

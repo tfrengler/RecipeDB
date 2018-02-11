@@ -6,7 +6,7 @@
 	<!DOCTYPE html>
 	<html lang="en" >
 
-		<cfinclude template="Views/HTMLHead.cfm" />
+		<cfinclude template="Modules/HTMLHead.cfm" />
 
 		<body class="roboto-font" >
 			<cfinclude template="Views/Menu.cfm" />

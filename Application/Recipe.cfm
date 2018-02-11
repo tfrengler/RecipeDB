@@ -9,7 +9,7 @@
 	<!DOCTYPE html>
 	<html lang="en" >
 
-		<cfmodule template="Views/HTMLHead.cfm" pageJavascript="recipe" pageStylesheet="recipe" >
+		<cfmodule template="Modules/HTMLHead.cfm" pageJavascript="recipe" pageStylesheet="recipe" >
 
 		<body class="roboto-font" >
 			<cfinclude template="Views/Menu.cfm" />
