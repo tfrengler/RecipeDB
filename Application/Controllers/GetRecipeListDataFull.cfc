@@ -1,50 +1,88 @@
 <cfcomponent output="false" >
-<cfprocessingdirective pageEncoding="utf-8" />
+<cfprocessingdirective pageEncoding="utf-8" />	
 
-	<!--- AJAX METHOD --->
-	<cffunction name="main" access="public" returntype="struct" returnformat="JSON" output="false" hint="" >
-		<!--- 
-			Looking further down, yes I realize that the formatting of the data for viewing should be done in the VIEW
-			rather than here in a backend CFC. Sadly we are not in control of the rendering of each table row since datables
-			control that, hence we NEED to do it here for max security!
-		 --->
+	<cffunction name="main" access="public" returntype="struct" output="false" hint="" >
+		<cfargument name="filterSettings" type="struct" required="false" default="#structNew()#" /> 
 
 		<cfset var returnData = {
  			statuscode: 0,
  			data: arrayNew(1)
  		} />
 
-		<cfset var AllRecipes = createObject("component", "Models.Recipe").getData(
-			Datasource=application.Settings.Datasource,
-			ColumnList="RecipeID,Name,DateCreated,DateTimeLastModified,CreatedByUser,Ingredients,Published"
+		<cfset var allRecipes = createObject("component", "Models.Recipe").getData(
+			datasource=application.settings.datasource,
+			cachedWithin=createTimespan(0, 0, 2, 0)
 		) >
-		<cfset var Users = createObject("component", "Models.User").getData( 
-			Datasource=application.Settings.Datasource,
-			ColumnList="UserID,DisplayName"
+		<cfset var users = createObject("component", "Models.User").getData( 
+			datasource=application.settings.datasource,
+			columnList="UserID,DisplayName",
+			cachedWithin=createTimespan(0, 1, 0, 0)
 		) />
 		
-		<cfset var ColumnNamesFromQuery = AllRecipes.ColumnList />
-		<cfset var CurrentColumnName = "" />
-		<cfset var CurrentRecipeData = structNew() />
-		<cfset var UserDisplayName = "" />
-		<cfset var CurrentColumnFromCurrentRowInQuery = "" />
-		<cfset var UserIDColumns = "CreatedByUser,LastModifiedByUser" />
+		<cfset var columnNamesFromQuery = "" />
+		<cfset var currentColumnName = "" />
+		<cfset var currentRecipeData = structNew() />
+		<cfset var userDisplayName = "" />
+		<cfset var currentColumnFromCurrentRowInQuery = "" />
+		<cfset var userIDColumns = "CreatedByUser,LastModifiedByUser" />
+		<cfset var filteredRecipes = queryNew("") />
 
-		<cfloop query="AllRecipes" >
+		<cfif structIsEmpty(arguments.filterSettings) IS false >
+			<cfquery name="FilteredRecipes" dbtype="query" >
+				SELECT RecipeID,Name,DateCreated,DateTimeLastModified,CreatedByUser,Published
+				FROM allRecipes
+				WHERE 1 = 1
 
-			<!--- 
-				Yes, the bloody controller is not supposed to reach into the session-scope
-				but since this bloody thing is called by AJAX this is the most secure way
-			--->
-			<cfif AllRecipes.CreatedByUser IS NOT session.currentUser.getId() >
-				<cfif AllRecipes.Published IS false >
+				<cfif structKeyExists(arguments.filterSettings, "mineOnly") >
+					AND CreatedByUser = #session.currentUser.getId()#
+				<cfelseif structKeyExists(arguments.filterSettings, "othersOnly") >
+					AND CreatedByUser != #session.currentUser.getId()#
+				<cfelse>
+
+					<cfif structKeyExists(arguments.filterSettings, "mineEmpty") >
+						AND char_length(Ingredients) = 0
+						AND char_length(Description) = 0
+						AND char_length(Instructions) = 0
+					</cfif>
+
+					<cfif structKeyExists(arguments.filterSettings, "minePrivate") IS false OR structKeyExists(arguments.filterSettings, "minePublic") IS false >
+
+						<cfif structKeyExists(arguments.filterSettings, "minePrivate") >
+							AND Published = false
+						</cfif>
+
+						<cfif structKeyExists(arguments.filterSettings, "minePublic") >
+							AND Published = true
+						</cfif>
+					<cfelse>
+						AND CreatedByUser = #session.currentUser.getId()#
+					</cfif>
+
+					<cfif structKeyExists(arguments.filterSettings, "mineNoPicture") >
+						AND char_length(Picture) = 0
+					</cfif>
+				</cfif>
+			</cfquery>
+		<cfelse>
+			<cfquery name="FilteredRecipes" dbtype="query" >
+				SELECT RecipeID,Name,DateCreated,DateTimeLastModified,CreatedByUser,Published
+				FROM allRecipes
+			</cfquery>
+		</cfif>
+
+		<cfset ColumnNamesFromQuery = FilteredRecipes.ColumnList />
+
+		<cfloop query="FilteredRecipes" >
+
+			<cfif FilteredRecipes.CreatedByUser IS NOT session.currentUser.getId() >
+				<cfif FilteredRecipes.Published IS false >
 					<cfcontinue />
 				</cfif>
 			</cfif>
 
 			<cfloop list=#ColumnNamesFromQuery# index="CurrentColumnName" >
 
-				<cfset CurrentColumnFromCurrentRowInQuery = AllRecipes[CurrentColumnName] />
+				<cfset CurrentColumnFromCurrentRowInQuery = FilteredRecipes[CurrentColumnName] />
 
 				<cfset structInsert(CurrentRecipeData, CurrentColumnName, structNew()) />
 				<cfset structInsert(CurrentRecipeData[CurrentColumnName], "display", "") />

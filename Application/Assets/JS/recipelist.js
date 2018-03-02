@@ -7,7 +7,7 @@ RecipeDB.page.constants.RECIPE_LIST_TABLE_ID = "RecipeList-Table";
 RecipeDB.page.constants.OPEN_FILTER_MENU_BUTTON_ID = "Open-Filter-Menu";
 RecipeDB.page.constants.CLOSE_FILTER_MENU_BUTTON_ID = "Close-Filter-Menu";
 RecipeDB.page.constants.FILTER_MENU_ID = "Filter-Menu";
-RecipeDB.page.constants.FILTER_CHECKBOXES_NAME = "FilterOption";
+RecipeDB.page.constants.FILTER_CHECKBOXES_CLASS = "FilterOption";
 RecipeDB.page.constants.FILTER_MINE_ID = "Filter-Mine";
 RecipeDB.page.constants.FILTER_MINE_PUBLIC_ID = "Filter-MinePublic";
 RecipeDB.page.constants.FILTER_MINE_PRIVATE_ID = "Filter-MinePrivate";
@@ -16,6 +16,7 @@ RecipeDB.page.constants.FILTER_MINE_NO_PICTURE_ID = "Filter-MineNoPicture";
 RecipeDB.page.constants.FILTER_OTHER_ID = "Filter-Others";
 RecipeDB.page.constants.CLEAR_FILTER_BUTTON_ID = "ClearFilter";
 RecipeDB.page.constants.APPLY_FILTER_BUTTON_ID = "ApplyFilter";
+RecipeDB.page.constants.NOTIFICATION_BOX = "Notification-Box";
 
 RecipeDB.page.constants.RECIPE_LIST_COLUMNS_SETUP = [
 	{
@@ -79,12 +80,12 @@ RecipeDB.page.init = function() {
 		RecipeDB.page.openCloseFilterMenu(true);
 	});
 
-	$("[name='" + this.constants.FILTER_CHECKBOXES_NAME + "']").click(function() {
+	$("[class='" + this.constants.FILTER_CHECKBOXES_CLASS + "']").click(function() {
 		RecipeDB.page.onSelectFilterOption(this)
 	});
 
 	$("#" + this.constants.CLEAR_FILTER_BUTTON_ID).click(function() {
-		$("[name='" + RecipeDB.page.constants.FILTER_CHECKBOXES_NAME + "']").prop("checked", false);
+		$("[class='" + RecipeDB.page.constants.FILTER_CHECKBOXES_CLASS + "']").prop("checked", false);
 	});
 
 	$("#" + this.constants.APPLY_FILTER_BUTTON_ID).click(this.applyFilter);
@@ -135,7 +136,7 @@ RecipeDB.page.onSelectFilterOption = function(FilterOption) {
 	}
 
 	if (FilterOption.attr("id") === RecipeDB.page.constants.FILTER_MINE_ID || FilterOption.attr("id") === RecipeDB.page.constants.FILTER_OTHER_ID) {
-		$("[name='" + RecipeDB.page.constants.FILTER_CHECKBOXES_NAME + "']").prop("checked", false);
+		$("[class='" + RecipeDB.page.constants.FILTER_CHECKBOXES_CLASS + "']").prop("checked", false);
 		FilterOption.prop("checked", true);
 	}
 
@@ -182,40 +183,58 @@ RecipeDB.page.setupRecipeList = function() {
 
 RecipeDB.page.getFilter = function() {
 
-	var Filter = {
-		mineOnly: false,
-		minePublic: false,
-		minePrivate: false,
-		mineEmpty: false,
-		mineNoPicture: false,
-		othersOnly: false
+	var filter = {};
+
+	if ($("#" + RecipeDB.page.constants.FILTER_MINE_ID).prop("checked") == true) {
+		filter.mineOnly = true;
+	};
+	if ( $("#" + RecipeDB.page.constants.FILTER_MINE_PUBLIC_ID).prop("checked") == true) {
+		filter.minePublic = true;
+	}
+	if ( $("#" + RecipeDB.page.constants.FILTER_MINE_PRIVATE_ID).prop("checked") == true) {
+		filter.minePrivate = true;
+	}
+	if ( $("#" + RecipeDB.page.constants.FILTER_MINE_EMPTY_ID).prop("checked") == true) {
+		filter.mineEmpty = true;
+	}
+	if ( $("#" + RecipeDB.page.constants.FILTER_MINE_NO_PICTURE_ID).prop("checked") == true) {
+		filter.mineNoPicture = true;
+	}
+	if ( $("#" + RecipeDB.page.constants.FILTER_OTHER_ID).prop("checked") == true) {
+		filter.othersOnly = true;
 	};
 
-	Filter.mineOnly = $("#" + RecipeDB.page.constants.FILTER_MINE_ID).prop("checked");
-	Filter.minePublic = $("#" + RecipeDB.page.constants.FILTER_MINE_PUBLIC_ID).prop("checked");
-	Filter.minePrivate = $("#" + RecipeDB.page.constants.FILTER_MINE_PRIVATE_ID).prop("checked");
-	Filter.mineEmpty = $("#" + RecipeDB.page.constants.FILTER_MINE_EMPTY_ID).prop("checked");
-	Filter.mineNoPicture = $("#" + RecipeDB.page.constants.FILTER_MINE_NO_PICTURE_ID).prop("checked");
-	Filter.othersOnly = $("#" + RecipeDB.page.constants.FILTER_OTHER_ID).prop("checked");
-
-	return Filter;
+	return filter;
 };
 
 RecipeDB.page.applyFilter = function() {
-
-	$("#" + RecipeDB.page.constants.RECIPE_LIST_TABLE_ID).DataTable().ajax.reload();
-
+	RecipeDB.main.ajaxLoadInnerHTML(true, $('#' + RecipeDB.page.constants.APPLY_FILTER_BUTTON_ID));
+	RecipeDB.main.notifyUserOfLoading($('#' + RecipeDB.page.constants.NOTIFICATION_BOX));
+	$("#" + RecipeDB.page.constants.RECIPE_LIST_TABLE_ID).DataTable().ajax.reload(RecipeDB.page.onApplyFilterComplete);
 };
 
 RecipeDB.page.getAJAXData = function() {
 
-	return {
+	var data = {
 		method: "call",
-		argumentCollection: JSON.stringify({
-			controller: "GetRecipeListData",
+		argumentCollection: {
+			controller: "GetRecipeListDataFull",
 			authKey: RecipeDB.main.constants.AUTH_KEY,
-			parameters: RecipeDB.page.getFilter()
-		})
-	}
+			parameters: {}
+		}
+	};
 
+	var filterSettings = RecipeDB.page.getFilter();
+
+	if (Object.keys(filterSettings).length > 0) {
+		data.argumentCollection.parameters.filterSettings = filterSettings;
+	};
+
+	data.argumentCollection = JSON.stringify(data.argumentCollection);
+	return data;
+};
+
+RecipeDB.page.onApplyFilterComplete = function() {
+	RecipeDB.main.ajaxLoadInnerHTML(false, $('#' + RecipeDB.page.constants.APPLY_FILTER_BUTTON_ID));
+	$('#' + RecipeDB.page.constants.NOTIFICATION_BOX).hide();
 };

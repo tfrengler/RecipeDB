@@ -76,7 +76,7 @@
 		</cfif>
 
 		<!--- SETTING UP ALLOWED AJAX PROXY CFC TARGETS --->
-		<cfdirectory directory="/Controllers" action="list" filter="*.cfc" listinfo="name" name="queryListOfControllers" >
+		<cfdirectory directory="/Controllers" action="list" filter="*.cfc" type="file" listinfo="name" name="queryListOfControllers" >
 
 		<cfloop query=#queryListOfControllers# >
 			<cfset application.allowedAJAXControllers = listAppend(application.allowedAJAXControllers, queryListOfControllers.name) />

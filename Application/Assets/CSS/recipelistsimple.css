@@ -1,0 +1,16 @@
+#Recipe-Name {
+	text-align: center;
+	font-size: 1.5em;
+}
+
+.recipe-thumbnail-wrapper {
+	padding: 0.5em;
+}
+
+a:link {
+	text-decoration: none;
+}
+
+img {
+	overflow: hidden;
+}
