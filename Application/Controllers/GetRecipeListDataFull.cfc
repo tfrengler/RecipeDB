@@ -11,7 +11,7 @@
 
 		<cfset var allRecipes = createObject("component", "Models.Recipe").getData(
 			datasource=application.settings.datasource,
-			cachedWithin=createTimespan(0, 0, 2, 0)
+			cachedWithin=createTimespan(0, 0, 1, 0)
 		) >
 		<cfset var users = createObject("component", "Models.User").getData( 
 			datasource=application.settings.datasource,

@@ -14,6 +14,7 @@
 	<cfset BrowserLastUsed = "" />
 	<cfset Blocked = true />
 	<cfset AuthKey = "" />
+	<cfset Settings = structNew() />
 
 	<cfset TableName = "Users" />
 
@@ -69,6 +70,10 @@
 
 	<cffunction name="getAuthKey" access="public" returntype="string" output="false" hint="" >
 		<cfreturn variables.AuthKey />
+	</cffunction>
+
+	<cffunction name="getSettings" access="public" returntype="struct" output="false" hint="" >
+		<cfreturn variables.Settings />
 	</cffunction>
 
 	<!--- Setters --->
@@ -151,7 +156,28 @@
 		<cfset variables.AuthKey = arguments.AuthKey />
 	</cffunction>
 
+	<cffunction name="setUserSettings" access="private" output="false" hint="" >
+		<cfargument name="data" type="struct" required="true" hint="" />
+
+		<cfset variables.Settings = arguments.data />
+	</cffunction>
+
 	<!--- Methods --->
+
+	<cffunction name="updateUserSettings" access="public" output="false" hint="" >
+		<cfargument name="data" type="struct" required="true" hint="" />
+		<cfargument name="category" type="string" required="true" hint="" />
+
+		<cfif structKeyExists(variables.Settings, arguments.category) IS false >
+			<cfthrow message="Error updating user settings" detail="Category '#arguments.category#' is not valid" />
+		</cfif>
+
+		<cfif structIsEmpty(arguments.data) >
+			<cfthrow message="Error updating user settings" detail="Data argument has no keys" />
+		</cfif>
+
+		<cfset variables.Settings[arguments.category] = arguments.data />
+	</cffunction>
 
 	<cffunction name="changePassword" returntype="void" access="public" output="false" hint="" >
 		<cfargument name="SecurityManager" type="Components.SecurityManager" required="true" hint="A reference to an instance of the SecurityManager object" />
@@ -219,6 +245,80 @@
 		<cfset variables.setBrowserLastUsed( UserAgentString=arguments.UserAgentString ) />
 	</cffunction>
 
+	<cffunction name="saveSettings" returntype="void" access="public" output="false" hint="" >
+		<cfset variables.onStatic() />
+
+		<cfset var SaveSettings = queryNew("") />
+		<cfset var Settings = variables.getSettings() />
+
+		<cftransaction action="begin" >
+			<cftry>
+				<cfquery name="SaveSettings" datasource="#variables.getDatasource()#" >
+					UPDATE UserSettings
+					SET
+						FindRecipes_ListType = <cfqueryparam sqltype="LONGVARCHAR" value=#Settings.findRecipes.listType# />,
+						FindRecipes_SortOnColumn = <cfqueryparam sqltype="LONGVARCHAR" value=#Settings.findRecipes.sortOnColumn# />,
+						FindRecipesFilterOn_MineOnly = <cfqueryparam sqltype="BOOLEAN" value=#Settings.findRecipes.filter.mineOnly# />,
+						FindRecipesFilterOn_MinePublic = <cfqueryparam sqltype="BOOLEAN" value=#Settings.findRecipes.filter.minePublic# />,
+						FindRecipesFilterOn_MinePrivate = <cfqueryparam sqltype="BOOLEAN" value=#Settings.findRecipes.filter.minePrivate# />,
+						FindRecipesFilterOn_MineEmpty = <cfqueryparam sqltype="BOOLEAN" value=#Settings.findRecipes.filter.mineEmpty# />,
+						FindRecipesFilterOn_MineNoPicture = <cfqueryparam sqltype="BOOLEAN" value=#Settings.findRecipes.filter.mineNoPicture# />,
+						FindRecipesFilterOn_OtherUsersOnly = <cfqueryparam sqltype="BOOLEAN" value=#Settings.findRecipes.filter.otherUsersOnly# />
+					WHERE BelongsToUser = <cfqueryparam sqltype="BIGINT" value=#getID()# />;
+				</cfquery>
+
+				<cftransaction action="commit" />
+
+				<cfset variables.loadSettings() />
+			<cfcatch>
+
+				<cftransaction action="rollback" />
+				<cfthrow object="#cfcatch#" />
+
+			</cfcatch>
+			</cftry>
+		</cftransaction>
+	</cffunction>
+
+	<cffunction name="loadSettings" returntype="void" access="public" output="false" hint="" >
+		<cfset var UserSettingsQuery = queryNew("") />
+
+		<cfquery name="UserSettingsQuery" datasource="#variables.getDatasource()#" >
+			SELECT 
+				FindRecipes_ListType,
+				FindRecipes_SortOnColumn,
+				FindRecipesFilterOn_MineOnly,
+				FindRecipesFilterOn_MinePublic,
+				FindRecipesFilterOn_MinePrivate,
+				FindRecipesFilterOn_MineEmpty,
+				FindRecipesFilterOn_MineNoPicture,
+				FindRecipesFilterOn_OtherUsersOnly
+			FROM UserSettings
+			WHERE BelongsToUser = <cfqueryparam sqltype="BIGINT" value="#getID()#" />
+		</cfquery>
+
+		<cfif UserSettingsQuery.RecordCount GT 0 >
+			<cfset UserSettingsStruct = {
+				findRecipes: {
+					listType: UserSettingsQuery.FindRecipes_ListType,
+					sortOnColumn: UserSettingsQuery.FindRecipes_SortOnColumn,
+					filter: {
+						mineOnly: UserSettingsQuery.FindRecipesFilterOn_MineOnly,
+						minePublic: UserSettingsQuery.FindRecipesFilterOn_MinePublic,
+						minePrivate: UserSettingsQuery.FindRecipesFilterOn_MinePrivate,
+						mineEmpty: UserSettingsQuery.FindRecipesFilterOn_MineEmpty,
+						mineNoPicture: UserSettingsQuery.FindRecipesFilterOn_MineNoPicture,
+						otherUsersOnly: UserSettingsQuery.FindRecipesFilterOn_OtherUsersOnly
+					}
+				}
+			} />
+
+			<cfset variables.setUserSettings(data=UserSettingsStruct) />
+		<cfelse>
+			<cfthrow message="Error when loading user settings data. There appears to be no settings for this UserID: #getID()#" />
+		</cfif>
+	</cffunction>
+
 	<cffunction name="save" returntype="void" access="public" output="false" hint="Persists the current state of the user to the db" >
 
 		<cfset variables.onStatic() />
@@ -227,8 +327,8 @@
 		
 		<cftransaction action="begin" >
 			<cftry>
-				<cfquery name="UpdateUser" datasource="#getDatasource()#" >
-					UPDATE #getTableName()#
+				<cfquery name="UpdateUser" datasource="#variables.getDatasource()#" >
+					UPDATE #variables.getTableName()#
 					SET	
 						DateCreated = <cfqueryparam sqltype="DATE" value="#getDateCreated()#" />,
 						DateTimeLastLogin = <cfqueryparam sqltype="TIMESTAMP" value="#getDateTimeLastLogin()#" />,
@@ -319,6 +419,43 @@
 			</cftry>
 		</cftransaction>
 
+		<cftransaction action="begin" >
+			<cftry>
+				<cfquery name="CreateDefaultSettings" datasource="#arguments.Datasource#" >
+					INSERT INTO UserSettings (
+						BelongsToUser,
+						FindRecipes_ListType,
+						FindRecipes_SortOnColumn,
+						FindRecipesFilterOn_MineOnly,
+						FindRecipesFilterOn_MinePublic,
+						FindRecipesFilterOn_MinePrivate,
+						FindRecipesFilterOn_MineEmpty,
+						FindRecipesFilterOn_MineNoPicture,
+						FindRecipesFilterOn_OtherUsersOnly
+					)
+					VALUES (
+						#getID()#,
+						'full',
+						'DateCreated',
+						false,
+						false,
+						false,
+						false,
+						false,
+						false
+					)
+				</cfquery>
+
+				<cftransaction action="commit" />
+			<cfcatch>
+
+				<cftransaction action="rollback" />
+				<cfthrow object="#cfcatch#" />
+
+			</cfcatch>
+			</cftry>
+		</cftransaction>
+
 		<cfreturn variables.init(
 			ID=CreateUser[ getTableKey() ],
 			Datasource=arguments.Datasource
@@ -370,6 +507,7 @@
 
 		<cfset variables.setID( Value=arguments.ID ) >
 		<cfset variables.load() />
+		<cfset variables.loadSettings() />
 
 		<cfset variables.IsStatic = false />
 

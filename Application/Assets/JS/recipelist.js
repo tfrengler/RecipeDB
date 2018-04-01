@@ -147,7 +147,6 @@ RecipeDB.page.onSelectFilterOption = function(FilterOption) {
 };
 
 RecipeDB.page.setupRecipeList = function() {
-	var CatchError = {};
 	try {
 		$("#" + RecipeDB.page.constants.RECIPE_LIST_TABLE_ID).DataTable(
 			{

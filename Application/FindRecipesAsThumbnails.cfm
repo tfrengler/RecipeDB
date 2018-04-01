@@ -1,6 +1,5 @@
 <cfprocessingdirective pageEncoding="utf-8" />
 <!--- CONTROLLER ACTIONS --->
-
 <cftry>
 	<cfset controller = createObject("component", "Controllers.GetRecipeListDataSimple") />
 
@@ -12,6 +11,7 @@
 	</cfif>
 	
 	<cfset viewData.recipes = contollerReturnData.data />
+	<cfset viewData.filter = session.currentUser.getSettings().findRecipes.filter />
 
 	<!DOCTYPE html>
 	<html lang="en" >

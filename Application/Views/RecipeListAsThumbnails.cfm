@@ -1,5 +1,7 @@
 <cfprocessingdirective pageEncoding="utf-8" />
+
 <cfparam name="attributes.recipes" type="array" />
+<cfparam name="attributes.filter" type="struct" />
 
 <cfoutput>
 
@@ -8,7 +10,7 @@
 </section>
 
 <form id="FilterForm" action="FindRecipesAsThumbnails.cfm" method="POST" enctype="application/x-www-form-urlencoded" >
-	<cfmodule template="RecipeListFilter.cfm" listSwitchButtonType="full" >
+	<cfmodule template="RecipeListFilter.cfm" listSwitchButtonType="full" filter=#attributes.filter# >
 </form>
 
 <section id="RecipeList-Container" class="container-fluid olive-wrapper-grey-background standard-rounded-corners" >
@@ -20,7 +22,10 @@
 			<div class="olive-wrapper-grey-background standard-rounded-corners standard-box-shadow" >
 
 				<a href="Recipe.cfm?RecipeID=#recipe.recipeID#">
-					<img src="#recipe.picture#" class="center-block img-responsive" />
+					<div class="recipe-image-loading center-block img-thumbnail" >
+						<img src="Assets/Pictures/Standard/ajax-loader-bigger.gif" class="center-block" />
+					</div>
+					<img src="#recipe.picture#" class="center-block img-responsive display-none" id="RecipeImage_#LoopIndex#" onload="RecipeDB.page.onRecipeImageLoaded(#LoopIndex#)" />
 				</a>
 
 				<div id="Recipe-Name" class="olive-background-color" >#encodeForHTML(recipe.name)#</div>
@@ -44,7 +49,7 @@
 		<cfif filterSetting IS "fieldnames" >
 			<cfcontinue/>
 		<cfelse>
-			$("[name='#filterSetting#']").prop("checked", true);
+			$("[name='#jsStringFormat(filterSetting)#']").prop("checked", true);
 		</cfif>
 
 	</cfloop>

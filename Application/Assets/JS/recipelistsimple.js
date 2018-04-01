@@ -73,3 +73,10 @@ RecipeDB.page.applyFilter = function() {
 	
 	$("#FilterForm").submit();
 };
+
+RecipeDB.page.onRecipeImageLoaded = function(imageIdentifier) {
+	var imagePointer = $("#RecipeImage_" + imageIdentifier);
+
+	imagePointer.prev().hide();
+	imagePointer.css("display", "block");
+};

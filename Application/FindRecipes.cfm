@@ -1,5 +1,17 @@
 <cfprocessingdirective pageEncoding="utf-8" />
+<cfparam name="URL.fromMenu" type="integer" default="1" />
+
+<!--- CONTROLLER ACTIONS --->
 <cftry>
+
+	<cfif session.currentUser.getSettings().findRecipes.listType IS "simple" AND URL.fromMenu IS 1 >
+		<cflocation url="FindRecipesAsThumbnails.cfm" addtoken="false" />
+	</cfif>
+
+	<cfset viewData = {
+		listSwitchButtonType: "simple",
+		filter: session.currentUser.getSettings().findRecipes.filter
+	} />
 
 	<!DOCTYPE html>
 	<html lang="en" >

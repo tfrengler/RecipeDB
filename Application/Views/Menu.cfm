@@ -14,7 +14,7 @@
 			Add recipe
 		</a></li>
 
-		<li><a id="RecipeList" href="FindRecipes.cfm" >
+		<li><a id="RecipeList" href="FindRecipes.cfm?fromMenu=1" >
 			<i class="fa fa-search fa-fw dark-green-text-color"></i>
 			Find recipes
 		</a></li>

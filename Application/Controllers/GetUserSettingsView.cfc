@@ -60,6 +60,9 @@
 		<cfset returnData.data.accountCreationDate = arguments.user.getDateCreated() />
 		<cfset returnData.data.timesLoggedIn = arguments.user.getTimesLoggedIn() />
 		<cfset returnData.data.browserLastUsed = UserAgentStringForView />
+		<cfset returnData.data.recipeListFilter = arguments.user.getSettings().findRecipes.filter />
+		<cfset returnData.data.recipeListType = arguments.user.getSettings().findRecipes.listType />
+		<cfset returnData.data.recipeListSortColumn = arguments.user.getSettings().findRecipes.sortOnColumn />
 
 		<cfreturn returnData />
 	</cffunction>

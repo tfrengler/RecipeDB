@@ -6,7 +6,7 @@
 	<h1 id="RecipeList-Welcome" class="olive-text-color-center" >List of recipes</h1>
 </section>
 
-<cfmodule template="RecipeListFilter.cfm" listSwitchButtonType="simple" >
+<cfmodule template="RecipeListFilter.cfm" attributecollection=#viewData# >
 
 <section id="RecipeList-Container">
 	<div class="col-lg-8 col-lg-offset-2 olive-wrapper-grey-background standard-rounded-corners standard-box-shadow" >

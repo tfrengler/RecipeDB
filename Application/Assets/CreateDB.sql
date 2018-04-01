@@ -37,6 +37,18 @@ CREATE TABLE Comments(
 	PRIMARY KEY(CommentID)
 );
 
+CREATE Table UserSettings(
+	BelongsToUser bigint REFERENCES Users(UserID) ON DELETE CASCADE NOT NULL,
+	FindRecipes_ListType varchar(6) NOT NULL,
+	FindRecipes_SortOnColumn varchar(20) NOT NULL,
+	FindRecipesFilterOn_MineOnly boolean NOT NULL DEFAULT false,
+	FindRecipesFilterOn_MinePublic boolean NOT NULL DEFAULT false,
+	FindRecipesFilterOn_MinePrivate boolean NOT NULL DEFAULT false,
+	FindRecipesFilterOn_MineEmpty boolean NOT NULL DEFAULT false,
+	FindRecipesFilterOn_MineNoPicture boolean NOT NULL DEFAULT false,
+	FindRecipesFilterOn_OtherUsersOnly boolean NOT NULL DEFAULT false
+);
+
 --- CREATING THE USER FOR LUCEE
 CREATE USER Lucee WITH
 LOGIN

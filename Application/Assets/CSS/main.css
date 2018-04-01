@@ -169,6 +169,24 @@ a:hover {
 	display: none;
 }
 
+.form-control-wrapper-grey {
+	border-radius: 0.3em;
+	border-style: solid;
+	border-width: 1px;
+	border-color: #ccc;
+	background-color: #eee;
+	padding: 6px 12px;
+}
+
+.form-control-wrapper-white {
+	border-radius: 0.3em;
+	border-style: solid;
+	border-width: 1px;
+	border-color: #ccc;
+	background-color: white;
+	padding: 6px 12px;
+}
+
 /* Fix for jQuery dialog modal transparency that doesn't seem to work in some browser */
 .ui-widget-overlay {
 	opacity: 0.3;
