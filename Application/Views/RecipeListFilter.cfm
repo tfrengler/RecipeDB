@@ -3,6 +3,12 @@
 
 <cfparam name="attributes.listSwitchButtonType" type="string" default="" />
 <cfparam name="attributes.filter" type="struct" default=#structNew()# />
+<cfparam name="attributes.filter.mineOnly" type="boolean" default="false" />
+<cfparam name="attributes.filter.minePublic" type="boolean" default="false" />
+<cfparam name="attributes.filter.minePrivate" type="boolean" default="false" />
+<cfparam name="attributes.filter.mineEmpty" type="boolean" default="false" />
+<cfparam name="attributes.filter.mineNoPicture" type="boolean" default="false" />
+<cfparam name="attributes.filter.otherUsersOnly" type="boolean" default="false" />
 
 <link rel="stylesheet" type="text/css" href="Assets/CSS/filtermenu.css" />
 
@@ -27,7 +33,7 @@
 	<div class="inline-block" >
 		<input type="checkbox" class="FilterOption" name="MineEmpty" id="Filter-MineEmpty" <cfif attributes.filter.mineEmpty >checked</cfif> >mine only that are empty</input><br/>
 		<input type="checkbox" class="FilterOption" name="MineNoPicture" id="Filter-MineNoPicture" <cfif attributes.filter.mineNoPicture >checked</cfif> >mine only without a picture</input><br/>
-		<input type="checkbox" class="FilterOption" name="OthersOnly" id="Filter-Others" <cfif attributes.filter.otherUsersOnly >checked</cfif> >from other users only</input><br/>
+		<input type="checkbox" class="FilterOption" name="OtherUsersOnly" id="Filter-Others" <cfif attributes.filter.otherUsersOnly >checked</cfif> >from other users only</input><br/>
 	</div>
 
 	<br/><br/>

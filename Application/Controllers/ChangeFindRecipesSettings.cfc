@@ -61,24 +61,15 @@
 
  			</cfif>
  		</cfloop>
-
- 		<cfset var findRecipesSettings = {
-			listType: arguments.settings.listType,
-			sortOnColumn: arguments.settings.sortOnColumn,
-			filter: {
-				mineOnly: arguments.settings.filter.mineOnly,
-				minePublic: arguments.settings.filter.minePublic,
-				minePrivate: arguments.settings.filter.minePrivate,
-				mineEmpty: arguments.settings.filter.mineEmpty,
-				mineNoPicture: arguments.settings.filter.mineNoPicture,
-				otherUsersOnly: arguments.settings.filter.othersOnly
-			}
-		} />
-
-		<cfset session.currentUser.updateUserSettings(
-			data=findRecipesSettings,
-			category="findRecipes"
-		) />
+ 
+		<cfset session.currentUser.setFindRecipes_ListType(data=arguments.settings.listType) />
+		<cfset session.currentUser.setFindRecipes_SortOnColumn(data=arguments.settings.sortOnColumn) />
+		<cfset session.currentUser.setFindRecipesFilterOn_MineOnly(data=arguments.settings.filter.mineOnly) />
+		<cfset session.currentUser.setFindRecipesFilterOn_MinePublic(data=arguments.settings.filter.minePublic) />
+		<cfset session.currentUser.setFindRecipesFilterOn_MinePrivate(data=arguments.settings.filter.minePrivate) />
+		<cfset session.currentUser.setFindRecipesFilterOn_MineEmpty(data=arguments.settings.filter.mineEmpty) />
+		<cfset session.currentUser.setFindRecipesFilterOn_MineNoPicture(data=arguments.settings.filter.mineNoPicture) />
+		<cfset session.currentUser.setFindRecipesFilterOn_OtherUsersOnly(data=arguments.settings.filter.othersOnly) />
 
 		<cfset session.currentUser.saveSettings() />
 

@@ -14,7 +14,7 @@
 
 		<cfif structKeyExists(session, "UserAgent") IS false >
 
-			<cfhttp url="http://useragentstring.com/" method="post" timeout="5" throwonerror="false" result="UserAgentStringResult" >
+			<cfhttp url="http://useragentstring.com/" method="post" timeout="2" throwonerror="false" result="UserAgentStringResult" >
 				<cfhttpparam type="formfield" name="uas" value="#arguments.user.getBrowserLastUsed()#" />
 				<cfhttpparam type="formfield" name="getJSON" value="all" />
 			</cfhttp>
@@ -36,19 +36,19 @@
 		<cfif structKeyExists(session, "UserAgent") AND isStruct(session.UserAgent) >
 
 			<cfif structKeyExists(session.UserAgent, "agent_name") AND len(session.UserAgent.agent_name) GT 0 >
-				<cfset UserAgentStringForView = session.UserAgent.agent_name />
+				<cfset UserAgentStringForView = encodeForHTML(session.UserAgent.agent_name) />
 			<cfelse>
 				<cfset UserAgentStringForView = "Unknown browser" />
 			</cfif>
 
 			<cfif structKeyExists(session.UserAgent, "agent_version") AND len(session.UserAgent.agent_version) GT 0 >
-				<cfset UserAgentStringForView = (UserAgentStringForView & " #session.UserAgent.agent_version#") />
+				<cfset UserAgentStringForView = (UserAgentStringForView & " #encodeForHTML(session.UserAgent.agent_version)#") />
 			<cfelse>
 				<cfset UserAgentStringForView = (UserAgentStringForView & ", unknown version") />
 			</cfif>
 
 			<cfif structKeyExists(session.UserAgent, "os_name") AND len(session.UserAgent.os_name) GT 0 >
-				<cfset UserAgentStringForView = (UserAgentStringForView & ", running on #session.UserAgent.os_name#") />
+				<cfset UserAgentStringForView = (UserAgentStringForView & ", running on #encodeForHTML(session.UserAgent.os_name)#") />
 			<cfelse>
 				<cfset UserAgentStringForView = (UserAgentStringForView & ", running on an unknown OS") />
 			</cfif>

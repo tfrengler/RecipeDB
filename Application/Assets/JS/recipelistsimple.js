@@ -50,7 +50,7 @@ RecipeDB.page.openCloseFilterMenu = function(action) {
 
 };
 RecipeDB.page.onSelectFilterOption = function(FilterOption) {
-	FilterOption = $(FilterOption);
+	var FilterOption = $(FilterOption);
 
 	if (FilterOption.prop("checked") === false) {
 		return;

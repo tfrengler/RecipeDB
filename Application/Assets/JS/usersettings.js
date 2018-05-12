@@ -14,15 +14,15 @@ RecipeDB.page.constants.FIND_RECIPES_SORT_ON_CHECKBOXES_NAME = "FindRecipes-Sort
 RecipeDB.page.constants.FIND_RECIPES_LIST_TYPE_CHECKBOXES_NAME = "FindRecipes-ListType";
 
 RecipeDB.page.transient.findRecipesSettings = {
-	listType: "",
-	sortOnColumn: "",
+	listType: undefined,
+	sortOnColumn: undefined,
 	filter: {
-		mineOnly: false,
-		minePublic: false,
-		minePrivate: false,
-		mineEmpty: false,
-		mineNoPicture: false,
-		othersOnly: false
+		mineOnly: undefined,
+		minePublic: undefined,
+		minePrivate: undefined,
+		mineEmpty: undefined,
+		mineNoPicture: undefined,
+		othersOnly: undefined
 	}
 };
 
@@ -33,6 +33,25 @@ RecipeDB.page.init = function() {
 	$("input[name='" + this.constants.FIND_RECIPES_FILTER_CHECKBOXES_NAME + "']").click(this.onChangeFindRecipesSetting);
 	$("input[name='" + this.constants.FIND_RECIPES_SORT_ON_CHECKBOXES_NAME + "']").click(this.onChangeFindRecipesSetting);
 	$("input[name='" + this.constants.FIND_RECIPES_LIST_TYPE_CHECKBOXES_NAME + "']").click(this.onChangeFindRecipesSetting);
+
+	$("input[name='" + this.constants.FIND_RECIPES_LIST_TYPE_CHECKBOXES_NAME + "']").each(function() {
+		if ($(this).prop("checked")) {
+			RecipeDB.page.transient.findRecipesSettings.listType = $(this).val()
+		}
+	});
+	
+	$("input[name='" + this.constants.FIND_RECIPES_SORT_ON_CHECKBOXES_NAME + "']").each(function() {
+		if ($(this).prop("checked")) {
+			RecipeDB.page.transient.findRecipesSettings.sortOnColumn = $(this).val()
+		}
+	});
+
+	this.transient.findRecipesSettings.filter.mineOnly = $("input[value='mineOnly']").prop("checked");
+	this.transient.findRecipesSettings.filter.minePublic = $("input[value='minePublic']").prop("checked");
+	this.transient.findRecipesSettings.filter.minePrivate = $("input[value='minePrivate']").prop("checked");
+	this.transient.findRecipesSettings.filter.mineEmpty = $("input[value='mineEmpty']").prop("checked");
+	this.transient.findRecipesSettings.filter.mineNoPicture = $("input[value='mineNoPicture']").prop("checked");
+	this.transient.findRecipesSettings.filter.othersOnly = $("input[value='othersOnly']").prop("checked");
 
 	console.log("Page init complete");
 };
@@ -164,30 +183,41 @@ RecipeDB.page.onChangeFindRecipesSetting = function() {
 	var checkbox = $(this);
 	var option = "";
 
+	// Filters have more complex combinations of conditions that are allowed
 	if (checkbox.prop("name") === RecipeDB.page.constants.FIND_RECIPES_FILTER_CHECKBOXES_NAME) {
-		$("input[name='" + RecipeDB.page.constants.FIND_RECIPES_FILTER_CHECKBOXES_NAME + "']").prop("checked", false);
-		checkbox.prop("checked", true);
+		
+		// If the filter setting we clicked is mineOnly or othersOnly...
+		if (checkbox.val() === "mineOnly" || checkbox.val() === "othersOnly") {
+			// ...then deselect all other options in memory...
+			for (option in RecipeDB.page.transient.findRecipesSettings.filter) {
+				RecipeDB.page.transient.findRecipesSettings.filter[option] = false
+			};
+			// ...then set the memory value to whatever the DOM element is checked as...
+			RecipeDB.page.transient.findRecipesSettings.filter[ checkbox.val() ] = checkbox.prop("checked");
+			// ...then uncheck all checkboxes on the page...
+			$("[name='" + RecipeDB.page.constants.FIND_RECIPES_FILTER_CHECKBOXES_NAME + "']").prop("checked", false);
+			// ...if the value if the checkbox we just clicked is true then re-check it in the DOM
+			if ( RecipeDB.page.transient.findRecipesSettings.filter[ checkbox.val() ] === true ) {
+				checkbox.prop("checked", true)
+			};
 
-		for (option in RecipeDB.page.transient.findRecipesSettings.filter) {
-			RecipeDB.page.transient.findRecipesSettings.filter[option] = false;
-		};
+		} // And if the filter setting is NOT any of these two.. 
+		else if (checkbox.val() !== "mineOnly" || checkbox.val() !== "othersOnly") {
+			// ...then de-select those two
+			$("[value='mineOnly']").prop("checked", false);
+			$("[value='othersOnly']").prop("checked", false);
+		}
 
 		RecipeDB.page.transient.findRecipesSettings.filter[ checkbox.val() ] = checkbox.prop("checked");
 		return true;
 	};
 
 	if (checkbox.prop("name") === RecipeDB.page.constants.FIND_RECIPES_SORT_ON_CHECKBOXES_NAME) {
-		$("input[name='" + RecipeDB.page.constants.FIND_RECIPES_SORT_ON_CHECKBOXES_NAME + "']").prop("checked", false);
-		checkbox.prop("checked", true);
-		
 		RecipeDB.page.transient.findRecipesSettings.sortOnColumn = checkbox.val();
 		return true;
-	}
+	};
 	
 	if (checkbox.prop("name") === RecipeDB.page.constants.FIND_RECIPES_LIST_TYPE_CHECKBOXES_NAME) {
-		$("input[name='" + RecipeDB.page.constants.FIND_RECIPES_LIST_TYPE_CHECKBOXES_NAME + "']").prop("checked", false);
-		checkbox.prop("checked", true);
-
 		RecipeDB.page.transient.findRecipesSettings.listType = checkbox.val();
 		return true;
 	};

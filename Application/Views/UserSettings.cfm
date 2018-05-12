@@ -75,15 +75,15 @@
 
 		<div class="form-control-wrapper-white" >
 			<div class="inline-block" >
-				<input type="checkbox" name="FindRecipes-SortOn" value="Name" <cfif attributes.RecipeListSortColumn IS "Name" >checked</cfif> >&nbsp;Name</input><br/>
-				<input type="checkbox" name="FindRecipes-SortOn" value="CreatedBy" <cfif attributes.RecipeListSortColumn IS "CreatedBy" >checked</cfif> >&nbsp;Created by</input><br/>
-				<input type="checkbox" name="FindRecipes-SortOn" value="CreatedOn" <cfif attributes.RecipeListSortColumn IS "CreatedOn" >checked</cfif> >&nbsp;Created on</input>
+				<input type="radio" name="FindRecipes-SortOn" value="Name" <cfif attributes.RecipeListSortColumn IS "Name" >checked</cfif> >&nbsp;Name</input><br/>
+				<input type="radio" name="FindRecipes-SortOn" value="CreatedBy" <cfif attributes.RecipeListSortColumn IS "CreatedBy" >checked</cfif> >&nbsp;Created by</input><br/>
+				<input type="radio" name="FindRecipes-SortOn" value="CreatedOn" <cfif attributes.RecipeListSortColumn IS "CreatedOn" >checked</cfif> >&nbsp;Created on</input>
 			</div>
 
 			<div class="inline-block" >
-				<input type="checkbox" name="FindRecipes-SortOn" value="ModifiedOn" <cfif attributes.RecipeListSortColumn IS "ModifiedOn" >checked</cfif> >&nbsp;Modified on</input><br/>
-				<input type="checkbox" name="FindRecipes-SortOn" value="Published" <cfif attributes.RecipeListSortColumn IS "Published" >checked</cfif> >&nbsp;Published</input><br/>
-				<input type="checkbox" name="FindRecipes-SortOn" value="ID" <cfif attributes.RecipeListSortColumn IS "ID" >checked</cfif> >&nbsp;ID</input>
+				<input type="radio" name="FindRecipes-SortOn" value="ModifiedOn" <cfif attributes.RecipeListSortColumn IS "ModifiedOn" >checked</cfif> >&nbsp;Modified on</input><br/>
+				<input type="radio" name="FindRecipes-SortOn" value="Published" <cfif attributes.RecipeListSortColumn IS "Published" >checked</cfif> >&nbsp;Published</input><br/>
+				<input type="radio" name="FindRecipes-SortOn" value="ID" <cfif attributes.RecipeListSortColumn IS "ID" >checked</cfif> >&nbsp;ID</input>
 			</div>
 		</div>
 		<br/>
@@ -91,8 +91,8 @@
 		<div id="ListTypeLegend">DEFAULT LIST TYPE:</div>
 
 		<div class="form-control-wrapper-white" >
-			<input type="checkbox" name="FindRecipes-ListType" value="full" <cfif attributes.RecipeListType IS "full">checked</cfif> >&nbsp;Full</input>
-			<input type="checkbox" name="FindRecipes-ListType" value="simple" <cfif attributes.RecipeListType IS "simple">checked</cfif> >&nbsp;Simple</input>
+			<input type="radio" name="FindRecipes-ListType" value="full" <cfif attributes.RecipeListType IS "full">checked</cfif> >&nbsp;Full</input>
+			<input type="radio" name="FindRecipes-ListType" value="simple" <cfif attributes.RecipeListType IS "simple">checked</cfif> >&nbsp;Simple</input>
 		</div>
 		<br/>
 

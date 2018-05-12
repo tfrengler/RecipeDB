@@ -4,15 +4,21 @@
 	<cfset controller = createObject("component", "Controllers.GetRecipeListDataSimple") />
 
 	<cfif structIsEmpty(FORM) IS false >
+
+		<!--- This is triggered when we use the filter to look for recipes --->
 		<cfset REQUEST.filtersettings = FORM />
-		<cfset contollerReturnData = controller.main(filterSettings=FORM) />
+		<cfset controllerReturnData = controller.main(filterSettings=FORM) />
+		<cfset viewData.filter = structNew() />
+
 	<cfelse>
-		<cfset contollerReturnData = controller.main() />
+
+		<cfset controllerReturnData = controller.main(filterSettings=session.currentUser.getSettings().findRecipes.filter) />
+		<cfset viewData.filter = session.currentUser.getSettings().findRecipes.filter />
+		
 	</cfif>
 	
-	<cfset viewData.recipes = contollerReturnData.data />
-	<cfset viewData.filter = session.currentUser.getSettings().findRecipes.filter />
-
+	<cfset viewData.recipes = controllerReturnData.data />
+	
 	<!DOCTYPE html>
 	<html lang="en" >
 

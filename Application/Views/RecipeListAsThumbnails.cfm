@@ -21,7 +21,7 @@
 		<div class="recipe-thumbnail-wrapper col-lg-3 col-md-3 col-sm-6" >
 			<div class="olive-wrapper-grey-background standard-rounded-corners standard-box-shadow" >
 
-				<a href="Recipe.cfm?RecipeID=#recipe.recipeID#">
+				<a href="Recipe.cfm?RecipeID=#val(recipe.recipeID)#">
 					<div class="recipe-image-loading center-block img-thumbnail" >
 						<img src="Assets/Pictures/Standard/ajax-loader-bigger.gif" class="center-block" />
 					</div>

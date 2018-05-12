@@ -9,56 +9,70 @@
  			data: arrayNew(1)
  		} />
 
+ 		<cfset var currentFilterSetting = "" />
  		<cfset var currentRecipeData = structNew() />
 		<cfset var userDisplayName = "" />
 		<cfset var filteredRecipes = queryNew("") />
 		<cfset var columnsToSelect = "RecipeID,Name,DateCreated,DateTimeLastModified,CreatedByUser,Published,Picture" />
 
-		<cfset var allRecipes = createObject("component", "Models.Recipe").getData(
-			datasource=application.settings.datasource,
-			cachedWithin=createTimespan(0, 0, 2, 0)
-		) >
+		<cfset var allRecipes = createObject("component", "Models.Recipe").getData(datasource=application.settings.datasource) >
 		<cfset var users = createObject("component", "Models.User").getData( 
 			datasource=application.settings.datasource,
 			columnList="UserID,DisplayName",
 			cachedWithin=createTimespan(0, 1, 0, 0)
 		) />
 
+		<!--- 
+ 			The reason we do this is because the way the query is set up it checks for existence of fields in the argument.
+ 			This makes sense when we apply a filter on the page because it's a form submission and thus only the checkboxes
+ 			that are selected are actually present in the FORM-scope.
+
+ 			However when we come in from the menu the default values are applied and we get those from the User in the session
+ 			scope, which returns us a struct full with all the settings as keys as booleans, which throws our lovely query off
+ 		 --->
+ 		<cfloop collection=#arguments.filterSettings# item="currentFilterSetting" >
+ 			<cfif arguments.filterSettings[currentFilterSetting] IS false >
+ 				<cfset structDelete(arguments.filterSettings, currentFilterSetting) />
+ 			</cfif>
+ 		</cfloop>
+
 		<cfif structIsEmpty(arguments.filterSettings) IS false >
-			<cfquery name="FilteredRecipes" dbtype="query" >
+			<cfquery name="filteredRecipes" dbtype="query" >
 				SELECT #columnsToSelect#
 				FROM allRecipes
 				WHERE 1 = 1
 
-				<cfif structKeyExists(arguments.filterSettings, "mineOnly") >
-					AND CreatedByUser = #session.currentUser.getId()#
-				<cfelseif structKeyExists(arguments.filterSettings, "othersOnly") >
-					AND CreatedByUser != #session.currentUser.getId()#
-				<cfelse>
-
-					<cfif structKeyExists(arguments.filterSettings, "mineEmpty") >
-						AND char_length(Ingredients) = 0
-						AND char_length(Description) = 0
-						AND char_length(Instructions) = 0
-					</cfif>
-
-					<cfif structKeyExists(arguments.filterSettings, "minePrivate") IS false OR structKeyExists(arguments.filterSettings, "minePublic") IS false >
-
-						<cfif structKeyExists(arguments.filterSettings, "minePrivate") >
-							AND Published = false
-						</cfif>
-
-						<cfif structKeyExists(arguments.filterSettings, "minePublic") >
-							AND Published = true
-						</cfif>
-					<cfelse>
+				<cfif 	
+					structKeyExists(arguments.filterSettings, "mineOnly") OR
+					structKeyExists(arguments.filterSettings, "minePrivate") OR
+					structKeyExists(arguments.filterSettings, "minePrivate") OR
+					structKeyExists(arguments.filterSettings, "minePublic") OR
+					structKeyExists(arguments.filterSettings, "mineNoPicture") 
+				>
 						AND CreatedByUser = #session.currentUser.getId()#
-					</cfif>
-
-					<cfif structKeyExists(arguments.filterSettings, "mineNoPicture") >
-						AND char_length(Picture) = 0
-					</cfif>
+					<cfelseif structKeyExists(arguments.filterSettings, "otherUsersOnly") >
+						AND CreatedByUser != #session.currentUser.getId()#
+					<cfelse>
 				</cfif>
+
+				<cfif structKeyExists(arguments.filterSettings, "mineEmpty") >
+					AND char_length(Ingredients) = 0
+					AND char_length(Description) = 0
+					AND char_length(Instructions) = 0
+				</cfif>
+
+				<cfif structKeyExists(arguments.filterSettings, "minePrivate") AND structKeyExists(arguments.filterSettings, "minePublic") IS false >
+					AND Published = false
+				</cfif>
+
+				<cfif structKeyExists(arguments.filterSettings, "minePublic") AND structKeyExists(arguments.filterSettings, "minePrivate") IS false >
+					AND Published = true
+				</cfif>
+
+				<cfif structKeyExists(arguments.filterSettings, "mineNoPicture") >
+					AND char_length(Picture) = 0
+				</cfif>
+
 			</cfquery>
 		<cfelse>
 			<cfquery name="FilteredRecipes" dbtype="query" >
@@ -67,7 +81,7 @@
 			</cfquery>
 		</cfif>
 
-		<cfloop query="FilteredRecipes" >
+		<cfloop query="filteredRecipes" >
 
 			<cfif FilteredRecipes.CreatedByUser IS NOT session.currentUser.getId() >
 				<cfif FilteredRecipes.Published IS false >

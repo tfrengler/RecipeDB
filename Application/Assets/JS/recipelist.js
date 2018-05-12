@@ -52,10 +52,10 @@ RecipeDB.page.constants.RECIPE_LIST_COLUMNS_SETUP = [
 				return parseInt(data.display);
 			}
 
-			if (data.display == 0) {
+			if (data.display == 0 || data.display == "false") {
 				return "no"
 			}
-			else if (data.display == 1) {
+			else if (data.display == 1 || data.display == "true") {
 				return "yes"
 			} else {
 				return data.display
@@ -129,7 +129,7 @@ RecipeDB.page.openCloseFilterMenu = function(action) {
 };
 
 RecipeDB.page.onSelectFilterOption = function(FilterOption) {
-	FilterOption = $(FilterOption);
+	var FilterOption = $(FilterOption);
 
 	if (FilterOption.prop("checked") === false) {
 		return;
@@ -147,6 +147,31 @@ RecipeDB.page.onSelectFilterOption = function(FilterOption) {
 };
 
 RecipeDB.page.setupRecipeList = function() {
+	var sortColumnIdentifier;
+
+	switch (this.transient.sortOnColumn) {
+		case "Name":
+			sortColumnIdentifier = 0;
+			break;
+		case "CreatedBy":
+			sortColumnIdentifier = 1;
+			break;
+		case "CreatedOn":
+			sortColumnIdentifier = 2;
+			break;
+		case "ModifiedOn":
+			sortColumnIdentifier = 3;
+			break;
+		case "Published":
+			sortColumnIdentifier = 4;
+			break;
+		case "ID":
+			sortColumnIdentifier = 5;
+			break;
+		default:
+			sortColumnIdentifier = 2; // Default is sorting by Created On-column
+	};
+
 	try {
 		$("#" + RecipeDB.page.constants.RECIPE_LIST_TABLE_ID).DataTable(
 			{
@@ -155,7 +180,7 @@ RecipeDB.page.setupRecipeList = function() {
 				columnDefs: [
 					{ targets: '_all', className: "dt-head-center dt-body-left" }, /* This is for adding classes that control the alignment of the data, in this case centered th-text and left aligned td-text */
 				],
-				order: [[2, "desc"]], /* Which column you want to order the table by, in this case the third colum (Created on) in ascending order */
+				order: [[sortColumnIdentifier, "desc"]], /* Which column you want to order the table by, in this case the third colum (Created on) in ascending order */
 				paging: true, /* enabling or disabling pagination. Set this to false and the lengthChange and lengthMenu will be ignored. Enable this if you want to test pagination */
 				fixedHeader: false, /* A plugin for datatables that allows the header row to stay in place when scrolling*/
 				searching: true, /* Self-explanatory */

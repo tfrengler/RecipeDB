@@ -10,7 +10,8 @@
 
 	<cfset viewData = {
 		listSwitchButtonType: "simple",
-		filter: session.currentUser.getSettings().findRecipes.filter
+		filter: session.currentUser.getSettings().findRecipes.filter,
+		sortOnColumn: session.currentUser.getSettings().findRecipes.sortOnColumn
 	} />
 
 	<!DOCTYPE html>
@@ -22,7 +23,7 @@
 			<cfinclude template="Views/Menu.cfm" />
 
 			<section id="MainContent" class="container-fluid" >
-				<cfinclude template="Views/RecipeList.cfm" />
+				<cfmodule template="Views/RecipeList.cfm" attributecollection=#viewData# >
 			</section>
 
 			<div id="Notification-Box" class="notification-box bottom-fixed-center col-lg-2 col-lg-offset-5 col-sm-4 col-sm-offset-4" ></div>

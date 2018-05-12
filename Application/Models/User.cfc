@@ -14,7 +14,15 @@
 	<cfset BrowserLastUsed = "" />
 	<cfset Blocked = true />
 	<cfset AuthKey = "" />
-	<cfset Settings = structNew() />
+
+	<cfset Settings_FindRecipes_ListType = "" />
+	<cfset Settings_FindRecipes_SortOnColumn = "" />
+	<cfset Settings_FindRecipesFilterOn_MineOnly = false />
+	<cfset Settings_FindRecipesFilterOn_MinePublic = false />
+	<cfset Settings_FindRecipesFilterOn_MinePrivate = false />
+	<cfset Settings_FindRecipesFilterOn_MineEmpty = false />
+	<cfset Settings_FindRecipesFilterOn_MineNoPicture = false />
+	<cfset Settings_FindRecipesFilterOn_OtherUsersOnly = false />
 
 	<cfset TableName = "Users" />
 
@@ -73,7 +81,20 @@
 	</cffunction>
 
 	<cffunction name="getSettings" access="public" returntype="struct" output="false" hint="" >
-		<cfreturn variables.Settings />
+		<cfreturn {
+			findRecipes: {
+				listType: variables.Settings_FindRecipes_ListType,
+				sortOnColumn: variables.Settings_FindRecipes_SortOnColumn,
+				filter: {
+					mineOnly: variables.Settings_FindRecipesFilterOn_MineOnly,
+					minePublic: variables.Settings_FindRecipesFilterOn_MinePublic,
+					minePrivate: variables.Settings_FindRecipesFilterOn_MinePrivate,
+					mineEmpty: variables.Settings_FindRecipesFilterOn_MineEmpty,
+					mineNoPicture: variables.Settings_FindRecipesFilterOn_MineNoPicture,
+					otherUsersOnly: variables.Settings_FindRecipesFilterOn_OtherUsersOnly
+				}
+			}
+		} />
 	</cffunction>
 
 	<!--- Setters --->
@@ -156,28 +177,67 @@
 		<cfset variables.AuthKey = arguments.AuthKey />
 	</cffunction>
 
-	<cffunction name="setUserSettings" access="private" output="false" hint="" >
-		<cfargument name="data" type="struct" required="true" hint="" />
+	<!--- Settings setters --->
 
-		<cfset variables.Settings = arguments.data />
+	<cffunction name="setFindRecipes_ListType" access="public" output="false" hint="" >
+		<cfargument name="data" type="string" required="true" hint="" />
+
+		<cfif listFind("full,simple", arguments.data) IS 0 >
+			<cfthrow message="Error changing setting" detail="Argument data is not valid, it must be 'simple' or 'full': #arguments.data#" />
+		</cfif>
+
+		<cfset variables.Settings_FindRecipes_ListType = arguments.data />
+	</cffunction>
+
+	<cffunction name="setFindRecipes_SortOnColumn" access="public" output="false" hint="" >
+		<cfargument name="data" type="string" required="true" hint="" />
+
+		<cfset var AllowedColumns = "Name,CreatedBy,CreatedOn,ModifiedOn,Published,ID" />
+
+		<cfif listFind(AllowedColumns, arguments.data) IS 0 >
+			<cfthrow message="Error changing setting" detail="Argument data is not valid, it must be '#AllowedColumns#' : #arguments.data#" />
+		</cfif>
+
+		<cfset variables.Settings_FindRecipes_SortOnColumn = arguments.data />
+	</cffunction>
+
+	<cffunction name="setFindRecipesFilterOn_MineOnly" access="public" output="false" hint="" >
+		<cfargument name="data" type="boolean" required="true" hint="" />
+
+		<cfset variables.Settings_FindRecipesFilterOn_MineOnly = arguments.data />
+	</cffunction>
+
+	<cffunction name="setFindRecipesFilterOn_MinePublic" access="public" output="false" hint="" >
+		<cfargument name="data" type="boolean" required="true" hint="" />
+
+		<cfset variables.Settings_FindRecipesFilterOn_MinePublic = arguments.data />
+	</cffunction>
+
+	<cffunction name="setFindRecipesFilterOn_MinePrivate" access="public" output="false" hint="" >
+		<cfargument name="data" type="boolean" required="true" hint="" />
+
+		<cfset variables.Settings_FindRecipesFilterOn_MinePrivate = arguments.data />
+	</cffunction>
+
+	<cffunction name="setFindRecipesFilterOn_MineEmpty" access="public" output="false" hint="" >
+		<cfargument name="data" type="boolean" required="true" hint="" />
+
+		<cfset variables.Settings_FindRecipesFilterOn_MineEmpty = arguments.data />
+	</cffunction>
+
+	<cffunction name="setFindRecipesFilterOn_MineNoPicture" access="public" output="false" hint="" >
+		<cfargument name="data" type="boolean" required="true" hint="" />
+
+		<cfset variables.Settings_FindRecipesFilterOn_MineNoPicture = arguments.data />
+	</cffunction>
+
+	<cffunction name="setFindRecipesFilterOn_OtherUsersOnly" access="public" output="false" hint="" >
+		<cfargument name="data" type="boolean" required="true" hint="" />
+
+		<cfset variables.Settings_FindRecipesFilterOn_OtherUsersOnly = arguments.data />
 	</cffunction>
 
 	<!--- Methods --->
-
-	<cffunction name="updateUserSettings" access="public" output="false" hint="" >
-		<cfargument name="data" type="struct" required="true" hint="" />
-		<cfargument name="category" type="string" required="true" hint="" />
-
-		<cfif structKeyExists(variables.Settings, arguments.category) IS false >
-			<cfthrow message="Error updating user settings" detail="Category '#arguments.category#' is not valid" />
-		</cfif>
-
-		<cfif structIsEmpty(arguments.data) >
-			<cfthrow message="Error updating user settings" detail="Data argument has no keys" />
-		</cfif>
-
-		<cfset variables.Settings[arguments.category] = arguments.data />
-	</cffunction>
 
 	<cffunction name="changePassword" returntype="void" access="public" output="false" hint="" >
 		<cfargument name="SecurityManager" type="Components.SecurityManager" required="true" hint="A reference to an instance of the SecurityManager object" />
@@ -268,8 +328,6 @@
 				</cfquery>
 
 				<cftransaction action="commit" />
-
-				<cfset variables.loadSettings() />
 			<cfcatch>
 
 				<cftransaction action="rollback" />
@@ -298,22 +356,16 @@
 		</cfquery>
 
 		<cfif UserSettingsQuery.RecordCount GT 0 >
-			<cfset UserSettingsStruct = {
-				findRecipes: {
-					listType: UserSettingsQuery.FindRecipes_ListType,
-					sortOnColumn: UserSettingsQuery.FindRecipes_SortOnColumn,
-					filter: {
-						mineOnly: UserSettingsQuery.FindRecipesFilterOn_MineOnly,
-						minePublic: UserSettingsQuery.FindRecipesFilterOn_MinePublic,
-						minePrivate: UserSettingsQuery.FindRecipesFilterOn_MinePrivate,
-						mineEmpty: UserSettingsQuery.FindRecipesFilterOn_MineEmpty,
-						mineNoPicture: UserSettingsQuery.FindRecipesFilterOn_MineNoPicture,
-						otherUsersOnly: UserSettingsQuery.FindRecipesFilterOn_OtherUsersOnly
-					}
-				}
-			} />
+			
+			<cfset variables.setFindRecipes_ListType(data=UserSettingsQuery.FindRecipes_ListType) />
+			<cfset variables.setFindRecipes_SortOnColumn(data=UserSettingsQuery.FindRecipes_SortOnColumn) />
+			<cfset variables.setFindRecipesFilterOn_MineOnly(data=UserSettingsQuery.FindRecipesFilterOn_MineOnly) />
+			<cfset variables.setFindRecipesFilterOn_MinePublic(data=UserSettingsQuery.FindRecipesFilterOn_MinePublic) />
+			<cfset variables.setFindRecipesFilterOn_MinePrivate(data=UserSettingsQuery.FindRecipesFilterOn_MinePrivate) />
+			<cfset variables.setFindRecipesFilterOn_MineEmpty(data=UserSettingsQuery.FindRecipesFilterOn_MineEmpty) />
+			<cfset variables.setFindRecipesFilterOn_MineNoPicture(data=UserSettingsQuery.FindRecipesFilterOn_MineNoPicture) />
+			<cfset variables.setFindRecipesFilterOn_OtherUsersOnly(data=UserSettingsQuery.FindRecipesFilterOn_OtherUsersOnly) />
 
-			<cfset variables.setUserSettings(data=UserSettingsStruct) />
 		<cfelse>
 			<cfthrow message="Error when loading user settings data. There appears to be no settings for this UserID: #getID()#" />
 		</cfif>
@@ -345,8 +397,6 @@
 				</cfquery>
 
 				<cftransaction action="commit" />
-
-				<cfset variables.load() />
 			<cfcatch>
 
 				<cftransaction action="rollback" />

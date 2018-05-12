@@ -33,35 +33,37 @@
 				FROM allRecipes
 				WHERE 1 = 1
 
-				<cfif structKeyExists(arguments.filterSettings, "mineOnly") >
-					AND CreatedByUser = #session.currentUser.getId()#
-				<cfelseif structKeyExists(arguments.filterSettings, "othersOnly") >
-					AND CreatedByUser != #session.currentUser.getId()#
-				<cfelse>
-
-					<cfif structKeyExists(arguments.filterSettings, "mineEmpty") >
-						AND char_length(Ingredients) = 0
-						AND char_length(Description) = 0
-						AND char_length(Instructions) = 0
-					</cfif>
-
-					<cfif structKeyExists(arguments.filterSettings, "minePrivate") IS false OR structKeyExists(arguments.filterSettings, "minePublic") IS false >
-
-						<cfif structKeyExists(arguments.filterSettings, "minePrivate") >
-							AND Published = false
-						</cfif>
-
-						<cfif structKeyExists(arguments.filterSettings, "minePublic") >
-							AND Published = true
-						</cfif>
-					<cfelse>
+				<cfif 	
+					structKeyExists(arguments.filterSettings, "mineOnly") OR
+					structKeyExists(arguments.filterSettings, "minePrivate") OR
+					structKeyExists(arguments.filterSettings, "minePrivate") OR
+					structKeyExists(arguments.filterSettings, "minePublic") OR
+					structKeyExists(arguments.filterSettings, "mineNoPicture") 
+				>
 						AND CreatedByUser = #session.currentUser.getId()#
-					</cfif>
-
-					<cfif structKeyExists(arguments.filterSettings, "mineNoPicture") >
-						AND char_length(Picture) = 0
-					</cfif>
+					<cfelseif structKeyExists(arguments.filterSettings, "othersOnly") >
+						AND CreatedByUser != #session.currentUser.getId()#
+					<cfelse>
 				</cfif>
+
+				<cfif structKeyExists(arguments.filterSettings, "mineEmpty") >
+					AND char_length(Ingredients) = 0
+					AND char_length(Description) = 0
+					AND char_length(Instructions) = 0
+				</cfif>
+
+				<cfif structKeyExists(arguments.filterSettings, "minePrivate") AND structKeyExists(arguments.filterSettings, "minePublic") IS false >
+					AND Published = false
+				</cfif>
+
+				<cfif structKeyExists(arguments.filterSettings, "minePublic") AND structKeyExists(arguments.filterSettings, "minePrivate") IS false >
+					AND Published = true
+				</cfif>
+
+				<cfif structKeyExists(arguments.filterSettings, "mineNoPicture") >
+					AND char_length(Picture) = 0
+				</cfif>
+
 			</cfquery>
 		<cfelse>
 			<cfquery name="FilteredRecipes" dbtype="query" >
