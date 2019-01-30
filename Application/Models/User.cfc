@@ -486,7 +486,7 @@
 					VALUES (
 						#getID()#,
 						'full',
-						'DateCreated',
+						'CreatedOn',
 						false,
 						false,
 						false,

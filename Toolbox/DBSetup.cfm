@@ -211,6 +211,76 @@
 			foreign_key: false,
 			references: structNew()
 		}
+	},
+
+	UserSettings: {
+
+		BelongsToUser: {
+			type: "bigserial",
+			size: 0,
+			primary_key: false,
+			foreign_key: true,
+			references: {
+				table: "Users",
+				key: "UserID"
+			}
+		},
+		FindRecipes_ListType: {
+			type: "varchar",
+			size: 6,
+			primary_key: false,
+			foreign_key: false,
+			references: structNew()
+		},
+		FindRecipes_SortOnColumn: {
+			type: "varchar",
+			size: 20,
+			primary_key: false,
+			foreign_key: false,
+			references: structNew()
+		},
+		FindRecipesFilterOn_MineOnly: {
+			type: "bool",
+			size: 0,
+			primary_key: false,
+			foreign_key: false,
+			references: structNew()
+		},
+		FindRecipesFilterOn_MinePublic: {
+			type: "bool",
+			size: 0,
+			primary_key: false,
+			foreign_key: false,
+			references: structNew()
+		},
+		FindRecipesFilterOn_MinePrivate: {
+			type: "bool",
+			size: 0,
+			primary_key: false,
+			foreign_key: false,
+			references: structNew()
+		},
+		FindRecipesFilterOn_MineEmpty: {
+			type: "bool",
+			size: 0,
+			primary_key: false,
+			foreign_key: false,
+			references: structNew()
+		},
+		FindRecipesFilterOn_MineNoPicture: {
+			type: "bool",
+			size: 0,
+			primary_key: false,
+			foreign_key: false,
+			references: structNew()
+		},
+		FindRecipesFilterOn_OtherUsersOnly: {
+			type: "bool",
+			size: 0,
+			primary_key: false,
+			foreign_key: false,
+			references: structNew()
+		}
 	}
 
 } />
