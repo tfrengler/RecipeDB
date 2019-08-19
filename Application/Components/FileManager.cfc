@@ -26,7 +26,8 @@
 		<cfif fileExists( fullPathToFile ) >
 			<cfset fileDelete(fullPathToFile) />
 		<cfelse>
-			<cfthrow message="Error deleting temp file" detail="File '#fullPathToFile#' does not exist" />
+			<!--- TODO(thomas): Replace with a log entry in an error log or something --->
+			<!--- <cfthrow message="Error deleting temp file" detail="File '#fullPathToFile#' does not exist" /> --->
 		</cfif>
 	</cffunction>
 
@@ -38,7 +39,8 @@
 		<cfif fileExists( fullPathToFile ) >
 			<cfset fileDelete(fullPathToFile) />
 		<cfelse>
-			<cfthrow message="Error deleting image" detail="File '#fullPathToFile#' does not exist" />
+			<!--- TODO(thomas): Replace with a log entry in an error log or something --->
+			<!--- <cfthrow message="Error deleting image" detail="File '#fullPathToFile#' does not exist" /> --->
 		</cfif>
 	</cffunction>
 

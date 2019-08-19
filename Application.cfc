@@ -12,7 +12,7 @@
 	<!--- MAPPINGS --->
 
 	<cfset this.root = getDirectoryFromPath( getCurrentTemplatePath() ) />
-	<cfset this.appdirectory = this.root & "Application\" /> 
+	<cfset this.appdirectory = this.root & "Application/" /> 
 	
 	<cfset this.mappings["/Models"] = (this.appdirectory & "Models/") />
 	<cfset this.mappings["/Components"] = (this.appdirectory & "Components/") />
