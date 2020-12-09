@@ -1,5 +1,4 @@
-<cfprocessingdirective pageencoding="utf-8" />
-<cfinclude template="checkauth.cfm" />
+<cfinclude template="CheckAuth.cfm" />
 
 <!DOCTYPE html>
 <html lang="en" >
@@ -35,12 +34,12 @@
 
 <body>
 
-	<p><a href="UserTools.cfm?token=#URL.token#" >Back to User Tools</a></p>
+	<p><a href="UserTools.cfm" >Back to User Tools</a></p>
 	<h1>Add user</h1>
 
 	<fieldset>
 
-		<form action="AddUser.cfm?token=#URL.token#" method="post" >
+		<form action="AddUser.cfm" method="post" >
 			<p>
 				<div class="form-field-label" >Username: </div>
 				<input type="text" name="UserName" value="" />

@@ -1,5 +1,4 @@
-<cfprocessingdirective pageencoding="utf-8" />
-<cfinclude template="checkauth.cfm" />
+<cfinclude template="CheckAuth.cfm" />
 
 <!DOCTYPE html>
 <html lang="en" >
@@ -54,7 +53,7 @@
 
 <body>
 
-	<p><a href="CommunicationTools.cfm?token=#URL.token#" >Back to Communcation Tools</a></p>
+	<p><a href="CommunicationTools.cfm" >Back to Communcation Tools</a></p>
 	<h1>Patch notes</h1>
 
 	<cfset PatchNoteDirectory = application.settings.files.patchnotes />
@@ -105,7 +104,7 @@
 	<fieldset>
 		<legend>LOAD EXISTING PATCH NOTE</legend>
 
-		<form name="Load_Existing_PatchNotes_Form" action="PatchNotes.cfm?token=#URL.token#" method="post" >
+		<form name="Load_Existing_PatchNotes_Form" action="PatchNotes.cfm" method="post" >
 
 			<cfloop query=#ExistingPatchNotes# >
 				<input type="checkbox" name="PatchNote_FileName" value=#ExistingPatchNotes.name# />
@@ -134,7 +133,7 @@
 
 		<br/>
 
-		<form name="Save_PatcNote_Changes_Form" action="PatchNotes.cfm?token=#URL.token#" method="post" >
+		<form name="Save_PatcNote_Changes_Form" action="PatchNotes.cfm" method="post" >
 
 			<input type="hidden" name="Saved_PatchNote_FileContents" value="" />
 

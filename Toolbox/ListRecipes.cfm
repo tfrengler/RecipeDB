@@ -1,5 +1,4 @@
-<cfprocessingdirective pageencoding="utf-8" />
-<cfinclude template="checkauth.cfm" />
+<cfinclude template="CheckAuth.cfm" />
 
 <!DOCTYPE html>
 <html lang="en" >
@@ -57,7 +56,7 @@
 
 <body>
 	
-	<p><a href="DBTools.cfm?token=#URL.token#" >Back to DB Tools</a></p>
+	<p><a href="DBTools.cfm" >Back to DB Tools</a></p>
 	<h1>List of recipes</h1>
 
 	<cfset RecipeInterface = createObject("component", "Models.Recipe") />

@@ -1,86 +1,52 @@
-<cfparam name="AuthFailed" type="boolean" default="false" />
+<cffunction name="NotAuthorized" returntype="void" access="public" >
+	<cfargument name="reason" type="numeric" required="true" />
 
-<cftry>
-	<cfparam name="URL.token" type="uuid" default="0" />
+	<cfcontent reset="true" />
 
-	<cfif URL.token IS NOT "1895708B-AA14-4FC6-AC4549ADDB4BEBB0" >
-		<cfset AuthFailed = true />
-	</cfif>
-
-<cfcatch>
-	<cfset AuthFailed = true />
-</cfcatch>
-</cftry>
-
-<cfif AuthFailed IS true >
-
-	<cfparam name="session.HackerImageByteArray" default="empty" />
-
-	<!DOCTYPE html>
-	<html lang="en" >
 	<cfoutput>
+	<!DOCTYPE html>
+	<html>
 
-	<head>
-		<title>DENIED, INSECT!</title>
+		<head>
+			<title>ACCESS FORBIDDEN</title>
+			<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+			<meta name="author" content="Thomas Frengler" />
+		</head>
 
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-		<style type="text/css">
-			body {
-				background-color: black;
-			}
-
-			##ImgContainer, img {
-				width: 100%;
-				height: 100%;
-			}
-
-			##HackMessageContainer {
-				color: white;
-				position: absolute;
-				top: 50%;
-				width: 100%;
-				/*height: 100%;*/
-				text-align: center;
-				font-size: 1.2em;
-			}
-
-			##HackMessage {
-				border-style: solid;
-				border-width: 1px;
-				background-color: black;
-				color: green;
-				padding-top: 0.5em;
-				padding-bottom: 0.5em;
-				font-style: italic;
-			}
-		</style>
-	</head>
-
-	<body>
-		<cfif isValid("Array", session.HackerImageByteArray) IS false >
-			<cfhttp url="https://static.wixstatic.com/media/6a4a49_e7ad62bef9784345a5384e4b330d3e85~mv2.jpg" />
-
-			<cfif cfhttp.status_code IS 200 >
-				<cfset session.HackerImageByteArray = cfhttp.filecontent />
-			</cfif>
-		</cfif>
-
-		<div id="ImgContainer" >
-			<cfif isValid("Array", session.HackerImageByteArray) >
-				<cfimage action="writeToBrowser" source="#session.HackerImageByteArray#" />
-			</cfif>
-
-			<div id="HackMessageContainer" >
-				<div id="HackMessage" >"Look at you, hacker: a pathetic creature of meat and bone, panting and sweating as you run through my corridors. How can you challenge a perfect, immortal machine?"</div>
-			</div>
-		</div>
-	
-	</body>
-
-	</cfoutput>
+		<body>
+			<section style="color: white; background-color: red" >Not authorized (#arguments.reason#)</section>
+		</body>
 	</html>
+	</cfoutput>
 
+	<cfheader statuscode="401" statustext="Unauthorized" />
+	<cfheader name="WWW-Authenticate" value="basic realm='RecipeDB-Tools'" />
+</cffunction>
+
+<cfset HttpHeaders = getHTTPRequestData().headers />
+
+<cfif structKeyExists(HttpHeaders, "Authorization") IS false >
+	<cfset NotAuthorized(reason=1) />
+	<cfabort/>
+</cfif>
+
+<cfset EncodedUsernameAndPass = listLast(HttpHeaders.authorization, " ") />
+
+<cfif len(EncodedUsernameAndPass) IS 0 >
+	<cfset NotAuthorized(reason=2) />
+	<cfabort/>
+</cfif>
+
+<cfset AuthString = binaryDecode(EncodedUsernameAndPass, "base64") />
+<cfset Username = listFirst(AuthString, ":") />
+<cfset Password = listLast(AuthString, ":") />
+
+<cfif hash(Username, "SHA-256") NEQ "459C1C33AB6912927E13D5730815EABF7CBE663235D20A6178C9FF105FA63D2D" >
+	<cfset NotAuthorized(reason=3) />
+	<cfabort/>
+</cfif>
+
+<cfif hash(Password, "SHA-256") NEQ "5ED35EAC18634DD7BFCC3DE40619CB227AF4BA7EDFE88E83F23ADFC3E5601CA6" >
+	<cfset NotAuthorized(reason=4) />
 	<cfabort/>
 </cfif>

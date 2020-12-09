@@ -1,5 +1,4 @@
-<cfprocessingdirective pageencoding="utf-8" />
-<cfinclude template="checkauth.cfm" />
+<cfinclude template="CheckAuth.cfm" />
 
 <!DOCTYPE html>
 <html lang="en" >
@@ -13,16 +12,16 @@
 </head>
 
 <body>
-	<p><a href="index.cfm?token=#URL.token#" >Back to Toolbox</a></p>
+	<p><a href="index.cfm" >Back to Toolbox</a></p>
 	<h1>DB Tools</h1>
 	
 	<h3>Information</h3>
 
 	<ul>
-		<li><a href="DBInspection.cfm?token=#URL.token#" >DB Inspection</a></li>
-		<li><a href="DBHealthCheck.cfm?token=#URL.token#" >DB Health Check</a></li>
-		<li><a href="DBStructureChart.cfm?token=#URL.token#" >DB Structure Chart</a></li>
-		<li><a href="ListRecipes.cfm?token=#URL.token#" >List of recipes</a></li>
+		<li><a href="DBInspection.cfm" >DB Inspection</a></li>
+		<li><a href="DBHealthCheck.cfm" >DB Health Check</a></li>
+		<li><a href="DBStructureChart.cfm" >DB Structure Chart</a></li>
+		<li><a href="ListRecipes.cfm" >List of recipes</a></li>
 	</ul>
 
 	<!--- <h3>Table manipulation</h3>

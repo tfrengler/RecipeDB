@@ -1,5 +1,4 @@
-<cfprocessingdirective pageencoding="utf-8" />
-<cfinclude template="checkauth.cfm" />
+<cfinclude template="CheckAuth.cfm" />
 
 <!DOCTYPE html>
 <html lang="en" >
@@ -56,12 +55,12 @@
 </head>
 
 <body>
-	<p><a href="DBTools.cfm?token=#URL.token#" >Back to DB Tools</a></p>
+	<p><a href="DBTools.cfm" >Back to DB Tools</a></p>
 	<h1>Overview of current db structure</h1>
 
-	<cfdbinfo type="Tables" name="DatabaseTableInfo" datasource="#application.Settings.Datasource#" />
+	<cfdbinfo type="Tables" name="DatabaseTableInfo" />
 
-	<cfquery name="DatabaseTables" dbtype="query" datasource="#application.Settings.Datasource#" >
+	<cfquery name="DatabaseTables" dbtype="query" >
 		SELECT table_name
 		FROM DatabaseTableInfo
 		WHERE table_type = 'TABLE';
@@ -71,7 +70,7 @@
 
 		<cfloop query="DatabaseTables" >
 
-			<cfdbinfo type="Columns" name="DatabaseTableColumnInfo" table="#DatabaseTables.table_name#" datasource="#application.Settings.Datasource#" />
+			<cfdbinfo type="Columns" name="DatabaseTableColumnInfo" table="#DatabaseTables.table_name#" />
 
 			<!--- <cfdump var="#DatabaseTableColumnInfo#" abort="true" /> --->
 

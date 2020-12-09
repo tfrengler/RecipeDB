@@ -1,5 +1,5 @@
 <cfprocessingdirective pageencoding="utf-8" />
-<cfinclude template="checkauth.cfm" />
+<cfinclude template="CheckAuth.cfm" />
 
 <!DOCTYPE html>
 <html lang="en" >
@@ -16,9 +16,10 @@
 	<h1>Toolbox</h1>
 	
 	<ul>
-		<li><a href="DBTools.cfm?token=#URL.token#" >DB tools</a></li>
-		<li><a href="UserTools.cfm?token=#URL.token#" >User Tools</a></li>
-		<li><a href="CommunicationTools.cfm?token=#URL.token#" >Communication Tools</a></li>
+		<li><a href="InstallSQLite.cfm">Install SQLite</a>
+		<li><a href="DBTools.cfm" >DB tools</a></li>
+		<li><a href="UserTools.cfm" >User Tools</a></li>
+		<li><a href="CommunicationTools.cfm" >Communication Tools</a></li>
 	</ul>
 
 </body>

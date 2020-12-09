@@ -1,5 +1,4 @@
-<cfprocessingdirective pageencoding="utf-8" />
-<cfinclude template="checkauth.cfm" />
+<cfinclude template="CheckAuth.cfm" />
 
 <!--- BEGIN HEALTH CHECK --->
 
@@ -28,7 +27,7 @@
 
 <cfinclude template="DBSetup.cfm" />
 
-<p><a href="DBTools.cfm?token=#URL.token#" >Back to DB tools</a></p>
+<p><a href="DBTools.cfm" >Back to DB tools</a></p>
 
 <cfloop collection="#DBExpectedSetup#" item="CurrentTableName" >
 

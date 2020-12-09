@@ -1,5 +1,4 @@
-<cfprocessingdirective pageencoding="utf-8" />
-<cfinclude template="checkauth.cfm" />
+<cfinclude template="CheckAuth.cfm" />
 
 <cfset DBExpectedSetup = {
 
@@ -9,77 +8,77 @@
 			size: 0,
 			primary_key: true,
 			foreign_key: false,
-			references: structNew()
+			references: {}
 		},
 		DateCreated: {
 			type: "date",
 			size: 0,
 			primary_key: false,
 			foreign_key: false,
-			references: structNew()
+			references: {}
 		},
 		DateTimeLastLogin: {
 			type: "timestamp",
 			size: 0,
 			primary_key: false,
 			foreign_key: false,
-			references: structNew()
+			references: {}
 		},
 		Password: {
 			type: "varchar",
 			size: 128,
 			primary_key: false,
 			foreign_key: false,
-			references: structNew()
+			references: {}
 		},
 		PasswordSalt: {
 			type: "varchar",
 			size: 128,
 			primary_key: false,
 			foreign_key: false,
-			references: structNew()
+			references: {}
 		},
 		TempPassword: {
 			type: "varchar",
 			size: 100,
 			primary_key: false,
 			foreign_key: false,
-			references: structNew()
+			references: {}
 		},
 		UserName: {
 			type: "varchar",
 			size: 20,
 			primary_key: false,
 			foreign_key: false,
-			references: structNew()
+			references: {}
 		},
 		DisplayName: {
 			type: "varchar",
 			size: 30,
 			primary_key: false,
 			foreign_key: false,
-			references: structNew()
+			references: {}
 		},
 		TimesLoggedIn: {
 			type: "int4",
 			size: 0,
 			primary_key: false,
 			foreign_key: false,
-			references: structNew()
+			references: {}
 		},
 		BrowserLastUsed: {
 			type: "varchar",
 			size: 300,
 			primary_key: false,
 			foreign_key: false,
-			references: structNew()
+			references: {}
 		},
 		Blocked: {
 			type: "bool",
 			size: 0,
 			primary_key: false,
 			foreign_key: false,
-			references: structNew()
+			references: {}
 		}
 	},
 
@@ -89,28 +88,28 @@
 			size: 0,
 			primary_key: true,
 			foreign_key: false,
-			references: structNew()
+			references: {}
 		},
 		Name: {
 			type: "varchar",
 			size: 100,
 			primary_key: false,
 			foreign_key: false,
-			references: structNew()
+			references: {}
 		},
 		DateCreated: {
 			type: "date",
 			size: 0,
 			primary_key: false,
 			foreign_key: false,
-			references: structNew()
+			references: {}
 		},
 		DateTimeLastModified: {
 			type: "timestamp",
 			size: 0,
 			primary_key: false,
 			foreign_key: false,
-			references: structNew()
+			references: {}
 		},
 		CreatedByUser: {
 			type: "int8",
@@ -137,35 +136,35 @@
 			size: 2147483647,
 			primary_key: false,
 			foreign_key: false,
-			references: structNew()
+			references: {}
 		},
 		Description: {
 			type: "text",
 			size: 2147483647,
 			primary_key: false,
 			foreign_key: false,
-			references: structNew()
+			references: {}
 		},
 		Picture: {
 			type: "varchar",
 			size: 128,
 			primary_key: false,
 			foreign_key: false,
-			references: structNew()
+			references: {}
 		},
 		Instructions: {
 			type: "text",
 			size: 2147483647,
 			primary_key: false,
 			foreign_key: false,
-			references: structNew()
+			references: {}
 		},
 		Published: {
 			type: "bool",
 			size: 0,
 			primary_key: false,
 			foreign_key: false,
-			references: structNew()
+			references: {}
 		}
 	},
 
@@ -175,7 +174,7 @@
 			size: 0,
 			primary_key: true,
 			foreign_key: false,
-			references: structNew()
+			references: {}
 		},
 		RecipeID: {
 			type: "int8",
@@ -192,7 +191,7 @@
 			size: 2147483647,
 			primary_key: false,
 			foreign_key: false,
-			references: structNew()
+			references: {}
 		},
 		UserID: {
 			type: "int8",
@@ -209,7 +208,7 @@
 			size: 0,
 			primary_key: false,
 			foreign_key: false,
-			references: structNew()
+			references: {}
 		}
 	},
 
@@ -230,56 +229,56 @@
 			size: 6,
 			primary_key: false,
 			foreign_key: false,
-			references: structNew()
+			references: {}
 		},
 		FindRecipes_SortOnColumn: {
 			type: "varchar",
 			size: 20,
 			primary_key: false,
 			foreign_key: false,
-			references: structNew()
+			references: {}
 		},
 		FindRecipesFilterOn_MineOnly: {
 			type: "bool",
 			size: 0,
 			primary_key: false,
 			foreign_key: false,
-			references: structNew()
+			references: {}
 		},
 		FindRecipesFilterOn_MinePublic: {
 			type: "bool",
 			size: 0,
 			primary_key: false,
 			foreign_key: false,
-			references: structNew()
+			references: {}
 		},
 		FindRecipesFilterOn_MinePrivate: {
 			type: "bool",
 			size: 0,
 			primary_key: false,
 			foreign_key: false,
-			references: structNew()
+			references: {}
 		},
 		FindRecipesFilterOn_MineEmpty: {
 			type: "bool",
 			size: 0,
 			primary_key: false,
 			foreign_key: false,
-			references: structNew()
+			references: {}
 		},
 		FindRecipesFilterOn_MineNoPicture: {
 			type: "bool",
 			size: 0,
 			primary_key: false,
 			foreign_key: false,
-			references: structNew()
+			references: {}
 		},
 		FindRecipesFilterOn_OtherUsersOnly: {
 			type: "bool",
 			size: 0,
 			primary_key: false,
 			foreign_key: false,
-			references: structNew()
+			references: {}
 		}
 	}
 

@@ -1,5 +1,4 @@
-<cfprocessingdirective pageencoding="utf-8" />
-<cfinclude template="checkauth.cfm" />
+<cfinclude template="CheckAuth.cfm" />
 
 <!DOCTYPE html>
 <html lang="en" >
@@ -57,7 +56,7 @@
 
 <body>
 	
-	<p><a href="UserTools.cfm?token=#URL.token#" >Back to User Tools</a></p>
+	<p><a href="UserTools.cfm" >Back to User Tools</a></p>
 	<h1>List of users</h1>
 
 	<cfset UsersInterface = createObject("component", "Models.User") />

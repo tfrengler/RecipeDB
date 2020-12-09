@@ -1,5 +1,4 @@
-<cfprocessingdirective pageencoding="utf-8" />
-<cfinclude template="checkauth.cfm" />
+<cfinclude template="CheckAuth.cfm" />
 
 <!DOCTYPE html>
 <html lang="en" >
@@ -13,13 +12,13 @@
 </head>
 
 <body>
-	<p><a href="index.cfm?token=#URL.token#" >Back to Toolbox</a></p>
+	<p><a href="index.cfm" >Back to Toolbox</a></p>
 	<h1>User Tools</h1>
 
 	<ul>
-		<li><a href="AddUser.cfm?token=#URL.token#" >Add user</a></li>
-		<!--- <li><a href="EditUser.cfm?token=#URL.token#" >Edit user</a></li> --->
-		<li><a href="ListUsers.cfm?token=#URL.token#" >List users</a></li>
+		<li><a href="AddUser.cfm" >Add user</a></li>
+		<!--- <li><a href="EditUser.cfm" >Edit user</a></li> --->
+		<li><a href="ListUsers.cfm" >List users</a></li>
 	</ul>
 
 </body>

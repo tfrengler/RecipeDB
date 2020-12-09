@@ -1,5 +1,4 @@
 <cfcomponent output="false">
-<cfprocessingdirective pageencoding="utf-8" />
 
 	<cfset this.name="RecipeDB" />
 	<cfset this.applicationtimeout = CreateTimeSpan(14,0,0,0) />
@@ -20,6 +19,13 @@
 	<cfset this.mappings["/Views"] = (this.appdirectory & "Views/") />
 	<cfset this.mappings["/Controllers"] = (this.appdirectory & "Controllers/") />
 
+	<cfset this.defaultdatasource = {
+		class: "org.sqlite.JDBC",
+		connectionString: "jdbc:sqlite:#this.root#\dfa8c46a-29b3-4a1f-947e-0bdd385380bb\RecipeDB.sdb",
+		username: "", // No credentials for SQLite databases
+		password: ""
+	} />
+
 	<cffunction name="onApplicationStart" returnType="boolean" output="false">
 
 		<cfset var configXML = "" />
@@ -27,7 +33,7 @@
 		<cfset application.allowedAJAXControllers = "" />
 
 		<!--- Set up paths based on config file --->
-		<cffile action="read" file="Application/Assets/config.xml" charset="utf-8" variable="configXML" accept="application/xml" />
+		<!--- <cffile action="read" file="Application/Assets/config.xml" charset="utf-8" variable="configXML" accept="application/xml" />
 		<cfset configXML = xmlParse(configXML) />
 
 		<cfif directoryExists(configXML.envelope.files.patchnotes.xmlText) >
@@ -58,20 +64,20 @@
 			<cfset application.settings.files.temp = configXML.envelope.files.temp_folder.xmlText />
 		<cfelse>
 			<cfthrow message="Error setting up the application" detail="Temp directory '#configXML.envelope.files.temp_folder.xmlText#' does not exist!" />
-		</cfif>
+		</cfif> --->
 
 		<cfset application.settings.datasource = "dev" />
 
 		<!--- Set up singletons --->
 		<cfif structKeyExists(application, "securityManager") IS false >
-			<cfset application.securityManager = createObject("component", "Components.SecurityManager") />
+			<cfset application.securityManager = new Components.SecurityManager() />
 		</cfif>
 
 		<cfif structKeyExists(application, "fileManager") IS false >
-			<cfset application.fileManager = createObject("component", "Components.FileManager").init(
-					recipePicturePath = application.settings.files.recipe.standard,
-					recipeThumbnailPath = application.settings.files.recipe.thumbnails,
-					tempDirectory = application.settings.files.temp
+			<cfset application.fileManager = new Components.FileManager(
+					recipePicturePath = this.root & "/Temp/",
+					recipeThumbnailPath = this.root & "/Temp/",
+					tempDirectory = this.root & "/Temp/"
 			) />
 		</cfif>
 
@@ -199,7 +205,7 @@
 
 	<cffunction name="onSessionEnd" returntype="void" output="false">
 		<cfargument name="SessionScope" required=true /> 
-    	<cfargument name="ApplicationScope" required=false /> 
+		<cfargument name="ApplicationScope" required=false /> 
 
 		<cfcookie name="CFID" value="" expires="NOW" />
 		<cfcookie name="CFTOKEN" value="" expires="NOW" />

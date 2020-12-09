@@ -1,5 +1,5 @@
 <cfprocessingdirective pageencoding="utf-8" />
-<cfinclude template="checkauth.cfm" />
+<cfinclude template="CheckAuth.cfm" />
 
 <cfinclude template="DBSetup.cfm" />
 
@@ -58,7 +58,7 @@
 </head>
 
 <body>
-	<p><a href="DBTools.cfm?token=#URL.token#" >Back to DB Tools</a></p>
+	<p><a href="DBTools.cfm" >Back to DB Tools</a></p>
 	<h1>DB Chart of Expected Structure</h1>
 
 	<cfloop collection="#DBExpectedSetup#" item="CurrentTableName" >

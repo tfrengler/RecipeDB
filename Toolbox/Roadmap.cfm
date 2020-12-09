@@ -1,5 +1,4 @@
-<cfprocessingdirective pageencoding="utf-8" />
-<cfinclude template="checkauth.cfm" />
+<cfinclude template="CheckAuth.cfm" />
 
 <!DOCTYPE html>
 <html lang="en" >
@@ -54,7 +53,7 @@
 
 <body>
 
-	<p><a href="CommunicationTools.cfm?token=#URL.token#" >Back to Communcation Tools</a></p>
+	<p><a href="CommunicationTools.cfm" >Back to Communcation Tools</a></p>
 	<h1>Roadmap</h1>
 
 	<cfset RoadmapDirectory = application.settings.files.roadmap />
@@ -99,7 +98,7 @@
 
 		<br/>
 
-		<form name="Save_Roadmap_Changes_Form" action="Roadmap.cfm?token=#URL.token#" method="post" >
+		<form name="Save_Roadmap_Changes_Form" action="Roadmap.cfm" method="post" >
 
 			<input type="hidden" name="Saved_Roadmap_FileContents" value="" />
 			<input id="SaveRoadmap" type="button" value="SAVE" />

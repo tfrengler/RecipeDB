@@ -1,12 +1,10 @@
-<cfcomponent output="false" >
-<cfprocessingdirective pageEncoding="utf-8" />
-
+<cfcomponent output="false" modifier="abstract" persistent="true" >
 	<!--- This is the core component for all CFCs that model unique instances of an object --->
 
-	<cfset IsStatic = true />
-	<cfset DatasourceName = "" />
-	<cfset TableKey = "" />
-	<cfset TableColumns = "" />
+	<cfset variables.IsStatic = true />
+	<cfset variables.DatasourceName = "" />
+	<cfset variables.TableKey = "" />
+	<cfset variables.TableColumns = "" />
 
 	<!--- Define these in the child CFC
 
