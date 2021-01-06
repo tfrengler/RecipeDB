@@ -47,21 +47,17 @@ CREATE TABLE UserSettings (
 );
 
 CREATE TABLE RecipeImages (
-	ImageID 				INTEGER 		PRIMARY KEY AUTOINCREMENT,
-	BelongsToRecipe 		INTEGER			REFERENCES Recipes (RecipeID) ON DELETE CASCADE,
-	MimeType				VARCHAR (100),
-	OriginalName			VARCHAR (256),
-	BinaryContent			BLOB,
-	DateTimeCreated			DATETIME		DEFAULT (date('now') ),
-	DateTimeLastModified	DATETIME		DEFAULT (date('now') ),
+    ImageID              INTEGER       PRIMARY KEY AUTOINCREMENT,
+    BelongsToRecipe      INTEGER       REFERENCES Recipes (RecipeID) ON DELETE CASCADE
+                                       UNIQUE ON CONFLICT ROLLBACK,
+    MimeType             VARCHAR (100),
+    OriginalName         VARCHAR (256),
+    Base64Content        TEXT,
+    DateTimeCreated      TEXT          DEFAULT (datetime('now') ),
+    DateTimeLastModified TEXT          DEFAULT (datetime('now') ),
+    ModifiedByUser       INTEGER       REFERENCES Users (UserID)
 );
 
-CREATE TABLE ImageThumbnails (
-	ID						INTEGER			REFERENCES RecipeImages (ImageID) ON DELETE CASCADE
-	BinaryContent			BLOB,
-	DateTimeCreated			DATETIME		DEFAULT (date('now') ),
-	DateTimeLastModified	DATETIME		DEFAULT (date('now') )
-);
 
 -- Comments haven't been implemented so we aren't going to add this
 /*CREATE TABLE Comments(
