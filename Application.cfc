@@ -11,8 +11,8 @@
 	<!--- MAPPINGS --->
 
 	<cfset this.root = getDirectoryFromPath( getCurrentTemplatePath() ) />
-	<cfset this.appdirectory = this.root & "Application/" /> 
-	
+	<cfset this.appdirectory = this.root & "Application/" />
+
 	<cfset this.mappings["/Models"] = (this.appdirectory & "Models/") />
 	<cfset this.mappings["/Components"] = (this.appdirectory & "Components/") />
 	<cfset this.mappings["/Assets"] = (this.appdirectory & "Assets/") />
@@ -21,9 +21,12 @@
 
 	<cfset this.defaultdatasource = {
 		class: "org.sqlite.JDBC",
-		connectionString: "jdbc:sqlite:#this.root#\dfa8c46a-29b3-4a1f-947e-0bdd385380bb\RecipeDB.sdb",
-		username: "", // No credentials for SQLite databases
-		password: ""
+		connectionString: "jdbc:sqlite:#this.root#dfa8c46a-29b3-4a1f-947e-0bdd385380bb/RecipeDB.sdb",
+		timezone: "CET",
+		custom: {useUnicode: true, characterEncoding: 'UTF-8', Version: 3},
+		blob: true,
+		clob: true,
+		validate: true
 	} />
 
 	<cffunction name="onApplicationStart" returnType="boolean" output="false">
@@ -114,7 +117,7 @@
 			<cfreturn true />
 		</cfif>
 
-		<!--- 
+		<!---
 			Make a request, if it's targeting the login page and the form-scope is empty
 			(meaning no login request has been made), then we check if the current user
 			is already logged in. If he/she isn't then we log them out and kill their session
@@ -131,7 +134,7 @@
 
 		<!--- LOGIN/AUTHENTICATION PROCESS --->
 		<cflogin applicationtoken="RecipeDB" idletimeout="1800" >
-			<!--- 
+			<!---
 				The body of cflogin is executed if the current user is not logged in, otherwise it's skipped completely.
 				This latter what we want to happen everytime a request is made in the system after they are logged in.
 			--->
@@ -149,7 +152,7 @@
 			<cfset var UserSearch = queryNew("") />
 			<cfset var LoggedInUser = "" />
 
-			<cfset UserSearch = UserInterface.getBy( 
+			<cfset UserSearch = UserInterface.getBy(
 				ColumnToSearchOn="UserName",
 				SearchOperator="equal to",
 				SearchData=form.j_username,
@@ -173,12 +176,12 @@
 
 			<cfif LoggedInUser.validatePassword( Password=form.j_password, SecurityManager=application.securityManager ) IS false >
 				<cflocation url="Login.cfm?Reason=3" addtoken="false" />
-				<!--- Password is incorrect ---> 
+				<!--- Password is incorrect --->
 			</cfif>
 
 			<cfif LoggedInUser.getBlocked() IS 1 >
 				<cflocation url="Login.cfm?Reason=4" addtoken="false" />
-				<!--- User account is blocked ---> 
+				<!--- User account is blocked --->
 			</cfif>
 
 			<cfif LoggedInUser.getUserName() IS "tfrengler" >
@@ -204,8 +207,8 @@
 	</cffunction>
 
 	<cffunction name="onSessionEnd" returntype="void" output="false">
-		<cfargument name="SessionScope" required=true /> 
-		<cfargument name="ApplicationScope" required=false /> 
+		<cfargument name="SessionScope" required=true />
+		<cfargument name="ApplicationScope" required=false />
 
 		<cfcookie name="CFID" value="" expires="NOW" />
 		<cfcookie name="CFTOKEN" value="" expires="NOW" />
