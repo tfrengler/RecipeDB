@@ -77,8 +77,7 @@
 			<cfset ExistingUsers = UsersInterface.getBy( 
 				ColumnToSearchOn="username",
 				SearchOperator="equal to",
-				SearchData=FORM.UserName,
-				Datasource=application.settings.datasource
+				SearchData=FORM.UserName
 			) />
 
 			<cfif ExistingUsers.RecordCount GT 0 >
@@ -89,10 +88,7 @@
 		</cfif>
 
 		<cfif Continue >
-			<cfset NewUserInstance = UsersInterface.create(
-				Username=FORM.UserName,
-				Datasource=application.settings.datasource
-			) />
+			<cfset NewUserInstance = UsersInterface.create(Username=FORM.UserName) />
 
 			<cfset NewUserInstance.changePassword(
 				SecurityManager=application.securityManager,
@@ -109,10 +105,7 @@
 
 			<p class="good" >SUCCESS! New user added!</p>
 
-			<cfdump var=#UsersInterface.getData( 
-				ID=NewUserInstance.getId(),
-				Datasource=application.settings.datasource
-			)# />
+			<cfdump var=#UsersInterface.getData(ID=NewUserInstance.getId())# />
 		</cfif>
 	</cfif>
 

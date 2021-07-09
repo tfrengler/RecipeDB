@@ -17,7 +17,6 @@
 	--->
 
 	<cffunction name="setupTableColumns" access="private" returntype="void" output="false" hint="" >
-		<cfargument name="Datasource" type="string" required="true" hint="The name of the datasource to use for queries." />
 
 		<cfif len(variables.getTableColumns()) GT 0 AND len(variables.getTableKey()) GT 0 >
 			<cfreturn />
@@ -26,7 +25,7 @@
 		<cfset var ColumnDataFromDB = "" />
 		<cfset var ListOfColumns = "" />
 
-		<cfdbinfo name="ColumnDataFromDB" datasource="#arguments.Datasource#" type="columns" table="#getTableName()#" />
+		<cfdbinfo name="ColumnDataFromDB" type="columns" table="#getTableName()#" />
 
 		<cfloop query="#ColumnDataFromDB#" >
 			<cfif ColumnDataFromDB.IS_PRIMARYKEY IS false >
@@ -42,16 +41,6 @@
 		</cfloop>
 
 		<cfset variables.TableColumns = ListOfColumns />
-	</cffunction>
-
-	<cffunction name="setDataSource" access="private" returntype="void" output="false" hint="" >
-		<cfargument name="Name" type="string" required="true" hint="" />
-
-		<cfset variables.DatasourceName = arguments.Name />
-	</cffunction>
-
-	<cffunction name="getDatasource" access="public" returntype="string" output="false" hint="" >
-		<cfreturn variables.DatasourceName />
 	</cffunction>
 
 	<!--- Table mappings --->
@@ -89,15 +78,9 @@
 		<cfargument name="SearchOperator" type="string" required="true" hint="The search operator you want to use (such as equal to, begins with, contains etc)." />
 		<cfargument name="SearchData" type="any" required="true" hint="The data you're searching on. Can be a date, float, integer or a string. NOTE: For IN-searches you don't have to put parentheses around the values!" />
 		<cfargument name="CachedWithin" type="any" required="false" default="#createTimespan(0, 0, 0, 0)#" hint="A timespan in which you want to cache the query for subsequent calls." />
-		<cfargument name="Datasource" type="string" required="true" hint="The name of the datasource to use for queries." />
 
 		<cfset variables.onInitialized() />
-
-		<cfif len(arguments.Datasource) IS 0 >
-			<cfthrow message="Error when getting data for object" detail="Argument 'Datasource' is empty" />
-		</cfif>
-
-		<cfset variables.setupTableColumns( Datasource=arguments.Datasource ) />
+		<cfset variables.setupTableColumns() />
 
 		<cfset var CurrentColumn = "" />
 		<cfset var Columns = "#getTableKey()#,#getTableColumns()#" />
@@ -162,7 +145,7 @@
 
 		</cfswitch>
 
-		<cfquery name="GetByObjectData" datasource="#arguments.Datasource#" cachedwithin="#arguments.CachedWithin#" >
+		<cfquery name="GetByObjectData" cachedwithin="#arguments.CachedWithin#" >
 			SELECT #Columns#
 			FROM #getTableName()#
 				
@@ -189,16 +172,10 @@
 	<cffunction name="getData" returntype="query" access="public" output="false" hint="Static method. Fetch data from a specific object or multiple objects." >
 		<cfargument name="ColumnList" type="string" required="false" default="" hint="List of columns you want to fetch data from." />
 		<cfargument name="ID" type="numeric" required="false" default="0" hint="ID of the object you want to fetch data for. If you leave this out you get all objects." />
-		<cfargument name="Datasource" type="string" required="true" hint="The name of the datasource to use for queries." />
 		<cfargument name="CachedWithin" type="any" required="false" default="#createTimespan(0, 0, 0, 0)#" hint="A timespan in which you want to cache the query for subsequent calls." />
 
 		<cfset variables.onInitialized() />
-
-		<cfif len(arguments.Datasource) IS 0 AND arguments.Datasource IS NOT " " >
-			<cfthrow message="Error when getting data for object" detail="Argument 'Datasource' is empty" />
-		</cfif>
-
-		<cfset variables.setupTableColumns( Datasource=arguments.Datasource ) />
+		<cfset variables.setupTableColumns() />
 
 		<cfset var ObjectData = queryNew("") />
 		<cfset var CurrentColumn = "" />
@@ -223,7 +200,7 @@
 
 		<cfset ObjectData = queryNew(Columns) />
 
-		<cfquery name="ObjectData" datasource="#arguments.Datasource#" cachedwithin="#arguments.CachedWithin#" >
+		<cfquery name="ObjectData" cachedwithin="#arguments.CachedWithin#" >
 			SELECT #Columns#
 			FROM #getTableName()#
 			<cfif arguments.ID GT 0 >
@@ -239,7 +216,7 @@
 
 		<cftransaction action="begin" >
 			<cftry>
-				<cfquery datasource="#variables.getDatasource()#" >
+				<cfquery>
 					DELETE
 					FROM #variables.getTableName()#
 					WHERE #variables.getTableKey()# = <cfqueryparam sqltype="BIGINT" value="#variables.getID()#" />
@@ -260,13 +237,12 @@
 
 	<cffunction name="exists" returntype="boolean" access="public" output="false" hint="" >
 		<cfargument name="ID" type="numeric" required="true" hint="" />
-		<cfargument name="Datasource" type="string" required="true" hint="The name of the datasource to use for queries." />
 
 		<cfset variables.onInitialized() />
-		<cfset variables.setupTableColumns( Datasource=arguments.Datasource ) />
+		<cfset variables.setupTableColumns() />
 
 		<cfset var ExistenceCheck = queryNew("") />
-		<cfquery name="ExistenceCheck" datasource="#arguments.Datasource#" >
+		<cfquery name="ExistenceCheck" >
 			SELECT #variables.getTableKey()#
 			FROM #variables.getTableName()#
 			WHERE #variables.getTableKey()# = <cfqueryparam sqltype="CF_SQL_BIGINT" value="#arguments.ID#" />

@@ -52,11 +52,19 @@ CREATE TABLE RecipeImages (
                                        UNIQUE ON CONFLICT ROLLBACK,
     MimeType             VARCHAR (100),
     OriginalName         VARCHAR (256),
-    Base64Content        TEXT,
+    Base64Content        BLOB,
     DateTimeCreated      TEXT          DEFAULT (datetime('now') ),
     DateTimeLastModified TEXT          DEFAULT (datetime('now') ),
     ModifiedByUser       INTEGER       REFERENCES Users (UserID)
 );
+
+CREATE TABLE ImageThumbnails (
+    ID                   INTEGER		REFERENCES RecipeImages (ImageID) ON DELETE CASCADE,
+    Base64Content        BLOB,
+    DateTimeCreated      DATETIME DEFAULT (date('now') ),
+    DateTimeLastModified DATETIME DEFAULT (date('now') ) 
+);
+
 
 
 -- Comments haven't been implemented so we aren't going to add this

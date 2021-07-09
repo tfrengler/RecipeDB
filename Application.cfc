@@ -19,9 +19,10 @@
 	<cfset this.mappings["/Views"] = (this.appdirectory & "Views/") />
 	<cfset this.mappings["/Controllers"] = (this.appdirectory & "Controllers/") />
 
+	<!--- connectionString: "jdbc:sqlite:#this.root#dfa8c46a-29b3-4a1f-947e-0bdd385380bb/RecipeDB.sdb", --->
 	<cfset this.defaultdatasource = {
 		class: "org.sqlite.JDBC",
-		connectionString: "jdbc:sqlite:#this.root#dfa8c46a-29b3-4a1f-947e-0bdd385380bb/RecipeDB.sdb",
+		connectionString: "jdbc:sqlite:C:/Dev/web/Debug/RecipeDB.sdb",
 		timezone: "CET",
 		custom: {useUnicode: true, characterEncoding: 'UTF-8', Version: 3},
 		blob: true,
@@ -31,9 +32,9 @@
 
 	<cffunction name="onApplicationStart" returnType="boolean" output="false">
 
-		<cfset var configXML = "" />
-		<cfset var queryListOfControllers = queryNew("") />
-		<cfset application.allowedAJAXControllers = "" />
+		<cfset var configXML = null />
+		<cfset var queryListOfControllers = null />
+		<cfset application.allowedAJAXControllers = null />
 
 		<!--- Set up paths based on config file --->
 		<!--- <cffile action="read" file="Application/Assets/config.xml" charset="utf-8" variable="configXML" accept="application/xml" />
@@ -76,13 +77,13 @@
 			<cfset application.securityManager = new Components.SecurityManager() />
 		</cfif>
 
-		<cfif structKeyExists(application, "fileManager") IS false >
+		<!--- <cfif structKeyExists(application, "fileManager") IS false >
 			<cfset application.fileManager = new Components.FileManager(
 					recipePicturePath = this.root & "/Temp/",
 					recipeThumbnailPath = this.root & "/Temp/",
 					tempDirectory = this.root & "/Temp/"
 			) />
-		</cfif>
+		</cfif> --->
 
 		<!--- SETTING UP ALLOWED AJAX PROXY CFC TARGETS --->
 		<cfdirectory directory="/Controllers" action="list" filter="*.cfc" type="file" listinfo="name" name="queryListOfControllers" >
@@ -95,7 +96,7 @@
 	</cffunction>
 
 	<cffunction name="onRequestStart" returnType="boolean" output="false" >
-		<cfargument type="string" name="targetPage" required=true />
+		<cfargument type="string" name="targetPage" required="true" />
 
 		<!--- For force refreshing static content programmatically, rather than using Shift + F5 or similar means --->
 		<cfif structKeyExists(URL, "Refresh") >
@@ -109,7 +110,7 @@
 
 			<cfset sessionInvalidate() />
 			<cfset applicationStop() />
-			<cflocation url="http://#CGI.SERVER_NAME#/Login.cfm" addtoken="false" />
+			<cflocation url="Login.cfm" addtoken="false" />
 
 		</cfif>
 
@@ -143,13 +144,16 @@
 				If these keys do not exist in the form-scope it means no login attempt was made and being this far into
 				the code means it came from a request that didn't target the login-page, thus we redirect them back.
 			--->
-			<cfif structKeyExists(form, "j_username") IS false AND structKeyExists(form, "j_password") IS false >
-				<cflocation url="http://#CGI.SERVER_NAME#/Login.cfm?Reason=5" addtoken="false" />
+			<cfif NOT structKeyExists(form, "j_username") AND NOT structKeyExists(form, "j_password") >
+				<cfif structKeyExists(URL, "Reason") >
+					<cfreturn true />
+				<cfelse>
+					<cflocation url="Login.cfm?Reason=5" addtoken="false" />
+				</cfif>
 			</cfif>
 
 			<cfset var UserInterface = createObject("component", "Models.User") />
-			<cfset var UserID = 0 />
-			<cfset var UserSearch = queryNew("") />
+			<cfset var UserSearch = null />
 			<cfset var LoggedInUser = "" />
 
 			<cfset UserSearch = UserInterface.getBy(

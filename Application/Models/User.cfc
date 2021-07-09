@@ -313,7 +313,7 @@
 
 		<cftransaction action="begin" >
 			<cftry>
-				<cfquery name="SaveSettings" datasource="#variables.getDatasource()#" >
+				<cfquery name="SaveSettings" >
 					UPDATE UserSettings
 					SET
 						FindRecipes_ListType = <cfqueryparam sqltype="LONGVARCHAR" value=#Settings.findRecipes.listType# />,
@@ -341,7 +341,7 @@
 	<cffunction name="loadSettings" returntype="void" access="public" output="false" hint="" >
 		<cfset var UserSettingsQuery = queryNew("") />
 
-		<cfquery name="UserSettingsQuery" datasource="#variables.getDatasource()#" >
+		<cfquery name="UserSettingsQuery" >
 			SELECT 
 				FindRecipes_ListType,
 				FindRecipes_SortOnColumn,
@@ -379,7 +379,7 @@
 		
 		<cftransaction action="begin" >
 			<cftry>
-				<cfquery name="UpdateUser" datasource="#variables.getDatasource()#" >
+				<cfquery name="UpdateUser" >
 					UPDATE #variables.getTableName()#
 					SET	
 						DateCreated = <cfqueryparam sqltype="DATE" value="#getDateCreated()#" />,
@@ -407,32 +407,28 @@
 		</cftransaction>
 	</cffunction>
 
-	<cffunction name="create" returntype="Models.User" access="public" hint="Static method. Creates a new empty user in the db and returns an instance of this user" >
+	<cffunction name="create" returntype="Models.User" access="public" hint="Static method. Creates a new empty user in the db and returns an instance of this user" output="true" >
 		<cfargument name="Username" type="string" required="true" hint="The login name for the new user." />
-		<cfargument name="Datasource" type="string" required="true" hint="The name of the datasource to use for queries." />
 
 		<cfset variables.onInitialized() />
-		<cfset variables.setupTableColumns( Datasource=trim(arguments.Datasource) ) />
+		<cfset variables.setupTableColumns() />
 
 		<cfif len(arguments.Username) IS 0 >
 			<cfthrow message="Error creating new user" detail="The username you passed is empty, this is not allowed." />
 		</cfif>
 
-		<cfif len(arguments.Datasource) IS 0 >
-			<cfthrow message="Error creating new user" detail="The datasource name you passed is empty, this is not allowed." />
-		</cfif>
-
 		<cfset variables.setDisplayName(Name="New user XYZ#randRange(1, 100)#") />
 		<cfset variables.setUserName(Name=arguments.Username) />
 
-		<cfset var CreateUser = queryNew("") />
+		<cfset var NewUserID = 0 />
 
 		<cfset variables.setDateCreated( Date=createODBCdate(now()) ) />
 
 		<cftransaction action="begin" >
 			<cftry>
-				<cfquery name="CreateUser" datasource="#arguments.Datasource#" >
-					INSERT INTO #getTableName()# (
+
+				<cfset queryExecute(
+					"INSERT INTO '#getTableName()#' (
 						DateCreated,
 						DateTimeLastLogin,
 						Password,
@@ -444,20 +440,47 @@
 						BrowserLastUsed,
 						Blocked
 					)
-					VALUES (
-						<cfqueryparam sqltype="DATE" value="#getDateCreated()#" />,
-						<cfqueryparam sqltype="TIMESTAMP" value="#getDateTimeLastLogin()#" />,
-						<cfqueryparam sqltype="LONGVARCHAR" value="#getPassword()#" />,
-						<cfqueryparam sqltype="LONGVARCHAR" value="#getPasswordSalt()#" />,
-						<cfqueryparam sqltype="LONGVARCHAR" value="#getTempPassword()#" />,
-						<cfqueryparam sqltype="LONGVARCHAR" value="#getUserName()#" />,
-						<cfqueryparam sqltype="LONGVARCHAR" value="#getDisplayName()#" />,
-						<cfqueryparam sqltype="INTEGER" value="#getTimesLoggedIn()#" />,
-						<cfqueryparam sqltype="LONGVARCHAR" value="#getBrowserLastUsed()#" />,
-						<cfqueryparam sqltype="BOOLEAN" value="#getBlocked()#" />
+					VALUES(?,?,?,?,?,?,?,?,?,?)",
+					[
+						getDateCreated(),
+						getDateTimeLastLogin(),
+						getPassword(),
+						getPasswordSalt(),
+						getTempPassword(),
+						getUserName(),
+						getDisplayName(),
+						getTimesLoggedIn(),
+						getBrowserLastUsed(),
+						getBlocked()
+					],
+					{result="NewUserID"}
+				) />
+
+				<cfset queryExecute(
+					"INSERT INTO 'UserSettings' (
+						BelongsToUser,
+						FindRecipes_ListType,
+						FindRecipes_SortOnColumn,
+						FindRecipesFilterOn_MineOnly,
+						FindRecipesFilterOn_MinePublic,
+						FindRecipesFilterOn_MinePrivate,
+						FindRecipesFilterOn_MineEmpty,
+						FindRecipesFilterOn_MineNoPicture,
+						FindRecipesFilterOn_OtherUsersOnly
 					)
-					RETURNING #getTableKey()#; 
-				</cfquery>
+					VALUES(?,?,?,?,?,?,?,?,?)",
+					[
+						NewUserID.generatedKey,
+						'full',
+						'CreatedOn',
+						false,
+						false,
+						false,
+						false,
+						false,
+						false
+					]
+				) />
 
 				<cftransaction action="commit" />
 			<cfcatch>
@@ -469,9 +492,9 @@
 			</cftry>
 		</cftransaction>
 
-		<cftransaction action="begin" >
+		<!--- <cftransaction action="begin" >
 			<cftry>
-				<cfquery name="CreateDefaultSettings" datasource="#arguments.Datasource#" >
+				<cfquery name="CreateDefaultSettings" >
 					INSERT INTO UserSettings (
 						BelongsToUser,
 						FindRecipes_ListType,
@@ -484,7 +507,7 @@
 						FindRecipesFilterOn_OtherUsersOnly
 					)
 					VALUES (
-						#getID()#,
+						#NewUserID.generatedKey#,
 						'full',
 						'CreatedOn',
 						false,
@@ -504,19 +527,16 @@
 
 			</cfcatch>
 			</cftry>
-		</cftransaction>
+		</cftransaction> --->
 
-		<cfreturn variables.init(
-			ID=CreateUser[ getTableKey() ],
-			Datasource=arguments.Datasource
-		) />
+		<cfreturn variables.init(ID=NewUserID.generatedKey) />
 	</cffunction>
 
 	<cffunction name="load" returntype="void" access="private" output="false" hint="Fills the instance with data from the db." >
 
 		<cfset var UserData = queryNew("") />
 
-		<cfquery name="UserData" datasource="#getDatasource()#" >
+		<cfquery name="UserData" >
 			SELECT #getTableColumns()#
 			FROM #getTableName()#
 			WHERE #getTableKey()# = <cfqueryparam sqltype="BIGINT" value="#getID()#" />
@@ -540,20 +560,9 @@
 
 	<cffunction name="init" access="public" returntype="Models.User" output="false" hint="Constructor, returns an initialized user who is by default blocked." >
 		<cfargument name="ID" type="numeric" required="true" hint="The UserID of the user you want to init this instance with." />
-		<cfargument name="Datasource" type="string" required="true" hint="The name of the datasource to use for queries." />
 
 		<cfset variables.onInitialized() />
-
-		<cfif len(arguments.Datasource) IS 0 >
-			<cfthrow message="Error when initializing user. The datasource argument appears to be empty" />
-		</cfif>
-
-		<cfset variables.setDataSource( Name= trim(arguments.Datasource) ) />
-		<cfset variables.setupTableColumns( Datasource=trim(arguments.Datasource) ) />
-
-		<cfif variables.exists( ID=arguments.ID, Datasource=arguments.Datasource ) IS false >
-			<cfthrow message="Error when initializing user. No user with this #variables.getTableKey()# exists: #arguments.ID#" />
-		</cfif>
+		<cfset variables.setupTableColumns() />
 
 		<cfset variables.setID( Value=arguments.ID ) >
 		<cfset variables.load() />
