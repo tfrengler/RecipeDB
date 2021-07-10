@@ -60,7 +60,6 @@
 	</fieldset>
 
 	<cfif structIsEmpty(FORM) IS false >
-		<cfset UsersInterface = createObject("component", "Models.User") />
 		<cfset Continue = true />
 
 		<cfif len(FORM.UserName) IS 0 >
@@ -74,7 +73,7 @@
 		</cfif>
 
 		<cfif len(FORM.UserName) GT 0 >
-			<cfset ExistingUsers = UsersInterface.getBy( 
+			<cfset ExistingUsers = Models.User::getBy(
 				ColumnToSearchOn="username",
 				SearchOperator="equal to",
 				SearchData=FORM.UserName
@@ -83,12 +82,50 @@
 			<cfif ExistingUsers.RecordCount GT 0 >
 				<p class="bad" >There's already one or more users with that username!</p>
 				<cfdump var=#ExistingUsers# />
+
+				<table border="1">
+					<thead>
+						<tr>
+							<td>UserID</td>
+							<td>TempPassword</td>
+							<td>PasswordSalt</td>
+							<td>BrowserLastUsed</td>
+							<td>DisplayName</td>
+							<td>Blocked</td>
+							<td>DateTimeLastLogin</td>
+							<td>DateCreated</td>
+							<td>TimesLoggedIn</td>
+							<td>Password</td>
+							<td>UserName</td>
+						</tr>
+					</thead>
+
+					<cfset DateTimeLastLogin = Components.Localizer::getBackendDateTime(ExistingUsers.DateTimeLastLogin) />
+					<cfset DateCreated = Components.Localizer::getBackendDate(ExistingUsers.DateCreated) />
+
+					<tbody>
+						<tr>
+							<td>#ExistingUsers.UserID#</td>
+							<td>#ExistingUsers.TempPassword#</td>
+							<td>#ExistingUsers.PasswordSalt#</td>
+							<td>#ExistingUsers.BrowserLastUsed#</td>
+							<td>#ExistingUsers.DisplayName#</td>
+							<td>#ExistingUsers.Blocked#</td>
+							<td>#Components.Localizer::getDisplayDateTime(DateTimeLastLogin)#</td>
+							<td>#Components.Localizer::getDisplayDate(DateCreated)#</td>
+							<td>#ExistingUsers.TimesLoggedIn#</td>
+							<td>#ExistingUsers.Password#</td>
+							<td>#ExistingUsers.UserName#</td>
+						</tr>
+					</tbody>
+				</table>
+
 				<cfset Continue = false />
 			</cfif>
 		</cfif>
 
 		<cfif Continue >
-			<cfset NewUserInstance = UsersInterface.create(Username=FORM.UserName) />
+			<cfset NewUserInstance = Models.User::create(username=FORM.UserName) />
 
 			<cfset NewUserInstance.changePassword(
 				SecurityManager=application.securityManager,
@@ -100,7 +137,7 @@
 			<cfif len(FORM.DisplayName) GT 0 >
 				<cfset NewUserInstance.setDisplayName( Name=FORM.DisplayName ) />
 			</cfif>
-			
+
 			<cfset NewUserInstance.save() />
 
 			<p class="good" >SUCCESS! New user added!</p>

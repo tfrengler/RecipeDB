@@ -19,10 +19,9 @@
 	<cfset this.mappings["/Views"] = (this.appdirectory & "Views/") />
 	<cfset this.mappings["/Controllers"] = (this.appdirectory & "Controllers/") />
 
-	<!--- connectionString: "jdbc:sqlite:#this.root#dfa8c46a-29b3-4a1f-947e-0bdd385380bb/RecipeDB.sdb", --->
 	<cfset this.defaultdatasource = {
 		class: "org.sqlite.JDBC",
-		connectionString: "jdbc:sqlite:C:/Dev/web/Debug/RecipeDB.sdb",
+		connectionString: "jdbc:sqlite:#this.root#dfa8c46a-29b3-4a1f-947e-0bdd385380bb/RecipeDB.sdb",
 		timezone: "CET",
 		custom: {useUnicode: true, characterEncoding: 'UTF-8', Version: 3},
 		blob: true,

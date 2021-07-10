@@ -2,9 +2,6 @@
 	<!--- This is the core component for all CFCs that model unique instances of an object --->
 
 	<cfset variables.IsStatic = true />
-	<cfset variables.DatasourceName = "" />
-	<cfset variables.TableKey = "" />
-	<cfset variables.TableColumns = "" />
 
 	<!--- Define these in the child CFC
 
@@ -43,51 +40,20 @@
 		<cfset variables.TableColumns = ListOfColumns />
 	</cffunction>
 
-	<!--- Table mappings --->
-
-	<cffunction name="getTableName" returntype="string" access="public" output="false" hint="" >
-		<cfreturn variables.TableName />
-	</cffunction> 
-
-	<cffunction name="getTableKey" returntype="string" access="public" output="false" hint="" >
-		<cfreturn variables.TableKey />
-	</cffunction>
-
-	<cffunction name="getTableColumns" returntype="string" access="public" output="false" hint="" >
-		<cfreturn variables.TableColumns />
-	</cffunction>
-
-	<!--- Static method support --->
-
-	<cffunction name="onStatic" returntype="void" access="private" output="false" hint="" >
-		<cfif variables.IsStatic >
-			<cfthrow message="Can't call this method because the instance is not initialized" />
-		</cfif>
-	</cffunction>
-
-	<cffunction name="onInitialized" returntype="void" access="private" output="false" hint="" >
-		<cfif variables.IsStatic IS false >
-			<cfthrow message="Can't call this static method because this instance is already initialized" />
-		</cfif>
-	</cffunction>
-
 	<!--- Shared methods --->
 
-	<cffunction name="getBy" returntype="query" access="public" output="false" hint="Static method. Returns a query of objects that match your column, operator and search string." >
+	<cffunction modifier="static" name="getBy" returntype="query" access="public" output="false" hint="Static method. Returns a query of objects that match your column, operator and search string." >
 		<cfargument name="ColumnToSearchOn" type="string" required="true" hint="The name of the column you want to search on." />
 		<cfargument name="SearchOperator" type="string" required="true" hint="The search operator you want to use (such as equal to, begins with, contains etc)." />
 		<cfargument name="SearchData" type="any" required="true" hint="The data you're searching on. Can be a date, float, integer or a string. NOTE: For IN-searches you don't have to put parentheses around the values!" />
 		<cfargument name="CachedWithin" type="any" required="false" default="#createTimespan(0, 0, 0, 0)#" hint="A timespan in which you want to cache the query for subsequent calls." />
 
-		<cfset variables.onInitialized() />
-		<cfset variables.setupTableColumns() />
-
-		<cfset var CurrentColumn = "" />
-		<cfset var Columns = "#getTableKey()#,#getTableColumns()#" />
-		<cfset var GetByObjectData = queryNew(Columns) />
+		<cfset var CurrentColumn = null />
+		<cfset var Columns = "#static.TableKey#,#static.TableColumns#" />
+		<cfset var GetByObjectData = null />
 		<cfset var ValidOperators = "equal to,not equal to,begins with,ends with,contains,in,greater than,less than" />
-		<cfset var Qualifier = "" />
-		<cfset var QueryString = "" />
+		<cfset var Qualifier = null />
+		<cfset var QueryString = null />
 
 		<cfif listFindNoCase(ValidOperators, arguments.SearchOperator) IS 0 >
 			<cfthrow message="Error when getting data for object" detail="The search operator you passed as '#arguments.SearchOperator#' is not valid. Valid operators are: #ValidOperators#" />
@@ -110,7 +76,7 @@
 
 			<cfcase value="not equal to" >
 				<cfset Qualifier = "!=" >
-				<!--- <cfset QueryString = arguments.SearchData /> --->
+				<cfset QueryString = arguments.SearchData />
 			</cfcase>
 
 			<cfcase value="begins with" >
@@ -141,19 +107,19 @@
 			<cfcase value="less than" >
 				<cfset Qualifier = "<" >
 				<cfset QueryString = arguments.SearchData />
-			</cfcase>		
+			</cfcase>
 
 		</cfswitch>
 
 		<cfquery name="GetByObjectData" cachedwithin="#arguments.CachedWithin#" >
 			SELECT #Columns#
-			FROM #getTableName()#
-				
-			<cfif 	isValid("integer", arguments.SearchData)
-				OR IsValid("date", arguments.SearchData)
-				OR IsValid("float", arguments.SearchData)
-				OR Qualifier is "IN"
-			> 
+			FROM #variables.TableName#
+
+			<cfif	isValid("integer", arguments.SearchData)
+				OR	IsValid("date", arguments.SearchData)
+				OR	IsValid("float", arguments.SearchData)
+				OR	Qualifier is "IN"
+			>
 
 			WHERE #arguments.ColumnToSearchOn# #Qualifier# #QueryString#;
 

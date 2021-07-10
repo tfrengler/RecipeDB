@@ -6,8 +6,8 @@ CREATE TABLE Users (
 	DisplayName			VARCHAR (30),
 	Blocked				BOOLEAN			NOT NULL
 										DEFAULT (0),
-	DateTimeLastLogin	DATETIME		DEFAULT ('1666-12-31T00:00:00'),
-	DateCreated			DATE			DEFAULT (date('now') ),
+	DateTimeLastLogin	DATETIME,
+	DateCreated			DATE,
 	TimesLoggedIn		INT				DEFAULT (0),
 	Password			VARCHAR (128), -- SHA-512 hash
 	UserName			VARCHAR (20)
@@ -16,8 +16,8 @@ CREATE TABLE Users (
 CREATE TABLE Recipes (
 	RecipeID				INTEGER			PRIMARY KEY AUTOINCREMENT,
 	Name					VARCHAR (100),
-	DateCreated				DATE			DEFAULT (date('now') ),
-	DateTimeLastModified	DATETIME		DEFAULT (date('now') ),
+	DateCreated				DATE,
+	DateTimeLastModified	DATETIME,
 	CreatedByUser			INTEGER			REFERENCES Users (UserID),
 	LastModifiedByUser		INTEGER			REFERENCES Users (UserID),
 	Ingredients				TEXT,
@@ -49,23 +49,21 @@ CREATE TABLE UserSettings (
 CREATE TABLE RecipeImages (
     ImageID              INTEGER       PRIMARY KEY AUTOINCREMENT,
     BelongsToRecipe      INTEGER       REFERENCES Recipes (RecipeID) ON DELETE CASCADE
-                                       UNIQUE ON CONFLICT ROLLBACK,
+										UNIQUE ON CONFLICT ROLLBACK,
     MimeType             VARCHAR (100),
     OriginalName         VARCHAR (256),
     Base64Content        BLOB,
-    DateTimeCreated      TEXT          DEFAULT (datetime('now') ),
-    DateTimeLastModified TEXT          DEFAULT (datetime('now') ),
+    DateTimeCreated      DATE,
+    DateTimeLastModified DATETIME,
     ModifiedByUser       INTEGER       REFERENCES Users (UserID)
 );
 
 CREATE TABLE ImageThumbnails (
     ID                   INTEGER		REFERENCES RecipeImages (ImageID) ON DELETE CASCADE,
     Base64Content        BLOB,
-    DateTimeCreated      DATETIME DEFAULT (date('now') ),
-    DateTimeLastModified DATETIME DEFAULT (date('now') ) 
+    DateTimeCreated      DATETIME,
+    DateTimeLastModified DATETIME
 );
-
-
 
 -- Comments haven't been implemented so we aren't going to add this
 /*CREATE TABLE Comments(

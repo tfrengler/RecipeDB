@@ -1,21 +1,23 @@
 <cfcomponent output="false" extends="Model" >
 <cfprocessingdirective pageEncoding="utf-8"  />
 
-	<cfset RecipeID = 0 />
-	<cfset DateCreated = createDate(666, 6, 6) />
-	<cfset DateTimeLastModified = createDateTime(666, 6, 6, 0, 0) />
-	<cfset CreatedByUser = 0 />
-	<cfset LastModifiedByUser = 0 />
+	<cfset variables.RecipeID = 0 />
+	<cfset variables.DateCreated = createDate(666, 6, 6) />
+	<cfset variables.DateTimeLastModified = createDateTime(666, 6, 6, 0, 0) />
+	<cfset variables.CreatedByUser = 0 />
+	<cfset variables.LastModifiedByUser = 0 />
 
-	<cfset Comments = arrayNew(1) /> <!--- An array of Comment.cfc's --->
-	<cfset Ingredients = "" />
-	<cfset Description = "" />
-	<cfset Picture = "" />
-	<cfset Instructions = "" />
-	<cfset Name = "" />
-	<cfset Published = false />
+	<cfset variables.Comments = [] /> <!--- An array of Comment.cfc's --->
+	<cfset variables.Ingredients = "" />
+	<cfset variables.Description = "" />
+	<cfset variables.Picture = "" />
+	<cfset variables.Instructions = "" />
+	<cfset variables.Name = "" />
+	<cfset variables.Published = false />
 
-	<cfset TableName = "Recipes" />
+	<cfset variables.TableName		= "Recipes" />
+	<cfset variables.TableKey		= "RecipeID" />
+	<cfset variables.TableColumns	= "Name,DateCreated,DateTimeLastModified,CreatedByUser,LastModifiedByUser,Ingredients,Description,Picture,Instructions,Published" />
 
 	<!--- Getters --->
 
@@ -29,27 +31,27 @@
 
 	<cffunction name="getDateCreated" access="public" output="false" returntype="date" >
 		<cfreturn variables.DateCreated />
-	</cffunction> 
+	</cffunction>
 
 	<cffunction name="getDateTimeLastModified" access="public" output="false" returntype="date" >
 		<cfreturn variables.DateTimeLastModified />
-	</cffunction> 
+	</cffunction>
 
 	<cffunction name="getCreatedByUser" access="public" output="false" returntype="Models.User" >
 		<cfreturn variables.CreatedByUser />
-	</cffunction> 
+	</cffunction>
 
 	<cffunction name="getLastModifiedByUser" access="public" output="false" returntype="Models.User" >
 		<cfreturn variables.LastModifiedByUser />
-	</cffunction> 
+	</cffunction>
 
 	<cffunction name="getComments" access="public" output="false" returntype="Models.Comment" >
 		<cfreturn variables.Comments />
-	</cffunction> 
+	</cffunction>
 
 	<cffunction name="getIngredients" access="public" output="false" returntype="string" >
 		<cfreturn variables.Ingredients />
-	</cffunction> 
+	</cffunction>
 
 	<cffunction name="getDescription" access="public" output="false" returntype="string" >
 		<cfreturn variables.Description />
@@ -57,7 +59,7 @@
 
 	<cffunction name="getPicture" access="public" output="false" returntype="string" >
 		<cfreturn variables.Picture />
-	</cffunction> 
+	</cffunction>
 
 	<cffunction name="getInstructions" access="public" output="false" returntype="string" >
 		<cfreturn variables.Instructions />
@@ -85,37 +87,37 @@
 		<cfargument name="Date" type="date" required="true" hint="" />
 
 		<cfset variables.DateCreated = LSParseDateTime(arguments.Date) />
-	</cffunction> 
+	</cffunction>
 
 	<cffunction name="setDateTimeLastModified" access="public" output="false" hint="" >
 		<cfargument name="Date" type="date" required="true" hint="" />
 
 		<cfset variables.DateTimeLastModified = LSParseDateTime(arguments.Date) />
-	</cffunction> 
+	</cffunction>
 
 	<cffunction name="setCreatedByUser" access="private" output="false" hint="" >
 		<cfargument name="UserInstance" type="Models.User" required="true" hint="" />
 
 		<cfset variables.CreatedByUser = arguments.UserInstance />
-	</cffunction> 
+	</cffunction>
 
 	<cffunction name="setLastModifiedByUser" access="public" output="false" hint="" >
 		<cfargument name="UserInstance" type="Models.User" required="true" hint="" />
 
 		<cfset variables.LastModifiedByUser = arguments.UserInstance />
-	</cffunction> 
+	</cffunction>
 
 	<cffunction name="setComments" access="public" output="false" hint="" >
 		<cfargument name="Comments" type="array" required="true" hint="" />
 
 		<cfset variables.Comments = arguments.Comments />
-	</cffunction> 
+	</cffunction>
 
 	<cffunction name="setIngredients" access="public" output="false" hint="" >
 		<cfargument name="Data" type="string" required="true" hint="" />
 
 		<cfset variables.Ingredients = arguments.Data />
-	</cffunction> 
+	</cffunction>
 
 	<cffunction name="setDescription" access="public" output="false" hint="" >
 		<cfargument name="Data" type="string" required="true" hint="" />
@@ -127,7 +129,7 @@
 		<cfargument name="ID" type="string" required="true" hint="" />
 
 		<cfset variables.Picture = arguments.ID />
-	</cffunction> 
+	</cffunction>
 
 	<cffunction name="setInstructions" access="public" output="false" hint="" >
 		<cfargument name="Data" type="string" required="true" hint="" />
@@ -149,12 +151,12 @@
 
 		<cfset var UpdateRecipe = queryNew("") />
 		<cfset variables.setDateTimeLastModified(Date=createODBCDateTime(now())) />
-		
+
 		<cftransaction action="begin" >
 			<cftry>
 				<cfquery name="UpdateRecipe" datasource="#getDatasource()#" >
 					UPDATE #getTableName()#
-					SET	
+					SET
 						DateCreated = <cfqueryparam sqltype="DATE" value="#getDateCreated()#" />,
 						DateTimeLastModified = <cfqueryparam sqltype="TIMESTAMP" value="#getDateTimeLastModified()#" />,
 						CreatedByUser = <cfqueryparam sqltype="BIGINT" value="#getCreatedByUser().getID()#" />,
@@ -233,7 +235,7 @@
 						<cfqueryparam sqltype="LONGVARCHAR" value="#getName()#" />,
 						<cfqueryparam sqltype="BOOLEAN" value="#getPublished()#" />
 					)
-					RETURNING #getTableKey()#; 
+					RETURNING #getTableKey()#;
 				</cfquery>
 
 				<cftransaction action="commit" />
@@ -277,7 +279,7 @@
 			<cfthrow message="Error when loading recipe data. There appears to be no recipe with this #getTableKey()#: #getID()#" />
 		</cfif>
 
-		<cfset RecipeOwner = createObject("component", "Models.User").init( 
+		<cfset RecipeOwner = createObject("component", "Models.User").init(
 			ID=GetRecipeData.CreatedByUser,
 			Datasource=getDatasource()
 		) />
@@ -288,8 +290,8 @@
 			<cfset variables.setLastModifiedByUser( UserInstance=RecipeOwner ) />
 		<cfelse>
 
-			<cfset variables.setLastModifiedByUser( 
-				UserInstance = createObject("component", "Models.User").init( 
+			<cfset variables.setLastModifiedByUser(
+				UserInstance = createObject("component", "Models.User").init(
 					ID=GetRecipeData.LastModifiedByUser,
 					Datasource=getDatasource()
 				)

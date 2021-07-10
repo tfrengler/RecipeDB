@@ -1,30 +1,35 @@
-<cfcomponent output="false" extends="Model" >
-<cfprocessingdirective pageEncoding="utf-8" />
+<cfcomponent output="false" modifier="final" extends="Model" >
 
-	<cfset UserID = 0 />
-	<cfset DateCreated = createDate(1666, 6, 6) />
-	<cfset DateTimePreviousLogin = createDateTime(1666, 6, 6, 6, 6, 6) />
-	<cfset DateTimeLastLogin = createDateTime(1666, 6, 6, 6, 6, 6) />
-	<cfset Password = "" />
-	<cfset PasswordSalt = "" />
-	<cfset TempPassword = "" />
-	<cfset UserName = "" />
-	<cfset DisplayName = "" />
-	<cfset TimesLoggedIn = 0 />
-	<cfset BrowserLastUsed = "" />
-	<cfset Blocked = true />
-	<cfset AuthKey = "" />
+	<cfset variables.UserID = 0 />
+	<cfset variables.DateCreated = null />
+	<cfset variables.DateTimePreviousLogin = null />
+	<cfset variables.DateTimeLastLogin = null />
+	<cfset variables.Password = null />
+	<cfset variables.PasswordSalt = null />
+	<cfset variables.TempPassword = null />
+	<cfset variables.UserName = null />
+	<cfset variables.DisplayName = null />
+	<cfset variables.TimesLoggedIn = 0 />
+	<cfset variables.BrowserLastUsed = null />
+	<cfset variables.Blocked = false />
+	<cfset variables.AuthKey = "" />
 
-	<cfset Settings_FindRecipes_ListType = "" />
-	<cfset Settings_FindRecipes_SortOnColumn = "" />
-	<cfset Settings_FindRecipesFilterOn_MineOnly = false />
-	<cfset Settings_FindRecipesFilterOn_MinePublic = false />
-	<cfset Settings_FindRecipesFilterOn_MinePrivate = false />
-	<cfset Settings_FindRecipesFilterOn_MineEmpty = false />
-	<cfset Settings_FindRecipesFilterOn_MineNoPicture = false />
-	<cfset Settings_FindRecipesFilterOn_OtherUsersOnly = false />
+	<cfset variables.Settings_FindRecipes_ListType = null />
+	<cfset variables.Settings_FindRecipes_SortOnColumn = null />
+	<cfset variables.Settings_FindRecipesFilterOn_MineOnly = false />
+	<cfset variables.Settings_FindRecipesFilterOn_MinePublic = false />
+	<cfset variables.Settings_FindRecipesFilterOn_MinePrivate = false />
+	<cfset variables.Settings_FindRecipesFilterOn_MineEmpty = false />
+	<cfset variables.Settings_FindRecipesFilterOn_MineNoPicture = false />
+	<cfset variables.Settings_FindRecipesFilterOn_OtherUsersOnly = false />
 
-	<cfset TableName = "Users" />
+	<cfscript>
+		static {
+			static.TableName = "Users";
+			static.TableKey = "UserID";
+			static.TableColumns = "TempPassword,PasswordSalt,BrowserLastUsed,DisplayName,Blocked,DateTimeLastLogin,DateCreated,TimesLoggedIn,Password,UserName";
+		};
+	</cfscript>
 
 	<!--- Getters --->
 
@@ -244,8 +249,6 @@
 		<cfargument name="Password" type="string" required="false" default="" hint="The new password, in plain text (non-hashed)" />
 		<cfargument name="TempPassword" type="boolean" required="false" default="false" hint="Whether this is a temporary password or not" />
 
-		<cfset variables.onStatic() />
-
 		<cfset var NewPassword = "" />
 		<cfset var NewPasswordHashed = "" />
 		<cfset var NewPasswordSalt = arguments.SecurityManager.getSaltedString() />
@@ -274,8 +277,6 @@
 		<cfargument name="SecurityManager" type="Components.SecurityManager" required="true" hint="A reference to an instance of the SecurityManager object" />
 		<cfargument name="Password" type="string" required="true" default="" hint="The password to validate, unhashed" />
 
-		<cfset variables.onStatic() />
-
 		<cfset var HashedPassword = "" />
 		<cfset var HashedAndSaltedPassword = "" />
 		<cfset var UsersPassword = getPassword() />
@@ -294,8 +295,6 @@
 	<cffunction name="updateLoginStats" returntype="void" access="public" output="false" hint="Updates the login count and datetime of last login. Should be called whenever the user successfully logs in." >
 		<cfargument name="UserAgentString" type="string" required="true" hint="The user agent string of the user logging in" />
 
-		<cfset variables.onStatic() />
-
 		<cfset var CurrentLoginCount = getTimesLoggedIn() />
 		<cfset variables.setTimesLoggedIn( Count=CurrentLoginCount+1 ) />
 
@@ -306,9 +305,8 @@
 	</cffunction>
 
 	<cffunction name="saveSettings" returntype="void" access="public" output="false" hint="" >
-		<cfset variables.onStatic() />
 
-		<cfset var SaveSettings = queryNew("") />
+		<cfset var SaveSettings = null />
 		<cfset var Settings = variables.getSettings() />
 
 		<cftransaction action="begin" >
@@ -342,7 +340,7 @@
 		<cfset var UserSettingsQuery = queryNew("") />
 
 		<cfquery name="UserSettingsQuery" >
-			SELECT 
+			SELECT
 				FindRecipes_ListType,
 				FindRecipes_SortOnColumn,
 				FindRecipesFilterOn_MineOnly,
@@ -356,7 +354,7 @@
 		</cfquery>
 
 		<cfif UserSettingsQuery.RecordCount GT 0 >
-			
+
 			<cfset variables.setFindRecipes_ListType(data=UserSettingsQuery.FindRecipes_ListType) />
 			<cfset variables.setFindRecipes_SortOnColumn(data=UserSettingsQuery.FindRecipes_SortOnColumn) />
 			<cfset variables.setFindRecipesFilterOn_MineOnly(data=UserSettingsQuery.FindRecipesFilterOn_MineOnly) />
@@ -372,16 +370,13 @@
 	</cffunction>
 
 	<cffunction name="save" returntype="void" access="public" output="false" hint="Persists the current state of the user to the db" >
+		<cfset var UpdateUser = null />
 
-		<cfset variables.onStatic() />
-
-		<cfset var UpdateUser = queryNew("") />
-		
 		<cftransaction action="begin" >
 			<cftry>
 				<cfquery name="UpdateUser" >
-					UPDATE #variables.getTableName()#
-					SET	
+					UPDATE #static.TableName#
+					SET
 						DateCreated = <cfqueryparam sqltype="DATE" value="#getDateCreated()#" />,
 						DateTimeLastLogin = <cfqueryparam sqltype="TIMESTAMP" value="#getDateTimeLastLogin()#" />,
 						Password = <cfqueryparam sqltype="LONGVARCHAR" value="#getPassword()#" maxlength="128" />,
@@ -393,7 +388,7 @@
 						BrowserLastUsed = <cfqueryparam sqltype="LONGVARCHAR" value="#getBrowserLastUsed()#" />,
 						Blocked = <cfqueryparam sqltype="BOOLEAN" value="#getBlocked()#" />
 
-					WHERE #getTableKey()# = <cfqueryparam sqltype="BIGINT" value="#getID()#" />;
+					WHERE #static.TableKey# = <cfqueryparam sqltype="INT" value="#getID()#" />;
 				</cfquery>
 
 				<cftransaction action="commit" />
@@ -407,51 +402,31 @@
 		</cftransaction>
 	</cffunction>
 
-	<cffunction name="create" returntype="Models.User" access="public" hint="Static method. Creates a new empty user in the db and returns an instance of this user" output="true" >
-		<cfargument name="Username" type="string" required="true" hint="The login name for the new user." />
+	<cffunction modifier="static" name="create" returntype="Models.User" access="public" hint="Static method. Creates a new empty user in the db and returns an instance of this user" output="true" >
+		<cfargument name="username" type="string" required="true" hint="The login name for the new user." />
 
-		<cfset variables.onInitialized() />
-		<cfset variables.setupTableColumns() />
-
-		<cfif len(arguments.Username) IS 0 >
+		<cfif len(arguments.username) IS 0 >
 			<cfthrow message="Error creating new user" detail="The username you passed is empty, this is not allowed." />
 		</cfif>
 
-		<cfset variables.setDisplayName(Name="New user XYZ#randRange(1, 100)#") />
-		<cfset variables.setUserName(Name=arguments.Username) />
-
-		<cfset var NewUserID = 0 />
-
-		<cfset variables.setDateCreated( Date=createODBCdate(now()) ) />
+		<cfset var NewUserID = null />
 
 		<cftransaction action="begin" >
 			<cftry>
 
 				<cfset queryExecute(
-					"INSERT INTO '#getTableName()#' (
+					"INSERT INTO '#static.TableName#' (
 						DateCreated,
-						DateTimeLastLogin,
-						Password,
-						PasswordSalt,
-						TempPassword,
 						UserName,
 						DisplayName,
-						TimesLoggedIn,
-						BrowserLastUsed,
-						Blocked
+						DateTimeLastLogin
 					)
-					VALUES(?,?,?,?,?,?,?,?,?,?)",
+					VALUES(?,?,?,?)",
 					[
-						getDateCreated(),
-						getDateTimeLastLogin(),
-						getPassword(),
-						getPasswordSalt(),
-						getTempPassword(),
-						getUserName(),
-						getDisplayName(),
-						getTimesLoggedIn(),
-						getBrowserLastUsed(),
-						getBlocked()
+						Components.Localizer::getDBDate(now()),
+						arguments.Username,
+						"New user XYZ#randRange(1, 100)#",
+						Components.Localizer::getDBDateTime(now())
 					],
 					{result="NewUserID"}
 				) />
@@ -460,25 +435,13 @@
 					"INSERT INTO 'UserSettings' (
 						BelongsToUser,
 						FindRecipes_ListType,
-						FindRecipes_SortOnColumn,
-						FindRecipesFilterOn_MineOnly,
-						FindRecipesFilterOn_MinePublic,
-						FindRecipesFilterOn_MinePrivate,
-						FindRecipesFilterOn_MineEmpty,
-						FindRecipesFilterOn_MineNoPicture,
-						FindRecipesFilterOn_OtherUsersOnly
+						FindRecipes_SortOnColumn
 					)
-					VALUES(?,?,?,?,?,?,?,?,?)",
+					VALUES(?,?,?)",
 					[
 						NewUserID.generatedKey,
 						'full',
-						'CreatedOn',
-						false,
-						false,
-						false,
-						false,
-						false,
-						false
+						'CreatedOn'
 					]
 				) />
 
@@ -492,44 +455,7 @@
 			</cftry>
 		</cftransaction>
 
-		<!--- <cftransaction action="begin" >
-			<cftry>
-				<cfquery name="CreateDefaultSettings" >
-					INSERT INTO UserSettings (
-						BelongsToUser,
-						FindRecipes_ListType,
-						FindRecipes_SortOnColumn,
-						FindRecipesFilterOn_MineOnly,
-						FindRecipesFilterOn_MinePublic,
-						FindRecipesFilterOn_MinePrivate,
-						FindRecipesFilterOn_MineEmpty,
-						FindRecipesFilterOn_MineNoPicture,
-						FindRecipesFilterOn_OtherUsersOnly
-					)
-					VALUES (
-						#NewUserID.generatedKey#,
-						'full',
-						'CreatedOn',
-						false,
-						false,
-						false,
-						false,
-						false,
-						false
-					)
-				</cfquery>
-
-				<cftransaction action="commit" />
-			<cfcatch>
-
-				<cftransaction action="rollback" />
-				<cfthrow object="#cfcatch#" />
-
-			</cfcatch>
-			</cftry>
-		</cftransaction> --->
-
-		<cfreturn variables.init(ID=NewUserID.generatedKey) />
+		<cfreturn new User(ID=NewUserID.generatedKey) />
 	</cffunction>
 
 	<cffunction name="load" returntype="void" access="private" output="false" hint="Fills the instance with data from the db." >
@@ -537,14 +463,14 @@
 		<cfset var UserData = queryNew("") />
 
 		<cfquery name="UserData" >
-			SELECT #getTableColumns()#
-			FROM #getTableName()#
-			WHERE #getTableKey()# = <cfqueryparam sqltype="BIGINT" value="#getID()#" />
+			SELECT #static.TableColumns#
+			FROM #static.TableName#
+			WHERE #static.TableKey# = <cfqueryparam sqltype="INT" value="#getID()#" />
 		</cfquery>
 
 		<cfif UserData.RecordCount GT 0 >
-			<cfset variables.setDateCreated( Date=UserData.DateCreated ) />
-			<cfset variables.setDateTimeLastLogin( Time=UserData.DateTimeLastLogin ) />
+			<cfset variables.setDateCreated( Components.Localizer::getBackendDate(UserData.DateCreated) ) />
+			<cfset variables.setDateTimeLastLogin( Components.Localizer::getBackendDateTime(UserData.DateTimeLastLogin) ) />
 			<cfset variables.setPassword( Password=UserData.Password ) />
 			<cfset variables.setPasswordSalt( Salt=UserData.PasswordSalt ) />
 			<cfset variables.setTempPassword( Password=UserData.TempPassword ) />
@@ -554,15 +480,12 @@
 			<cfset variables.setBrowserLastUsed( UserAgentString=UserData.BrowserLastUsed ) />
 			<cfset variables.setBlocked( Blocked=UserData.Blocked ) />
 		<cfelse>
-			<cfthrow message="Error when loading user data. There appears to be no userdata with this #getTableKey()#: #getID()#" />
+			<cfthrow message="Error when loading user data. There appears to be no userdata with this #static.TableKey#: #getID()#" />
 		</cfif>
 	</cffunction>
 
 	<cffunction name="init" access="public" returntype="Models.User" output="false" hint="Constructor, returns an initialized user who is by default blocked." >
 		<cfargument name="ID" type="numeric" required="true" hint="The UserID of the user you want to init this instance with." />
-
-		<cfset variables.onInitialized() />
-		<cfset variables.setupTableColumns() />
 
 		<cfset variables.setID( Value=arguments.ID ) >
 		<cfset variables.load() />
