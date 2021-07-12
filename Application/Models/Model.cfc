@@ -1,102 +1,63 @@
-<cfcomponent output="false" modifier="abstract" persistent="true" >
+<cfcomponent output="false" modifier="abstract" hint="This is the core component for all CFCs that model unique instances of an object" >
 	<!--- This is the core component for all CFCs that model unique instances of an object --->
 
-	<cfset variables.IsStatic = true />
+	<cfscript>
+		static {
+			static.ValidSQLOperators = ["equal to","not equal to","begins with","ends with","contains","in","greater than","less than"];
+		}
+	</cfscript>
 
-	<!--- Define these in the child CFC
+	<!--- Static methods --->
 
-	When adding new DB columns to a model don't forget to:
-	- Add the variable at the top with a blank default value
-	- Add getter and setter methods as appropriate
-	- Add them to load(), save() and TableColumns
-	- Add them to any other methods if needed
+	<cffunction modifier="static" name="GetBy" returntype="query" access="public" output="false" hint="Static method. Returns a query of objects that match your column, operator and search string." >
+		<cfargument name="columnToSearchOn" type="string" required="true" hint="The name of the column you want to search on." />
+		<cfargument name="searchOperator" type="string" required="true" hint="The search operator you want to use (such as equal to, begins with, contains etc)." />
+		<cfargument name="searchData" type="any" required="true" hint="The data you're searching on. Can be a date, float, integer or a string. NOTE: For IN-searches you don't have to put parentheses around the values!" />
 
-	--->
-
-	<cffunction name="setupTableColumns" access="private" returntype="void" output="false" hint="" >
-
-		<cfif len(variables.getTableColumns()) GT 0 AND len(variables.getTableKey()) GT 0 >
-			<cfreturn />
-		</cfif>
-
-		<cfset var ColumnDataFromDB = "" />
-		<cfset var ListOfColumns = "" />
-
-		<cfdbinfo name="ColumnDataFromDB" type="columns" table="#getTableName()#" />
-
-		<cfloop query="#ColumnDataFromDB#" >
-			<cfif ColumnDataFromDB.IS_PRIMARYKEY IS false >
-
-				<cfset ListOfColumns = listAppend(ListOfColumns, ColumnDataFromDB.COLUMN_NAME) />
-
-			<cfelseif ColumnDataFromDB.IS_PRIMARYKEY IS true >
-				<!--- This is predicated on our db structure being so that we only ever have one primary key of course --->
-				<cfif len(variables.getTableKey()) IS 0 >
-					<cfset variables.TableKey = ColumnDataFromDB.COLUMN_NAME />
-				</cfif>
-			</cfif>
-		</cfloop>
-
-		<cfset variables.TableColumns = ListOfColumns />
-	</cffunction>
-
-	<!--- Shared methods --->
-
-	<cffunction modifier="static" name="getBy" returntype="query" access="public" output="false" hint="Static method. Returns a query of objects that match your column, operator and search string." >
-		<cfargument name="ColumnToSearchOn" type="string" required="true" hint="The name of the column you want to search on." />
-		<cfargument name="SearchOperator" type="string" required="true" hint="The search operator you want to use (such as equal to, begins with, contains etc)." />
-		<cfargument name="SearchData" type="any" required="true" hint="The data you're searching on. Can be a date, float, integer or a string. NOTE: For IN-searches you don't have to put parentheses around the values!" />
-		<cfargument name="CachedWithin" type="any" required="false" default="#createTimespan(0, 0, 0, 0)#" hint="A timespan in which you want to cache the query for subsequent calls." />
-
-		<cfset var CurrentColumn = null />
 		<cfset var Columns = "#static.TableKey#,#static.TableColumns#" />
 		<cfset var GetByObjectData = null />
-		<cfset var ValidOperators = "equal to,not equal to,begins with,ends with,contains,in,greater than,less than" />
+		<!--- <cfset var ValidOperators = ["equal to","not equal to","begins with","ends with","contains","in","greater than","less than"] /> --->
 		<cfset var Qualifier = null />
 		<cfset var QueryString = null />
 
-		<cfif listFindNoCase(ValidOperators, arguments.SearchOperator) IS 0 >
-			<cfthrow message="Error when getting data for object" detail="The search operator you passed as '#arguments.SearchOperator#' is not valid. Valid operators are: #ValidOperators#" />
+		<cfif arrayFind(static.ValidSQLOperators, arguments.searchOperator) IS 0 >
+			<cfthrow message="Error when getting data for object" detail="The search operator you passed as '#arguments.SearchOperator#' is not valid. Valid operators are: #arrayToList(static.ValidSQLOperators)#" />
 		</cfif>
 
-		<cfif listFindNoCase(Columns, arguments.ColumnToSearchOn) IS 0 >
+		<cfif listFindNoCase(Columns, arguments.columnToSearchOn) IS 0 >
 			<cfthrow message="Error when getting data for object" detail="The search column you passed as '#arguments.ColumnToSearchOn#' is not valid. Valid columns are: #Columns#" />
 		</cfif>
 
-		<cfif isInstanceOf(arguments.CachedWithin, "lucee.runtime.type.dt.TimeSpanImpl") IS false >
-			<cfthrow message="Error when getting data for object" detail="Argument 'CachedWithin' is not a valid time span" />
-		</cfif>
-
-		<cfswitch expression="#arguments.SearchOperator#" >
+		<cfswitch expression=#arguments.searchOperator# >
 
 			<cfcase value="equal to" >
 				<cfset Qualifier = "=" >
-				<cfset QueryString = arguments.SearchData />
+				<cfset QueryString = arguments.searchData />
 			</cfcase>
 
 			<cfcase value="not equal to" >
 				<cfset Qualifier = "!=" >
-				<cfset QueryString = arguments.SearchData />
+				<cfset QueryString = arguments.searchData />
 			</cfcase>
 
 			<cfcase value="begins with" >
 				<cfset Qualifier = "LIKE" >
-				<cfset QueryString = "#arguments.SearchData#%" />
+				<cfset QueryString = "#arguments.searchData#%" />
 			</cfcase>
 
 			<cfcase value="ends with" >
 				<cfset Qualifier = "LIKE" >
-				<cfset QueryString = "%#arguments.SearchData#" />
+				<cfset QueryString = "%#arguments.searchData#" />
 			</cfcase>
 
 			<cfcase value="contains" >
 				<cfset Qualifier = "LIKE" >
-				<cfset QueryString = "%#arguments.SearchData#%" />
+				<cfset QueryString = "%#arguments.searchData#%" />
 			</cfcase>
 
 			<cfcase value="in" >
 				<cfset Qualifier = "IN" >
-				<cfset QueryString = "(#arguments.SearchData#)" />
+				<cfset QueryString = "(#arguments.searchData#)" />
 			</cfcase>
 
 			<cfcase value="greater than" >
@@ -109,11 +70,15 @@
 				<cfset QueryString = arguments.SearchData />
 			</cfcase>
 
+			<cfdefaultcase>
+				<cfthrow message="Error enumerating search operator" detail="This shouldn't happen..." />
+			</cfdefaultcase>
 		</cfswitch>
 
-		<cfquery name="GetByObjectData" cachedwithin="#arguments.CachedWithin#" >
+		<cfquery name="GetByObjectData" >
+
 			SELECT #Columns#
-			FROM #variables.TableName#
+			FROM '#variables.TableName#'
 
 			<cfif	isValid("integer", arguments.SearchData)
 				OR	IsValid("date", arguments.SearchData)
@@ -135,57 +100,69 @@
 		<cfreturn GetByObjectData />
 	</cffunction>
 
-	<cffunction name="getData" returntype="query" access="public" output="false" hint="Static method. Fetch data from a specific object or multiple objects." >
-		<cfargument name="ColumnList" type="string" required="false" default="" hint="List of columns you want to fetch data from." />
-		<cfargument name="ID" type="numeric" required="false" default="0" hint="ID of the object you want to fetch data for. If you leave this out you get all objects." />
-		<cfargument name="CachedWithin" type="any" required="false" default="#createTimespan(0, 0, 0, 0)#" hint="A timespan in which you want to cache the query for subsequent calls." />
+	<cffunction modifier="static" name="GetData" returntype="query" access="public" output="false" hint="Static method. Fetch data from a specific object or multiple objects." >
+		<cfargument name="columnList" type="string" required="false" default="" hint="List of columns you want to fetch data from." />
+		<cfargument name="id" type="numeric" required="false" default="0" hint="ID of the object you want to fetch data for. If you leave this out you get all objects." />
 
-		<cfset variables.onInitialized() />
-		<cfset variables.setupTableColumns() />
-
-		<cfset var ObjectData = queryNew("") />
+		<cfset var ObjectData = null />
 		<cfset var CurrentColumn = "" />
 		<cfset var Columns = "" />
-
-		<cfif isInstanceOf(arguments.CachedWithin, "lucee.runtime.type.dt.TimeSpanImpl") IS false >
-			<cfthrow message="Error when getting data for object" detail="Argument 'CachedWithin' is not a valid time span" />
-		</cfif>
+		<cfset var TableColumns = "#static.TableKey#,#static.TableColumns#" />
 
 		<cfif len(arguments.ColumnList) GT 0 >
 
 			<cfloop list="#arguments.ColumnList#" index="CurrentColumn" >
-				<cfif listFindNoCase("#getTableKey()#,#getTableColumns()#", CurrentColumn) IS 0 >
-					<cfthrow message="The column '#CurrentColumn#' you are trying to get data for is not a valid column in the #getTableName()#-table. Valid columns are: #getTableColumns()#" />
+				<cfif listFindNoCase(TableColumns, CurrentColumn) IS 0 >
+					<cfthrow message="The column '#CurrentColumn#' you are trying to get data for is not a valid column in the #static.TableName#-table. Valid columns are: #static.TableColumns#" />
 				</cfif>
 			</cfloop>
 
 			<cfset Columns = arguments.ColumnList />
 		<cfelse>
-			<cfset Columns = "#getTableKey()#,#getTableColumns()#" />
+			<cfset Columns = TableColumns />
 		</cfif>
 
-		<cfset ObjectData = queryNew(Columns) />
+		<cfset ObjectData = null />
 
-		<cfquery name="ObjectData" cachedwithin="#arguments.CachedWithin#" >
+		<cfquery name="ObjectData" >
 			SELECT #Columns#
-			FROM #getTableName()#
+			FROM #static.TableName#
 			<cfif arguments.ID GT 0 >
-			WHERE #getTableKey()# = <cfqueryparam sqltype="BIGINT" value="#arguments.ID#" />
+			WHERE #static.TableKey# = <cfqueryparam sqltype="INT" value=#arguments.ID# />
 			</cfif>
 		</cfquery>
 
 		<cfreturn ObjectData />
 	</cffunction>
 
-	<cffunction name="delete" returntype="void" access="public" output="false" hint="Delete the db data belonging to this object instance" >
-		<cfset variables.onStatic() />
+	<cffunction modifier="static" name="Exists" returntype="boolean" access="public" output="false" hint="" >
+		<cfargument name="ID" type="numeric" required="true" hint="" />
+
+		<cfset var ExistenceCheck = null />
+
+		<cfquery name="ExistenceCheck" >
+			SELECT #static.TableKey#
+			FROM #static.TableName#
+			WHERE #static.TableKey# = <cfqueryparam sqltype="INT" value=#arguments.ID# />
+		</cfquery>
+
+		<cfif ExistenceCheck.RecordCount IS 1 >
+			<cfreturn true />
+		</cfif>
+
+		<cfreturn false />
+	</cffunction>
+
+	<!--- Instance methods --->
+
+	<cffunction name="Delete" returntype="void" access="public" output="false" hint="Delete the db data belonging to this object instance" >
 
 		<cftransaction action="begin" >
 			<cftry>
 				<cfquery>
 					DELETE
-					FROM #variables.getTableName()#
-					WHERE #variables.getTableKey()# = <cfqueryparam sqltype="BIGINT" value="#variables.getID()#" />
+					FROM #static.TableName#
+					WHERE #static.TableKey# = <cfqueryparam sqltype="INT" value="#variables.getID()#" />
 				</cfquery>
 
 				<cfset structClear(this) />
@@ -199,26 +176,6 @@
 				</cfcatch>
 			</cftry>
 		</cftransaction>
-	</cffunction>
-
-	<cffunction name="exists" returntype="boolean" access="public" output="false" hint="" >
-		<cfargument name="ID" type="numeric" required="true" hint="" />
-
-		<cfset variables.onInitialized() />
-		<cfset variables.setupTableColumns() />
-
-		<cfset var ExistenceCheck = queryNew("") />
-		<cfquery name="ExistenceCheck" >
-			SELECT #variables.getTableKey()#
-			FROM #variables.getTableName()#
-			WHERE #variables.getTableKey()# = <cfqueryparam sqltype="CF_SQL_BIGINT" value="#arguments.ID#" />
-		</cfquery>
-
-		<cfif ExistenceCheck.RecordCount IS 1 >
-			<cfreturn true />
-		</cfif>
-
-		<cfreturn false />
 	</cffunction>
 
 </cfcomponent>

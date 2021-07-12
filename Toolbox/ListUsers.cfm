@@ -22,7 +22,7 @@
 		}
 
 		td, th {
-			padding-left: 0.5em; 
+			padding-left: 0.5em;
 			padding-right: 0.5em;
 		}
 
@@ -55,13 +55,14 @@
 </head>
 
 <body>
-	
+
 	<p><a href="UserTools.cfm" >Back to User Tools</a></p>
 	<h1>List of users</h1>
 
-	<cfset UsersInterface = createObject("component", "Models.User") />
-	<cfset AllUsers = UsersInterface.getData( Datasource=application.settings.datasource ) />
-	<cfset TableColumnsList = "#UsersInterface.getTableKey()#,#UsersInterface.getTableColumns()#" />
+	<cfset AllUsers = Models.User::GetData() />
+	<cfset TableColumnsList = "#Models.User::TableKey#,#Models.User::TableColumns#" />
+
+	<cfdump var=#new Models.User(AllUsers.UserID)# abort="true" />
 
 	<table>
 		<thead>
@@ -78,10 +79,14 @@
 				<tr>
 					<cfloop list=#TableColumnsList# index="CurrentColumnName" >
 						<cfif findNoCase("{ts", AllUsers[CurrentColumnName]) GT 0 >
-							<td>#LSDateTimeFormat(AllUsers[CurrentColumnName], "dd-mm-yyyy HH:nn:ss")#</td>
+							<cfset Date = Components.Localizer::GetBackendDateTime(AllUsers[CurrentColumnName]) />
+							<td>#Components.Localizer::GetDisplayDateTime(Date)#</td>
+						<cfelseif findNoCase("{d", AllUsers[CurrentColumnName]) GT 0 >
+							<cfset Date = Components.Localizer::GetBackendDate(AllUsers[CurrentColumnName]) />
+							<td>#Components.Localizer::GetDisplayDate(Date)#</td>
 						<cfelseif findNoCase("password", CurrentColumnName) GT 0 >
 							<td>*****</td>
-						<cfelse> 
+						<cfelse>
 							<td>#AllUsers[CurrentColumnName]#</td>
 						</cfif>
 					</cfloop>
