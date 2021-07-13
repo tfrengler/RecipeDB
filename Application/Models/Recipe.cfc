@@ -1,175 +1,72 @@
-<cfcomponent output="false" extends="Model" >
-<cfprocessingdirective pageEncoding="utf-8"  />
+<cfcomponent output="false" persistent="true" extends="Model" >
 
-	<cfset variables.RecipeID = 0 />
-	<cfset variables.DateCreated = createDate(666, 6, 6) />
-	<cfset variables.DateTimeLastModified = createDateTime(666, 6, 6, 0, 0) />
-	<cfset variables.CreatedByUser = 0 />
-	<cfset variables.LastModifiedByUser = 0 />
+	<cfproperty name="RecipeID"					type="numeric"			getter="true" setter="false" />
+	<cfproperty name="DateCreated"				type="date"				getter="true" setter="false" />
+	<cfproperty name="DateTimeLastModified"		type="date"				getter="true" setter="false" />
+	<cfproperty name="CreatedByUser"			type="Models.User"		getter="true" setter="false" />
+	<cfproperty name="LastModifiedByUser"		type="Models.User"		getter="true" setter="false" />
 
-	<cfset variables.Comments = [] /> <!--- An array of Comment.cfc's --->
-	<cfset variables.Ingredients = "" />
-	<cfset variables.Description = "" />
-	<cfset variables.Picture = "" />
-	<cfset variables.Instructions = "" />
-	<cfset variables.Name = "" />
-	<cfset variables.Published = false />
+	<!--- <cfset variables.Comments = [] /> --->
+	<cfproperty name="Ingredients" 		type="string" 		getter="true"	setter="false" />
+	<cfproperty name="Description" 		type="string" 		getter="true"	setter="false" />
+	<cfproperty name="Picture" 			type="string" 		getter="true"	setter="false" />
+	<cfproperty name="Instructions"		type="string" 		getter="true"	setter="false" />
+	<cfproperty name="Name"				type="string" 		getter="true"	setter="false" />
+	<cfproperty name="Published"		type="boolean" 		getter="true"	setter="false" />
 
-	<cfset variables.TableName		= "Recipes" />
-	<cfset variables.TableKey		= "RecipeID" />
-	<cfset variables.TableColumns	= "Name,DateCreated,DateTimeLastModified,CreatedByUser,LastModifiedByUser,Ingredients,Description,Picture,Instructions,Published" />
+	<cfscript>
+		static {
+			static.TableName	= "Recipes";
+			static.TableKey		= "RecipeID";
+			static.TableColumns	= "Name,DateCreated,DateTimeLastModified,CreatedByUser,LastModifiedByUser,Ingredients,Description,Picture,Instructions,Published";
+		}
+	</cfscript>
 
-	<!--- Getters --->
+	<!--- INSTANCE --->
+	<!--- Public --->
 
-	<cffunction name="getPublished" access="public" output="false" returntype="boolean" >
-		<cfreturn variables.Published />
-	</cffunction>
+	<cffunction name="Save" returntype="void" access="public" output="false" hint="Persists the current state of the recipe to the db." >
+		<cfargument name="userID" type="numeric" required="true" hint="" />
 
-	<cffunction name="getID" access="public" output="false" returntype="numeric" >
-		<cfreturn variables.RecipeID />
-	</cffunction>
+		<cfset var LastModified = createODBCDateTime(now()) />
+		<cfset var LastUpdatedByUser = null />
 
-	<cffunction name="getDateCreated" access="public" output="false" returntype="date" >
-		<cfreturn variables.DateCreated />
-	</cffunction>
-
-	<cffunction name="getDateTimeLastModified" access="public" output="false" returntype="date" >
-		<cfreturn variables.DateTimeLastModified />
-	</cffunction>
-
-	<cffunction name="getCreatedByUser" access="public" output="false" returntype="Models.User" >
-		<cfreturn variables.CreatedByUser />
-	</cffunction>
-
-	<cffunction name="getLastModifiedByUser" access="public" output="false" returntype="Models.User" >
-		<cfreturn variables.LastModifiedByUser />
-	</cffunction>
-
-	<cffunction name="getComments" access="public" output="false" returntype="Models.Comment" >
-		<cfreturn variables.Comments />
-	</cffunction>
-
-	<cffunction name="getIngredients" access="public" output="false" returntype="string" >
-		<cfreturn variables.Ingredients />
-	</cffunction>
-
-	<cffunction name="getDescription" access="public" output="false" returntype="string" >
-		<cfreturn variables.Description />
-	</cffunction>
-
-	<cffunction name="getPicture" access="public" output="false" returntype="string" >
-		<cfreturn variables.Picture />
-	</cffunction>
-
-	<cffunction name="getInstructions" access="public" output="false" returntype="string" >
-		<cfreturn variables.Instructions />
-	</cffunction>
-
-	<cffunction name="getName" access="public" output="false" returntype="string" >
-		<cfreturn variables.Name />
-	</cffunction>
-
-	<!--- Setters --->
-
-	<cffunction name="setPublished" access="public" output="false" hint="" >
-		<cfargument name="status" type="boolean" required="true" hint="" />
-
-		<cfset variables.Published = arguments.status />
-	</cffunction>
-
-	<cffunction name="setID" access="private" output="false" hint="" >
-		<cfargument name="Value" type="numeric" required="true" hint="" />
-
-		<cfset variables.RecipeID = arguments.Value />
-	</cffunction>
-
-	<cffunction name="setDateCreated" access="private" output="false" hint="" >
-		<cfargument name="Date" type="date" required="true" hint="" />
-
-		<cfset variables.DateCreated = LSParseDateTime(arguments.Date) />
-	</cffunction>
-
-	<cffunction name="setDateTimeLastModified" access="public" output="false" hint="" >
-		<cfargument name="Date" type="date" required="true" hint="" />
-
-		<cfset variables.DateTimeLastModified = LSParseDateTime(arguments.Date) />
-	</cffunction>
-
-	<cffunction name="setCreatedByUser" access="private" output="false" hint="" >
-		<cfargument name="UserInstance" type="Models.User" required="true" hint="" />
-
-		<cfset variables.CreatedByUser = arguments.UserInstance />
-	</cffunction>
-
-	<cffunction name="setLastModifiedByUser" access="public" output="false" hint="" >
-		<cfargument name="UserInstance" type="Models.User" required="true" hint="" />
-
-		<cfset variables.LastModifiedByUser = arguments.UserInstance />
-	</cffunction>
-
-	<cffunction name="setComments" access="public" output="false" hint="" >
-		<cfargument name="Comments" type="array" required="true" hint="" />
-
-		<cfset variables.Comments = arguments.Comments />
-	</cffunction>
-
-	<cffunction name="setIngredients" access="public" output="false" hint="" >
-		<cfargument name="Data" type="string" required="true" hint="" />
-
-		<cfset variables.Ingredients = arguments.Data />
-	</cffunction>
-
-	<cffunction name="setDescription" access="public" output="false" hint="" >
-		<cfargument name="Data" type="string" required="true" hint="" />
-
-		<cfset variables.Description = arguments.Data />
-	</cffunction>
-
-	<cffunction name="setPicture" access="public" output="false" hint="" >
-		<cfargument name="ID" type="string" required="true" hint="" />
-
-		<cfset variables.Picture = arguments.ID />
-	</cffunction>
-
-	<cffunction name="setInstructions" access="public" output="false" hint="" >
-		<cfargument name="Data" type="string" required="true" hint="" />
-
-		<cfset variables.Instructions = arguments.Data />
-	</cffunction>
-
-	<cffunction name="setName" access="public" output="false" hint="" >
-		<cfargument name="Data" type="string" required="true" hint="" />
-
-		<cfset variables.Name = arguments.Data />
-	</cffunction>
-
-	<!--- Methods --->
-
-	<cffunction name="save" returntype="void" access="public" output="false" hint="Persists the current state of the recipe to the db." >
-
-		<cfset variables.onStatic() />
-
-		<cfset var UpdateRecipe = queryNew("") />
-		<cfset variables.setDateTimeLastModified(Date=createODBCDateTime(now())) />
+		<cfif variables.LastModifiedByUser.getUserID() IS arguments.userID >
+			<cfset LastUpdatedByUser = variables.LastModifiedByUser.getUserID() />
+		<cfelse>
+			<cfset variables.LastModifiedByUser = new Models.User(arguments.userID) />
+			<cfset LastUpdatedByUser = arguments.userID />
+		</cfif>
 
 		<cftransaction action="begin" >
 			<cftry>
-				<cfquery name="UpdateRecipe" datasource="#getDatasource()#" >
-					UPDATE #getTableName()#
+				<cfset queryExecute(
+					"UPDATE #static.TableName#
 					SET
-						DateCreated = <cfqueryparam sqltype="DATE" value="#getDateCreated()#" />,
-						DateTimeLastModified = <cfqueryparam sqltype="TIMESTAMP" value="#getDateTimeLastModified()#" />,
-						CreatedByUser = <cfqueryparam sqltype="BIGINT" value="#getCreatedByUser().getID()#" />,
-						LastModifiedByUser = <cfqueryparam sqltype="BIGINT" value="#getLastModifiedByUser().getID()#" />,
-						Ingredients = <cfqueryparam sqltype="LONGVARCHAR" value="#getIngredients()#" />,
-						Description = <cfqueryparam sqltype="LONGVARCHAR" value="#getDescription()#" />,
-						Picture = <cfqueryparam sqltype="LONGVARCHAR" value="#getPicture()#" />,
-						Instructions = <cfqueryparam sqltype="LONGVARCHAR" value="#getInstructions()#" />,
-						Name = <cfqueryparam sqltype="LONGVARCHAR" value="#getName()#" />,
-						Published = <cfqueryparam sqltype="BOOLEAN" value="#getPublished()#" />
+						DateTimeLastModified = ?,
+						LastModifiedByUser = ?,
+						Ingredients = ?,
+						Description = ?,
+						Picture = ?,
+						Instructions = ?,
+						Name = ?,
+						Published = ?
 
-					WHERE #getTableKey()# = <cfqueryparam sqltype="BIGINT" value="#getID()#" />;
-				</cfquery>
+					WHERE #static.TableKey# = ?;"
+					[
+						LastModified,
+						{value=variables.LastModifiedByUser.getUserID(), cfsqltype="integer"},
+						variables.Ingredients,
+						variables.Description,
+						variables.Picture,
+						variables.Instructions,
+						variables.Name,
+						variables.Published,
+						{value=variables.RecipeID, cfsqltype="integer"}
+					]
+				) />
+
+				<cfset variables.DateTimeLastModified = LastModified />
 
 				<cftransaction action="commit" />
 			<cfcatch>
@@ -182,31 +79,31 @@
 		</cftransaction>
 	</cffunction>
 
-	<cffunction name="create" returntype="Models.Recipe" access="public" hint="Static method. Creates a new empty recipe in the db, and returns an instance of it" output="false" >
-		<cfargument name="UserID" required="true" type="numeric" />
-		<cfargument name="Name" required="true" type="string" />
-		<cfargument name="Datasource" type="string" required="true" hint="The name of the datasource to use for queries." />
-
-		<cfset variables.onInitialized() />
-		<cfset variables.setupTableColumns( Datasource=trim(arguments.Datasource) ) />
+	<cffunction modifier="static" name="Create" returntype="Models.Recipe" access="public" hint="Static method. Creates a new empty recipe in the db, and returns an instance of it" output="false" >
+		<cfargument name="userID" required="true" type="numeric" hint="The owner of the new recipe" />
+		<cfargument name="name" required="true" type="string" hint="The name of the new recipe" />
 
 		<cfif len(arguments.Name) IS 0 >
 			<cfthrow message="Error creating recipe" detail="The recipe name you passed is empty." />
 		</cfif>
 
-		<cfif isValid("integer", arguments.UserID) IS false AND arguments.UserID IS 0 >
-			<cfthrow message="Error creating new recipe" detail="The UserID you passed is an invalid integer or is 0: #arguments.UserID#" />
+		<cfif arguments.UserID LT 0 >
+			<cfthrow message="Error creating new recipe" detail="The UserID you passed must be greater than 0: #arguments.UserID#" />
 		</cfif>
 
 		<cfif len(arguments.Datasource) IS 0 >
 			<cfthrow message="Error creating new recipe" detail="The datasource name you passed is empty." />
 		</cfif>
 
-		<cfset variables.setDateCreated(Date=createODBCdate(now())) />
-		<cfset variables.setDateTimeLastModified(Date=createODBCdatetime(now())) />
-		<cfset variables.setName( Data=trim(arguments.Name) ) />
+		<!--- <cfif NOT Models.User::Exists(arguments.userID) >
+			<cfthrow message="" detail="" />
+		</cfif> --->
 
-		<cfset var CreateRecipe = queryNew("") />
+		<cfset variables.DateCreated = createODBCdate(now()) />
+		<cfset variables.DateTimeLastModified = createODBCdatetime(now()) />
+		<cfset variables.Name = trim(arguments.Name) />
+
+		<cfset var CreateNewRecipeResult = null />
 
 		<cftransaction action="begin" >
 			<cftry>
@@ -238,6 +135,37 @@
 					RETURNING #getTableKey()#;
 				</cfquery>
 
+				<cfset queryExecute(
+					"INSERT INTO #static.TableName# (
+						DateCreated,
+						DateTimeLastModified,
+						CreatedByUser,
+						LastModifiedByUser,
+						Ingredients,
+						Description,
+						Picture,
+						Instructions,
+						Name,
+						Published
+					)
+					VALUES (
+						<cfqueryparam sqltype="DATE" value="#getDateCreated()#" />,
+						<cfqueryparam sqltype="TIMESTAMP" value="#getDateTimeLastModified()#" />,
+						<cfqueryparam sqltype="BIGINT" value="#arguments.UserID#" />,
+						<cfqueryparam sqltype="BIGINT" value="#arguments.UserID#" />,
+						<cfqueryparam sqltype="LONGVARCHAR" value="#getIngredients()#" />,
+						<cfqueryparam sqltype="LONGVARCHAR" value="#getDescription()#" />,
+						<cfqueryparam sqltype="LONGVARCHAR" value="#getPicture()#" />,
+						<cfqueryparam sqltype="LONGVARCHAR" value="#getInstructions()#" />,
+						<cfqueryparam sqltype="LONGVARCHAR" value="#getName()#" />,
+						<cfqueryparam sqltype="BOOLEAN" value="#getPublished()#" />
+					)",
+					[
+
+					],
+					{result="CreateNewRecipeResult"}
+				) />
+
 				<cftransaction action="commit" />
 			<cfcatch>
 
@@ -248,7 +176,7 @@
 			</cftry>
 		</cftransaction>
 
-		<cfreturn variables.init(
+		<cfreturn new Modelinit(
 			ID=CreateRecipe[ getTableKey() ],
 			Datasource=arguments.Datasource
 		) />
@@ -300,27 +228,17 @@
 		</cfif>
 	</cffunction>
 
+	<!--- CONSTRUCTOR --->
+
 	<cffunction name="init" access="public" returntype="Models.Recipe" output="false" hint="Constructor, returns an initialized recipe." >
 		<cfargument name="ID" type="numeric" required="true" hint="" />
-		<cfargument name="Datasource" type="string" required="true" hint="The name of the datasource to use for queries." />
 
-		<cfset variables.onInitialized() />
-
-		<cfif len(arguments.Datasource) IS 0 >
-			<cfthrow message="Error when initializing recipe. The datasource argument appears to be empty" />
+		<cfif NOT Models.Recipe::Exists(arguments.ID) >
+			<cfthrow message="Error when initializing recipe. No recipe with this #static.TableKey# exists: #arguments.ID#" />
 		</cfif>
 
-		<cfset variables.setDataSource( Name=trim(arguments.Datasource) ) />
-		<cfset variables.setupTableColumns( Datasource=trim(arguments.Datasource) ) />
-
-		<cfif variables.exists( ID=arguments.ID, Datasource=arguments.Datasource ) IS false >
-			<cfthrow message="Error when initializing recipe. No recipe with this #getTableKey()# exists: #arguments.ID#" />
-		</cfif>
-
-		<cfset variables.setID( Value=arguments.ID ) >
-		<cfset variables.load() />
-
-		<cfset variables.IsStatic = false />
+		<cfset variables.RecipeID = arguments.ID />
+		<cfset Load() />
 
 		<cfreturn this />
 	</cffunction>

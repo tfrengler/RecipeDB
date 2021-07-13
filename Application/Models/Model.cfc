@@ -16,7 +16,6 @@
 
 		<cfset var Columns = "#static.TableKey#,#static.TableColumns#" />
 		<cfset var GetByObjectData = null />
-		<!--- <cfset var ValidOperators = ["equal to","not equal to","begins with","ends with","contains","in","greater than","less than"] /> --->
 		<cfset var Qualifier = null />
 		<cfset var QueryString = null />
 
