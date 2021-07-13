@@ -1,21 +1,9 @@
-<cfcomponent output="false" >
-
-    <cffunction modifier="static" name="GetDBDate" returntype="date" access="public" output="false" >
-        <cfargument name="date" type="string" required="true" />
-
-        <cfreturn createODBCDate(dateConvert("local2Utc", parseDateTime(arguments.date))) />
-    </cffunction>
+<cfcomponent output="false" hint="Utility class for dealing with converting dates between what goes into the db, what should be stored in memory and what should be displayed" >
 
     <cffunction modifier="static" name="GetDBDateTime" returntype="date" access="public" output="false" >
         <cfargument name="date" type="string" required="true" />
 
         <cfreturn createODBCDateTime(dateConvert("local2Utc", parseDateTime(arguments.date))) />
-    </cffunction>
-
-    <cffunction modifier="static" name="GetBackendDate" returntype="date" access="public" output="false" >
-        <cfargument name="date" type="string" required="true" />
-
-        <cfreturn createODBCDate(dateConvert("utc2Local", parseDateTime(arguments.date))) />
     </cffunction>
 
     <cffunction modifier="static" name="GetBackendDateTime" returntype="date" access="public" output="false" >

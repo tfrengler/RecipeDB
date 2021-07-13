@@ -145,11 +145,7 @@
 			WHERE #static.TableKey# = <cfqueryparam sqltype="INT" value=#arguments.ID# />
 		</cfquery>
 
-		<cfif ExistenceCheck.RecordCount IS 1 >
-			<cfreturn true />
-		</cfif>
-
-		<cfreturn false />
+		<cfreturn ExistenceCheck.RecordCount IS 1 />
 	</cffunction>
 
 	<!--- Instance methods --->

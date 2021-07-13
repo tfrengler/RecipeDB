@@ -73,7 +73,7 @@
 		</cfif>
 
 		<cfif len(FORM.UserName) GT 0 >
-			<cfset ExistingUsers = Models.User::getBy(
+			<cfset ExistingUsers = Models.User::GetBy(
 				ColumnToSearchOn="username",
 				SearchOperator="equal to",
 				SearchData=FORM.UserName
@@ -125,14 +125,12 @@
 		</cfif>
 
 		<cfif Continue >
-			<cfset NewUserInstance = Models.User::create(username=FORM.UserName) />
+			<cfset NewUserInstance = Models.User::Create(username=FORM.UserName) />
 
 			<cfset NewUserInstance.changePassword(
 				SecurityManager=application.securityManager,
 				Password=FORM.Password
 			) />
-
-			<cfset NewUserInstance.setBlocked( Blocked=false ) />
 
 			<cfif len(FORM.DisplayName) GT 0 >
 				<cfset NewUserInstance.setDisplayName( Name=FORM.DisplayName ) />
@@ -142,7 +140,7 @@
 
 			<p class="good" >SUCCESS! New user added!</p>
 
-			<cfdump var=#UsersInterface.getData(ID=NewUserInstance.getId())# />
+			<cfdump var=#Models.Users::GetData(ID=NewUserInstance.GetUserID())# />
 		</cfif>
 	</cfif>
 

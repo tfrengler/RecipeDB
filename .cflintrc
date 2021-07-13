@@ -34,7 +34,9 @@
         {"code": "SCOPE_ALLCAPS_NAME"},
         {"code": "AVOID_USING_CFMODULE_TAG"},
         {"code": "UNQUOTED_STRUCT_KEY"},
-        {"code": "STRUCT_ARRAY_NOTATION"}
+        {"code": "STRUCT_ARRAY_NOTATION"},
+        {"code": "QUERYPARAM_REQ"},
+        {"code": "CFQUERYPARAM_REQ"}
     ],
     "inheritParent": false,
     "parameters": { }

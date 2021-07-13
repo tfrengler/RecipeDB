@@ -1,7 +1,35 @@
-<cfprocessingdirective pageencoding="utf-8" />
+<!--- CREATE TABLE RecipeImages (
+    ImageID              INTEGER    PRIMARY KEY AUTOINCREMENT
+                                    UNIQUE ON CONFLICT ROLLBACK,
+    BelongsToRecipe      INTEGER    REFERENCES Recipes (RecipeID) ON DELETE CASCADE,
+    MimeType             TEXT (100),
+    OriginalName         TEXT (256),
+    Base64Content        BLOB,
+    DateTimeCreated      TEXT (16),
+    DateTimeLastModified TEXT (26),
+    ModifiedByUser       INTEGER    REFERENCES Users (UserID) ON DELETE SET NULL
+); --->
 
-<cfhttp url="https://static.wixstatic.com/media/6a4a49_e7ad62bef9784345a5384e4b330d3e85~mv2.jpg" getasbinary="false" />
+<cfset queryExecute(
+    "INSERT INTO RecipeImages (
+        BelongsToRecipe,
+        MimeType,
+        OriginalName,
+        Base64Content,
+        DateTimeCreated,
+        DateTimeLastModified
+        --ModifiedByUser
+    )
+    VALUES(?,?,?,?,?,?)",
+    [
+        {value=56, cfsqltype="integer"},
+        "application/json",
+        "Gnargle",
+        "XXX",
+        "1234567890123456789012345678901234567890",
+        "1234567890123456789012345678901234567890"
+    ],
+    {result="TestResult"}
+) >
 
-<!--- <cfdump var="#cfhttp#" /> --->
-
-<cfimage action="writeToBrowser" source="#cfhttp.filecontent#" format="png" isBase64="false" width="800" height="600" />
+<cfdump var=#TestResult# />

@@ -33,7 +33,7 @@
 
 	<!--- Settings --->
 
-	<cffunction name="getSettings" access="public" returntype="struct" output="false" hint="" >
+	<cffunction name="GetSettings" access="public" returntype="struct" output="false" hint="" >
 		<cfreturn {
 			findRecipes: {
 				listType: variables.Settings_FindRecipes_ListType,
@@ -50,7 +50,7 @@
 		} />
 	</cffunction>
 
-	<cffunction name="setFindRecipes_ListType" returntype="string" access="public" output="false" hint="" >
+	<cffunction name="SetFindRecipes_ListType" returntype="string" access="public" output="false" hint="" >
 		<cfargument name="data" type="string" required="true" hint="" />
 
 		<cfif listFind("full,simple", arguments.data) IS 0 >
@@ -60,7 +60,7 @@
 		<cfset variables.Settings_FindRecipes_ListType = arguments.data />
 	</cffunction>
 
-	<cffunction name="setFindRecipes_SortOnColumn" returntype="string" access="public" output="false" hint="" >
+	<cffunction name="SetFindRecipes_SortOnColumn" returntype="string" access="public" output="false" hint="" >
 		<cfargument name="data" type="string" required="true" hint="" />
 
 		<cfset var AllowedColumns = "Name,CreatedBy,CreatedOn,ModifiedOn,Published,ID" />
@@ -213,8 +213,6 @@
 				<cfset queryExecute(
 					"UPDATE #static.TableName#
 					SET
-						DateCreated = ?,
-						DateTimeLastLogin = ?,
 						Password = ?,
 						PasswordSalt = ?,
 						TempPassword = ?,
@@ -222,12 +220,11 @@
 						DisplayName = ?,
 						TimesLoggedIn = ?,
 						BrowserLastUsed = ?,
-						Blocked = ?
+						Blocked = ?,
+						DateTimeLastLogin = ?
 
 					WHERE #static.TableKey# = ?;",
 					[
-						variables.DateCreated,
-						variables.DateTimeLastLogin,
 						variables.Password,
 						variables.PasswordSalt,
 						variables.TempPassword,
@@ -236,6 +233,7 @@
 						variables.TimesLoggedIn,
 						variables.BrowserLastUsed,
 						variables.Blocked,
+						Components.Localizer::GetDBDateTime(variables.DateTimeLastLogin),
 						variables.UserID
 					]
 				) />
@@ -265,8 +263,12 @@
 		) />
 
 		<cfif UserData.RecordCount GT 0 >
-			<cfset variables.DateCreated = Components.Localizer::GetBackendDate(UserData.DateCreated) />
-			<cfset variables.DateTimeLastLogin = Components.Localizer::GetBackendDateTime(UserData.DateTimeLastLogin) />
+
+			<cfset var DateCreated = Components.Localizer::GetBackendDate(UserData.DateCreated) />
+			<cfset var DateTimeLastLogin = Components.Localizer::GetBackendDateTime(UserData.DateTimeLastLogin) />
+
+			<cfset variables.DateCreated = DateCreated />
+			<cfset variables.DateTimeLastLogin = DateTimeLastLogin />
 			<cfset variables.Password = UserData.Password />
 			<cfset variables.PasswordSalt = UserData.PasswordSalt />
 			<cfset variables.TempPassword = UserData.TempPassword />

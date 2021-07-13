@@ -31,6 +31,10 @@
 
 	<cffunction name="onApplicationStart" returnType="boolean" output="false">
 
+		<cfquery>
+			PRAGMA foreign_keys = ON;
+		</cfquery>
+
 		<cfset var configXML = null />
 		<cfset var queryListOfControllers = null />
 		<cfset application.allowedAJAXControllers = null />
