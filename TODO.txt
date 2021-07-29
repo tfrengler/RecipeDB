@@ -1,3 +1,4 @@
 Consider changing all Date-objects to DateTime instead
 Consider using UTC datetimes in the backend as well as the db, only converting for display purposes
 Consider adding a timezone setting for users that defaults to the server's location (GMT+1)
+The save-method in each model MUST persist ALL data to the db!!!
