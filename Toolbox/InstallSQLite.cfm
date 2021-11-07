@@ -15,17 +15,17 @@
 	<p><a href="index.cfm" >Back to Toolbox</a></p>
 	<h1>Install SQLite</h1>
 
-    <cfadmin 
+    <cfadmin
         type="server"
-        password="tf499985" 
-        action="getBundles" 
+        password="tf499985"
+        action="getBundles"
         returnvariable="bundles" />
 
     <cfquery dbtype="query" name="SQLiteSearch" >
         SELECT *
         FROM bundles
         WHERE title = 'SQLite JDBC'
-        AND state = 'active'
+        -- AND state = 'installed'
     </cfquery>
 
     <cfif SQLiteSearch.recordCount GT 0 >
@@ -35,11 +35,12 @@
     <cfelse>
         <p>SQLite appears not to be installed, attempting to do so now...</p>
 
-        <cfset var DbLibFile = "#this.root#\sqlite-jdbc-3.30.1.jar" /> <!--- https://bitbucket.org/xerial/sqlite-jdbc/downloads/ --->
+        <cfset Root = getDirectoryFromPath( getCurrentTemplatePath() ) />
+        <cfset DbLibFile = "#Root#\sqlite-jdbc-3.36.0.3.jar" /> <!--- https://bitbucket.org/xerial/sqlite-jdbc/downloads/ --->
 
-        <cfset var CFMLEngine = createObject( "java", "lucee.loader.engine.CFMLEngineFactory" ).getInstance() />
-        <cfset var OSGiUtil = createObject( "java", "lucee.runtime.osgi.OSGiUtil" ) />
-        <cfset var resource = CFMLEngine.getResourceUtil().toResourceExisting( getPageContext(), DbLibFile ) />
+        <cfset CFMLEngine = createObject( "java", "lucee.loader.engine.CFMLEngineFactory" ).getInstance() />
+        <cfset OSGiUtil = createObject( "java", "lucee.runtime.osgi.OSGiUtil" ) />
+        <cfset resource = CFMLEngine.getResourceUtil().toResourceExisting( getPageContext(), DbLibFile ) />
 
         <cfset OSGiUtil.installBundle(
             CFMLEngine.getBundleContext(),

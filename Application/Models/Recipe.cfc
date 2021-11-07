@@ -42,24 +42,24 @@
 				<cfset queryExecute(
 					"UPDATE #static.TableName#
 					SET
+						Name = ?,
 						DateTimeLastModified = ?,
 						LastModifiedByUser = ?,
 						Ingredients = ?,
 						Description = ?,
 						Picture = ?,
 						Instructions = ?,
-						Name = ?,
 						Published = ?
 
 					WHERE #static.TableKey# = ?;",
 					[
+						variables.Name,
 						Components.Localizer::GetDBDateTime(createODBCDateTime(now())),
 						{value=LastUpdatedByUser, cfsqltype="integer"},
 						variables.Ingredients,
 						variables.Description,
 						variables.Picture,
 						variables.Instructions,
-						variables.Name,
 						variables.Published,
 						{value=variables.RecipeID, cfsqltype="integer"}
 					]

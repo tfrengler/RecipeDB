@@ -1,24 +1,17 @@
 <cfcomponent output="false" >
-<cfprocessingdirective pageEncoding="utf-8" />	
+<cfprocessingdirective pageEncoding="utf-8" />
 
 	<cffunction name="main" access="public" returntype="struct" output="false" hint="" >
-		<cfargument name="filterSettings" type="struct" required="false" default="#structNew()#" /> 
+		<cfargument name="filterSettings" type="struct" required="false" default="#structNew()#" />
 
 		<cfset var returnData = {
  			statuscode: 0,
  			data: arrayNew(1)
  		} />
 
-		<cfset var allRecipes = createObject("component", "Models.Recipe").getData(
-			datasource=application.settings.datasource,
-			cachedWithin=createTimespan(0, 0, 1, 0)
-		) >
-		<cfset var users = createObject("component", "Models.User").getData( 
-			datasource=application.settings.datasource,
-			columnList="UserID,DisplayName",
-			cachedWithin=createTimespan(0, 1, 0, 0)
-		) />
-		
+		<cfset var allRecipes = Models.Recipe::GetData() >
+		<cfset var users = Models.User::GetData(columnList="UserID,DisplayName") />
+
 		<cfset var columnNamesFromQuery = "" />
 		<cfset var currentColumnName = "" />
 		<cfset var currentRecipeData = structNew() />
@@ -33,12 +26,12 @@
 				FROM allRecipes
 				WHERE 1 = 1
 
-				<cfif 	
+				<cfif
 					structKeyExists(arguments.filterSettings, "mineOnly") OR
 					structKeyExists(arguments.filterSettings, "minePrivate") OR
 					structKeyExists(arguments.filterSettings, "minePrivate") OR
 					structKeyExists(arguments.filterSettings, "minePublic") OR
-					structKeyExists(arguments.filterSettings, "mineNoPicture") 
+					structKeyExists(arguments.filterSettings, "mineNoPicture")
 				>
 						AND CreatedByUser = #session.currentUser.getId()#
 					<cfelseif structKeyExists(arguments.filterSettings, "othersOnly") >
@@ -103,7 +96,7 @@
 
 						<cfset structInsert(CurrentRecipeData[CurrentColumnName], "sortdata", encodeForHTML(UserDisplayName["DisplayName"]), true) />
 						<cfset structInsert(CurrentRecipeData[CurrentColumnName], "display", encodeForHTML(UserDisplayName["DisplayName"]), true) />
-					
+
 					<!--- Date columns cannot be sorted by normal means so we need some additional processing --->
 					<cfelseif find("{ts '", CurrentColumnFromCurrentRowInQuery) GT 0 >
 
@@ -118,8 +111,8 @@
 
 					<!--- For everything else, just put the data in the return data --->
 					<cfelse>
-						
-						<!--- Normally I'd put encodeForHTML() type things in the view but 
+
+						<!--- Normally I'd put encodeForHTML() type things in the view but
 							A: we are not in charge of rendering each row and their content and
 							B: hopefully this helps neuter things that might otherwise break the JSON
 						--->

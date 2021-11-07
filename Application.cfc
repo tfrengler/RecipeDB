@@ -31,9 +31,7 @@
 
 	<cffunction name="onApplicationStart" returnType="boolean" output="false">
 
-		<cfquery>
-			PRAGMA foreign_keys = ON;
-		</cfquery>
+		<cfquery>PRAGMA foreign_keys = ON;</cfquery>
 
 		<cfset var configXML = null />
 		<cfset var queryListOfControllers = null />
@@ -155,11 +153,10 @@
 				</cfif>
 			</cfif>
 
-			<cfset var UserInterface = createObject("component", "Models.User") />
 			<cfset var UserSearch = null />
 			<cfset var LoggedInUser = "" />
 
-			<cfset UserSearch = UserInterface.getBy(
+			<cfset UserSearch = Models.User::GetBy(
 				ColumnToSearchOn="UserName",
 				SearchOperator="equal to",
 				SearchData=form.j_username,
@@ -168,7 +165,7 @@
 
 			<cfif UserSearch.RecordCount IS 1 >
 				<cfset LoggedInUser = createObject("component", "Models.User").init(
-					ID=UserSearch[ UserInterface.getTableKey() ],
+					ID=UserSearch[ Models.User::TableKey ],
 					Datasource="#application.Settings.Datasource#"
 				) />
 

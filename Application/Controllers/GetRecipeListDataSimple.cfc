@@ -1,8 +1,8 @@
 <cfcomponent output="false" >
-<cfprocessingdirective pageEncoding="utf-8" />	
+<cfprocessingdirective pageEncoding="utf-8" />
 
 	<cffunction name="main" access="public" returntype="struct" output="false" hint="" >
-		<cfargument name="filterSettings" type="struct" required="false" default="#structNew()#" /> 
+		<cfargument name="filterSettings" type="struct" required="false" default="#structNew()#" />
 
 		<cfset var returnData = {
  			statuscode: 0,
@@ -15,14 +15,10 @@
 		<cfset var filteredRecipes = queryNew("") />
 		<cfset var columnsToSelect = "RecipeID,Name,DateCreated,DateTimeLastModified,CreatedByUser,Published,Picture" />
 
-		<cfset var allRecipes = createObject("component", "Models.Recipe").getData(datasource=application.settings.datasource) >
-		<cfset var users = createObject("component", "Models.User").getData( 
-			datasource=application.settings.datasource,
-			columnList="UserID,DisplayName",
-			cachedWithin=createTimespan(0, 1, 0, 0)
-		) />
+		<cfset var allRecipes = Models.Recipe::GetData() >
+		<cfset var users = Models.User::GetData(columnList="UserID,DisplayName") />
 
-		<!--- 
+		<!---
  			The reason we do this is because the way the query is set up it checks for existence of fields in the argument.
  			This makes sense when we apply a filter on the page because it's a form submission and thus only the checkboxes
  			that are selected are actually present in the FORM-scope.
@@ -42,12 +38,12 @@
 				FROM allRecipes
 				WHERE 1 = 1
 
-				<cfif 	
+				<cfif
 					structKeyExists(arguments.filterSettings, "mineOnly") OR
 					structKeyExists(arguments.filterSettings, "minePrivate") OR
 					structKeyExists(arguments.filterSettings, "minePrivate") OR
 					structKeyExists(arguments.filterSettings, "minePublic") OR
-					structKeyExists(arguments.filterSettings, "mineNoPicture") 
+					structKeyExists(arguments.filterSettings, "mineNoPicture")
 				>
 						AND CreatedByUser = #session.currentUser.getId()#
 					<cfelseif structKeyExists(arguments.filterSettings, "otherUsersOnly") >

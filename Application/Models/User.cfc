@@ -264,7 +264,7 @@
 
 		<cfif UserData.RecordCount GT 0 >
 
-			<cfset var DateCreated = Components.Localizer::GetBackendDate(UserData.DateCreated) />
+			<cfset var DateCreated = Components.Localizer::GetBackendDateTime(UserData.DateCreated) />
 			<cfset var DateTimeLastLogin = Components.Localizer::GetBackendDateTime(UserData.DateTimeLastLogin) />
 
 			<cfset variables.DateCreated = DateCreated />
