@@ -1,7 +1,7 @@
 <cfcomponent output="false" modifier="final" persistent="true" extends="Model" >
 
 	<cfproperty name="UserID" 					type="numeric"		getter="true"	setter="true" />
-	<cfproperty name="DateCreated" 				type="date"			getter="true"	setter="true" />
+	<cfproperty name="DateTimeCreated" 			type="date"			getter="true"	setter="true" />
 	<cfproperty name="DateTimePreviousLogin" 	type="date"			getter="true"	setter="true" />
 	<cfproperty name="DateTimeLastLogin" 		type="date"			getter="true"	setter="true" />
 	<cfproperty name="Password" 				type="string"		getter="true"	setter="true" />
@@ -27,7 +27,7 @@
 		static {
 			static.TableName = "Users";
 			static.TableKey = "UserID";
-			static.TableColumns = "TempPassword,PasswordSalt,BrowserLastUsed,DisplayName,Blocked,DateTimeLastLogin,DateCreated,TimesLoggedIn,Password,UserName";
+			static.TableColumns = "TempPassword,PasswordSalt,BrowserLastUsed,DisplayName,Blocked,DateTimeLastLogin,DateTimeCreated,TimesLoggedIn,Password,UserName";
 		};
 	</cfscript>
 
@@ -233,7 +233,7 @@
 						variables.TimesLoggedIn,
 						variables.BrowserLastUsed,
 						variables.Blocked,
-						Components.Localizer::GetDBDateTime(variables.DateTimeLastLogin),
+						Components.Localizer::GetBackendDateTimeFromDate(variables.DateTimeLastLogin),
 						variables.UserID
 					]
 				) />
@@ -264,10 +264,10 @@
 
 		<cfif UserData.RecordCount GT 0 >
 
-			<cfset var DateCreated = Components.Localizer::GetBackendDateTime(UserData.DateCreated) />
-			<cfset var DateTimeLastLogin = Components.Localizer::GetBackendDateTime(UserData.DateTimeLastLogin) />
+			<cfset var DateTimeCreated = Components.Localizer::GetBackendDateTimeFromString(UserData.DateTimeCreated) />
+			<cfset var DateTimeLastLogin = Components.Localizer::GetBackendDateTimeFromString(UserData.DateTimeLastLogin) />
 
-			<cfset variables.DateCreated = DateCreated />
+			<cfset variables.DateTimeCreated = DateTimeCreated />
 			<cfset variables.DateTimeLastLogin = DateTimeLastLogin />
 			<cfset variables.Password = UserData.Password />
 			<cfset variables.PasswordSalt = UserData.PasswordSalt />
@@ -285,7 +285,7 @@
 	<!--- STATIC --->
 	<!--- Public --->
 
-	<cffunction modifier="static" name="Create" returntype="Models.User" access="public" hint="Static method. Creates a new empty user in the db and returns an instance of this user" output="true" >
+	<cffunction modifier="static" name="Create" returntype="Models.User" access="public" hint="Static method. Creates a new empty user in the db and returns an instance of this user" output="false" >
 		<cfargument name="username" type="string" required="true" hint="The login name for the new user." />
 
 		<cfif len(arguments.username) IS 0 >
@@ -293,23 +293,28 @@
 		</cfif>
 
 		<cfset var NewUser = null />
+		<cfset var TempPasswordAndSalt = hash("DEFAULT", "SHA-512", "utf-8") />
 
 		<cftransaction action="begin" >
 			<cftry>
 
 				<cfset queryExecute(
 					"INSERT INTO '#static.TableName#' (
-						DateCreated,
+						DateTimeCreated,
 						UserName,
 						DisplayName,
-						DateTimeLastLogin
+						DateTimeLastLogin,
+						Password,
+						PasswordSalt
 					)
-					VALUES(?,?,?,?)",
+					VALUES(?,?,?,?,?,?)",
 					[
-						Components.Localizer::GetDBDate(now()),
+						Components.Localizer::GetBackendDateTimeFromDate(now()),
 						arguments.Username,
 						"New user XYZ#randRange(1, 100)#",
-						Components.Localizer::GetDBDateTime(now())
+						Components.Localizer::GetBackendDateTimeFromDate(now()),
+						TempPasswordAndSalt,
+						TempPasswordAndSalt
 					],
 					{result="NewUser"}
 				) />
@@ -332,7 +337,7 @@
 			<cfcatch>
 
 				<cftransaction action="rollback" />
-				<cfthrow object="#cfcatch#" />
+				<cfrethrow />
 
 			</cfcatch>
 			</cftry>

@@ -6,9 +6,9 @@
 		<cfargument name="Name" type="string" required="true" />
 
 		<cfset var returnData = {
- 			statuscode: 0,
- 			data: 0
- 		} />
+			statuscode: 0,
+			data: 0
+		} />
 
 		<cfif len(arguments.Name) IS 0 >
 
@@ -18,16 +18,12 @@
 
 		</cfif>
 
-		<cfset var recipeInterface = createObject("component", "Models.Recipe") />
-		<cfset var newRecipe = "" />
+		<cfset var NewRecipe = Models.Recipe::Create(
+			UserID=session.CurrentUser.GetUserID(),
+			Name=trim(arguments.Name)
+		) />
 
-		<cfset NewRecipe = RecipeInterface.create(
-			UserID=session.CurrentUser.getID(),
-			Name=trim(arguments.Name),
-			Datasource=application.settings.datasource
-		 ) />
-
-		<cfset returnData.data = NewRecipe.getID() />
+		<cfset returnData.data = NewRecipe.GetRecipeID() />
 
 		<cfreturn returnData />
 	</cffunction>

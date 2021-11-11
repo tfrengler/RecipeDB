@@ -93,15 +93,15 @@
 							<td>DisplayName</td>
 							<td>Blocked</td>
 							<td>DateTimeLastLogin</td>
-							<td>DateCreated</td>
+							<td>DateTimeCreated</td>
 							<td>TimesLoggedIn</td>
 							<td>Password</td>
 							<td>UserName</td>
 						</tr>
 					</thead>
 
-					<cfset DateTimeLastLogin = Components.Localizer::getBackendDateTime(ExistingUsers.DateTimeLastLogin) />
-					<cfset DateCreated = Components.Localizer::getBackendDate(ExistingUsers.DateCreated) />
+					<cfset DateTimeLastLogin = Components.Localizer::GetBackendDateTimeFromString(ExistingUsers.DateTimeLastLogin) />
+					<cfset DateTimeCreated = Components.Localizer::GetBackendDateTimeFromString(ExistingUsers.DateTimeCreated) />
 
 					<tbody>
 						<tr>
@@ -111,8 +111,8 @@
 							<td>#ExistingUsers.BrowserLastUsed#</td>
 							<td>#ExistingUsers.DisplayName#</td>
 							<td>#ExistingUsers.Blocked#</td>
-							<td>#Components.Localizer::getDisplayDateTime(DateTimeLastLogin)#</td>
-							<td>#Components.Localizer::getDisplayDate(DateCreated)#</td>
+							<td>#Components.Localizer::GetDisplayDateTime(DateTimeLastLogin)#</td>
+							<td>#Components.Localizer::GetDisplayDate(DateTimeCreated)#</td>
 							<td>#ExistingUsers.TimesLoggedIn#</td>
 							<td>#ExistingUsers.Password#</td>
 							<td>#ExistingUsers.UserName#</td>
@@ -140,7 +140,7 @@
 
 			<p class="good" >SUCCESS! New user added!</p>
 
-			<cfdump var=#Models.Users::GetData(ID=NewUserInstance.GetUserID())# />
+			<cfdump var=#Models.User::GetData(ID=NewUserInstance.GetUserID())# />
 		</cfif>
 	</cfif>
 

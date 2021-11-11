@@ -1,4 +1,13 @@
-Consider changing all Date-objects to DateTime instead
-Consider using UTC datetimes in the backend as well as the db, only converting for display purposes
 Consider adding a timezone setting for users that defaults to the server's location (GMT+1)
+
 The save-method in each model MUST persist ALL data to the db!!!
+
+Refactor the image logic to use the new structure (from db instead of disk)
+- Controllers/ChangeRecipePicture.cfc
+- Components/ImageManager.cfc
+- Views/ChangeRecipePicture.cfm
+- Modules/RecipeImageDownloader.cfm
+
+Remove all datasource-arguments to model calls
+
+Replace structNew and arrayNew calls with modern versions

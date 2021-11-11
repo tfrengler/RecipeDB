@@ -12,7 +12,7 @@
 	</cffunction>
 
 	<cffunction name="getSaltedString" returntype="string" access="public" hint="" >
-		<cfreturn Hash(GenerateSecretKey("AES"), "SHA-512") /> 
+		<cfreturn Hash(GenerateSecretKey("AES"), "SHA-512") />
 	</cffunction>
 
 	<cffunction name="createPassword" returntype="string" access="public" hint="" >
@@ -26,7 +26,8 @@
 		<cfset var Password = arrayNew(1) />
 		<cfset var RandomPasswordValue = "" />
 
-		<cfloop from="1" to="8" index="index" >
+		<cfset var Index = 0 />
+		<cfloop from="1" to="8" index="Index" >
 			<cfset RandomPasswordValue = mid(
 				AllValidChars,
 				randRange(1, len(AllValidChars)),
@@ -37,12 +38,12 @@
 		</cfloop>
 
 		<cfset Password = arrayToList(Password, "") />
-		
+
 		<cfreturn Password />
 	</cffunction>
 
 	<cffunction name="generateAuthKey" returntype="string" access="public" hint="" >
-		<cfset var AuthKey = "" /> 
+		<cfset var AuthKey = "" />
 
 		<cfif structKeyExists(session, "sessionid") >
 			<cfset AuthKey = (session.sessionid & variables.SecretKey) />
@@ -56,11 +57,11 @@
 	<!--- <cffunction name="removeHTMLTags" returntype="string" access="private" hint="Removes HTML from a string. Will remove entire tag and its attributes (http://cflib.org/udf/stripHTML)" >
 		<cfargument name="StringData" type="string" required="true" />
 		<cfargument name="SpecialTagsOnly" type="boolean" required="false" default="false" />
-		
+
 		<cfset var sSpecialTags = "style,script,noscript" />
 		<cfset var sCurrentTag = "" />
 		<cfset var ReturnData = arguments.StringData />
-		
+
 		<cfloop list="#sSpecialTags#" index="sCurrentTag" >
 			<cfset ReturnData = reReplaceNoCase(ReturnData, "<\s*(#sCurrentTag#)[^>]*?>(.*?)</\1>","","ALL") />
 		</cfloop>
@@ -68,7 +69,7 @@
 		<cfif arguments.SpecialTagsOnly >
 			<cfset ReturnData = reReplaceNoCase(ReturnData, "<.*?>","","ALL") />
 			<!--- Get partial html in front --->
-			<cfset ReturnData = reReplaceNoCase(ReturnData, "^.*?>","") />		
+			<cfset ReturnData = reReplaceNoCase(ReturnData, "^.*?>","") />
 			<!--- Get partial html at end --->
 			<cfset ReturnData = reReplaceNoCase(ReturnData, "<.*$","") />
 		</cfif>

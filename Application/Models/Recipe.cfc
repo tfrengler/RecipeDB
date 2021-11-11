@@ -1,7 +1,7 @@
 <cfcomponent output="false" persistent="true" extends="Model" >
 
 	<cfproperty name="RecipeID"					type="numeric"			getter="true" setter="false" />
-	<cfproperty name="DateCreated"				type="date"				getter="true" setter="false" />
+	<cfproperty name="DateTimeCreated"			type="date"				getter="true" setter="false" />
 	<cfproperty name="DateTimeLastModified"		type="date"				getter="true" setter="false" />
 	<cfproperty name="CreatedByUser"			type="Models.User"		getter="true" setter="false" />
 	<cfproperty name="LastModifiedByUser"		type="Models.User"		getter="true" setter="false" />
@@ -18,7 +18,7 @@
 		static {
 			static.TableName	= "Recipes";
 			static.TableKey		= "RecipeID";
-			static.TableColumns	= "Name,DateCreated,DateTimeLastModified,CreatedByUser,LastModifiedByUser,Ingredients,Description,Picture,Instructions,Published";
+			static.TableColumns	= "Name,DateTimeCreated,DateTimeLastModified,CreatedByUser,LastModifiedByUser,Ingredients,Description,Picture,Instructions,Published";
 		}
 	</cfscript>
 
@@ -29,6 +29,7 @@
 		<cfargument name="userID" type="numeric" required="true" hint="" />
 
 		<cfset var LastUpdatedByUser = null />
+		<cfset var DateTimeLastModified = Components.Localizer::GetBackendDateTimeFromDate(now()) />
 
 		<cfif variables.LastModifiedByUser.getUserID() IS arguments.userID >
 			<cfset LastUpdatedByUser = variables.LastModifiedByUser.getUserID() />
@@ -54,7 +55,7 @@
 					WHERE #static.TableKey# = ?;",
 					[
 						variables.Name,
-						Components.Localizer::GetDBDateTime(createODBCDateTime(now())),
+						DateTimeLastModified,
 						{value=LastUpdatedByUser, cfsqltype="integer"},
 						variables.Ingredients,
 						variables.Description,
@@ -65,7 +66,7 @@
 					]
 				) />
 
-				<cfset variables.DateTimeLastModified = LastModified />
+				<cfset variables.DateTimeLastModified = DateTimeLastModified />
 
 				<cftransaction action="commit" />
 			<cfcatch>
@@ -93,10 +94,10 @@
 
 		<cfif RecipeData.RecordCount IS 1 >
 
-			<cfset var DateCreated = Components.Localizer::GetBackendDate(RecipeData.DateCreated) />
-			<cfset var DateTimeLastModified = Components.Localizer::GetBackendDateTime(RecipeData.DateTimeLastModified) />
+			<cfset var DateTimeCreated = Components.Localizer::GetBackendDateTimeFromString(RecipeData.DateTimeCreated) />
+			<cfset var DateTimeLastModified = Components.Localizer::GetBackendDateTimeFromString(RecipeData.DateTimeLastModified) />
 
-			<cfset variables.DateCreated = DateCreated />
+			<cfset variables.DateTimeCreated = DateTimeCreated />
 			<cfset variables.DateTimeLastModified = DateTimeLastModified />
 			<cfset variables.Ingredients = RecipeData.Ingredients />
 			<cfset variables.Description = RecipeData.Description />
@@ -109,12 +110,12 @@
 			<cfthrow message="Error when loading recipe data. There appears to be no recipe with this #static.TableKey#: #variables.RecipeID#" />
 		</cfif>
 
-		<cfset variables.CreatedByUser = new Models.User(GetRecipeData.CreatedByUser) />
+		<cfset variables.CreatedByUser = new Models.User(RecipeData.CreatedByUser) />
 
-		<cfif GetRecipeData.LastModifiedByUser IS GetRecipeData.CreatedByUser >
+		<cfif RecipeData.LastModifiedByUser IS RecipeData.CreatedByUser >
 			<cfset variables.LastModifiedByUser = variables.CreatedByUser />
 		<cfelse>
-			<cfset variables.LastModifiedByUser = new Models.User(GetRecipeData.LastModifiedByUser) />
+			<cfset variables.LastModifiedByUser = new Models.User(RecipeData.LastModifiedByUser) />
 		</cfif>
 	</cffunction>
 
@@ -135,24 +136,21 @@
 
 		<cfset var CreateNewRecipeResult = null />
 
-		<cfset var DateCreated = Components.Localizer::GetDBDate(createODBCdate(now())) />
-		<cfset var DateTimeLastModified = Components.Localizer::GetDBDateTime(createODBCdatetime(now())) />
-
 		<cftransaction action="begin" >
 			<cftry>
 				<cfset queryExecute(
 					"INSERT INTO #static.TableName# (
 						Name,
-						DateCreated,
+						DateTimeCreated,
 						DateTimeLastModified,
 						CreatedByUser,
 						LastModifiedByUser
 					)
-					VALUES (?,?,?,?)",
+					VALUES (?,?,?,?,?)",
 					[
 						trim(arguments.name),
-						DateCreated,
-						DateTimeLastModified,
+						Components.Localizer::GetBackendDateTimeFromDate(now()),
+						Components.Localizer::GetBackendDateTimeFromDate(now()),
 						{value=arguments.UserID, cfsqltype="integer"},
 						{value=arguments.UserID, cfsqltype="integer"}
 					],

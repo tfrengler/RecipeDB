@@ -15,8 +15,9 @@
 		<cfset var fullPathToTempFile = "" />
 
 		<cfif arguments.RecipeID LTE 0 >
-			
+
 			<cfheader statuscode="500" />
+
 			<cfset returnData.statuscode = 1 />
 			<cfreturn returnData />
 
@@ -48,7 +49,7 @@
 
 		</cfif>
 
-		<cfset Recipe = createObject("component", "Models.Recipe").init( 
+		<cfset Recipe = createObject("component", "Models.Recipe").init(
 			ID=arguments.RecipeID,
 			Datasource=application.settings.datasource
 		) />
@@ -64,7 +65,7 @@
 		</cfif>
 
 		<cfif listFind(application.fileManager.getAcceptedMimeTypes(), fileGetMimeType(fullPathToTempFile)) IS 0 AND isImageFile(fullPathToTempFile) IS false >
-			
+
 			<cfheader statuscode="500" />
 			<cfset returnData.statuscode = 6 />
 

@@ -27,7 +27,7 @@
 				<h3 id="Recipe-Title" name="ViewSection" >#encodeForHTML(attributes.Name)#</h3>
 				<input id="Recipe-Title-Edit" name="EditSection" class="h3 display-none" type="text" value="#attributes.Name#" maxlength="100" />
 			</div>
-			
+
 			<div id="Recipe-Picture-Container" class="recipe-picture center-block" >
 				<div id="Recipe-Picture-Edit-Container" class="display-none" >
 					<div id="Recipe-Picture-Edit" >CLICK TO CHANGE</div>
@@ -37,7 +37,7 @@
 		</div>
 		<br/>
 
-		<cfif attributes.CreatedByUserID EQ session.CurrentUser.getID() >
+		<cfif attributes.CreatedByUserID EQ session.CurrentUser.GetUserID() >
 			<div id="Toolbar-Row">
 				<div id="Toolbar-Header" class="standard-rounded-corners-top" >TOOLBAR</div>
 
@@ -133,9 +133,9 @@
 					<p><b>Created by:</b> #encodeForHTML(attributes.CreatedByUserName)#</p>
 					<p><b>Created on:</b> #LSDateFormat(attributes.DateCreated, "dd-mm-yyyy")#</p>
 					<!--- <p><b>Modified by:</b> #encodeForHTML(attributes.LastModifiedByUser)#</p> --->
-					<p><b>Last modified:</b> <span id="LastModifiedTime-Status" >#LSDateTimeFormat(attributes.DateTimeLastModified, "dd-mm-yyyy HH:nn:ss")#</span></p>
-					
-					<cfif attributes.CreatedByUserID EQ session.CurrentUser.getID() >
+					<p><b>Last modified:</b> <span id="LastModifiedTime-Status" >#Components.Localizer::GetDisplayDateTime(attributes.DateTimeLastModified)#</span></p>
+
+					<cfif attributes.CreatedByUserID EQ session.CurrentUser.GetUserID() >
 						<p>
 							<b>Visible to other users:</b>
 							<cfif attributes.Published >

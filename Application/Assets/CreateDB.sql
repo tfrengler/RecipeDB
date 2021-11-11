@@ -11,7 +11,7 @@ CREATE TABLE Users (
                                  DEFAULT (0),
     DateTimeLastLogin TEXT (26)  NOT NULL
                                  CHECK (length(DateTimeLastLogin) == 26),
-    DateCreated       TEXT (16)  CHECK (length(DateCreated) == 16)
+    DateTimeCreated   TEXT (26)  CHECK (length(DateTimeCreated) == 26)
                                  NOT NULL,
     TimesLoggedIn     INTEGER    DEFAULT (0)
                                  NOT NULL,
@@ -25,7 +25,7 @@ CREATE TABLE Recipes (
     RecipeID             INTEGER    PRIMARY KEY AUTOINCREMENT
                                     UNIQUE ON CONFLICT ROLLBACK,
     Name                 TEXT (100) CHECK (length(Name) <= 100),
-    DateCreated          TEXT (16)  CHECK (length(DateCreated) == 16)
+    DateTimeCreated      TEXT (26)  CHECK (length(DateTimeCreated) == 26)
                                     NOT NULL,
     DateTimeLastModified TEXT (26)  CHECK (length(DateTimeLastModified) == 26)
                                     NOT NULL,
@@ -73,7 +73,7 @@ CREATE TABLE RecipeImages (
     MimeType             TEXT (100) CHECK (length(MimeType) <= 100),
     OriginalName         TEXT (256) CHECK (length(OriginalName) <= 256),
     Base64Content        BLOB,
-    DateTimeCreated      TEXT (16)  CHECK (length(DateTimeCreated) == 16)
+    DateTimeCreated      TEXT (16)  CHECK (length(DateTimeCreated) == 26)
                                     NOT NULL,
     DateTimeLastModified TEXT (26)  NOT NULL
                                     CHECK (length(DateTimeLastModified) == 26),
