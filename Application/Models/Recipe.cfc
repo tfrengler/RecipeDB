@@ -94,8 +94,8 @@
 
 		<cfif RecipeData.RecordCount IS 1 >
 
-			<cfset var DateTimeCreated = Components.Localizer::GetBackendDateTimeFromString(RecipeData.DateTimeCreated) />
-			<cfset var DateTimeLastModified = Components.Localizer::GetBackendDateTimeFromString(RecipeData.DateTimeLastModified) />
+			<cfset var DateTimeCreated = parseDateTime(RecipeData.DateTimeCreated) />
+			<cfset var DateTimeLastModified = parseDateTime(RecipeData.DateTimeLastModified) />
 
 			<cfset variables.DateTimeCreated = DateTimeCreated />
 			<cfset variables.DateTimeLastModified = DateTimeLastModified />

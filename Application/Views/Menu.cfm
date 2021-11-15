@@ -28,23 +28,6 @@
 			<i class="fa fa-times fa-fw dark-green-text-color"></i>
 			Logout
 		</a></li>
-
-		<hr/>
-
-		<li><a id="PatchNotes" href="WhatChanged.cfm" >
-			<i class="fa fa-book fa-fw dark-green-text-color"></i>
-			Recent changes
-		</a></li>
-		
-		<li><a id="Roadmap" href="PlannedChanges.cfm" >
-			<i class="fa fa-book fa-fw dark-green-text-color"></i>
-			Planned changes
-		</a></li>
-
-		<li><a id="About" href="About.cfm" >
-			<i class="fa fa-question-circle fa-fw dark-green-text-color"></i>
-			About / FAQ
-		</a></li>
 	</ul>
 </nav>
 

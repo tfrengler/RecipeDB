@@ -32,8 +32,8 @@ RecipeDB.page.constants.RECIPE_LIST_COLUMNS_SETUP = [
 		}
 	},
 	{
-		data: "DATECREATED",
-		render: {  
+		data: "DATETIMECREATED",
+		render: {
 			_:"display",
 			sort: "sortdata"
 		}
@@ -64,10 +64,10 @@ RecipeDB.page.constants.RECIPE_LIST_COLUMNS_SETUP = [
 	},
 	{
 		data: "RECIPEID",
-		render: {  
+		render: {
 			_:"display"
 		}
-	}					
+	}
 ];
 
 RecipeDB.page.init = function() {
@@ -112,13 +112,13 @@ RecipeDB.page.openRecipe = function(Caller) {
 		RecipeDB.main.onJavascriptError("RecipeID is not a number or less than 1!", "RecipeDB.page.openRecipe");
 		return false;
 	};
-	
+
 	window.location.href = "Recipe.cfm?RecipeID=" + RecipeID;
 };
 
 RecipeDB.page.openCloseFilterMenu = function(action) {
 	var FilterMenu = $("#" + RecipeDB.page.constants.FILTER_MENU_ID);
-	
+
 	if (action === true) {
 		FilterMenu.show();
 	}

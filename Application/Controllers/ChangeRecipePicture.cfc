@@ -11,7 +11,6 @@
 			data: ""
 		} />
 
-		<cfset var Recipe = "" />
 		<cfset var fullPathToTempFile = "" />
 
 		<cfif arguments.RecipeID LTE 0 >
@@ -49,10 +48,7 @@
 
 		</cfif>
 
-		<cfset Recipe = createObject("component", "Models.Recipe").init(
-			ID=arguments.RecipeID,
-			Datasource=application.settings.datasource
-		) />
+		<cfset var Recipe = createObject("component", "Models.Recipe").init(arguments.RecipeID) />
 
 		<cfif Recipe.getCreatedByUser().getId() IS NOT session.CurrentUser.getId() >
 

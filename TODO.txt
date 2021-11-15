@@ -1,7 +1,5 @@
 Consider adding a timezone setting for users that defaults to the server's location (GMT+1)
 
-The save-method in each model MUST persist ALL data to the db!!!
-
 Refactor the image logic to use the new structure (from db instead of disk)
 - Controllers/ChangeRecipePicture.cfc
 - Components/ImageManager.cfc
@@ -11,3 +9,7 @@ Refactor the image logic to use the new structure (from db instead of disk)
 Remove all datasource-arguments to model calls
 
 Replace structNew and arrayNew calls with modern versions
+
+For the datatable AJAX call make a view that parses the output from Controllers/GetRecipeListDataFull into its display state
+
+Remove all cfprocessingdirective-tags

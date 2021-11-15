@@ -5,9 +5,9 @@
 		<cfargument name="filterSettings" type="struct" required="false" default="#structNew()#" />
 
 		<cfset var returnData = {
- 			statuscode: 0,
- 			data: arrayNew(1)
- 		} />
+			statuscode: 0,
+			data: []
+		} />
 
 		<cfset var allRecipes = Models.Recipe::GetData() >
 		<cfset var users = Models.User::GetData(columnList="UserID,DisplayName") />
@@ -18,7 +18,7 @@
 		<cfset var userDisplayName = "" />
 		<cfset var currentColumnFromCurrentRowInQuery = "" />
 		<cfset var userIDColumns = "CreatedByUser,LastModifiedByUser" />
-		<cfset var filteredRecipes = queryNew("") />
+		<cfset var filteredRecipes = null />
 
 		<cfif structIsEmpty(arguments.filterSettings) IS false >
 			<cfquery name="FilteredRecipes" dbtype="query" >
@@ -60,7 +60,7 @@
 			</cfquery>
 		<cfelse>
 			<cfquery name="FilteredRecipes" dbtype="query" >
-				SELECT RecipeID,Name,DateCreated,DateTimeLastModified,CreatedByUser,Published
+				SELECT RecipeID,Name,DateTimeCreated,DateTimeLastModified,CreatedByUser,Published
 				FROM allRecipes
 			</cfquery>
 		</cfif>
@@ -69,7 +69,7 @@
 
 		<cfloop query="FilteredRecipes" >
 
-			<cfif FilteredRecipes.CreatedByUser IS NOT session.currentUser.getId() >
+			<cfif FilteredRecipes.CreatedByUser IS NOT session.currentUser.GetUserId() >
 				<cfif FilteredRecipes.Published IS false >
 					<cfcontinue />
 				</cfif>
@@ -101,13 +101,7 @@
 					<cfelseif find("{ts '", CurrentColumnFromCurrentRowInQuery) GT 0 >
 
 						<cfset structInsert(CurrentRecipeData[CurrentColumnName], "sortdata", ReReplaceNoCase(CurrentColumnFromCurrentRowInQuery, "[^0-9,]", "", "ALL"), true) />
-
-						<!--- Date and DateTime-stamp need to be formatted differently --->
-						<cfif find("00:00:00'}", CurrentColumnFromCurrentRowInQuery) GT 0 >
-							<cfset structInsert(CurrentRecipeData[CurrentColumnName], "display", LSDateFormat(CurrentColumnFromCurrentRowInQuery, "DD/MM/yyyy"), true) />
-						<cfelse>
-							<cfset structInsert(CurrentRecipeData[CurrentColumnName], "display", LSDateTimeFormat(CurrentColumnFromCurrentRowInQuery, "dd-mm-yyyy HH:nn:ss"), true) />
-						</cfif>
+						<cfset structInsert(CurrentRecipeData[CurrentColumnName], "display", Components.Localizer::GetDisplayDateTime(CurrentColumnFromCurrentRowInQuery), true) />
 
 					<!--- For everything else, just put the data in the return data --->
 					<cfelse>

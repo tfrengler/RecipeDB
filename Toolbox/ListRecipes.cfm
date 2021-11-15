@@ -22,7 +22,7 @@
 		}
 
 		td, th {
-			padding-left: 0.5em; 
+			padding-left: 0.5em;
 			padding-right: 0.5em;
 		}
 
@@ -55,12 +55,12 @@
 </head>
 
 <body>
-	
+
 	<p><a href="DBTools.cfm" >Back to DB Tools</a></p>
 	<h1>List of recipes</h1>
 
 	<cfset RecipeInterface = createObject("component", "Models.Recipe") />
-	<cfset AllRecipes = RecipeInterface.getData( Datasource=application.settings.datasource ) />
+	<cfset AllRecipes = RecipeInterface.getData() />
 	<cfset TableColumnsList = "#RecipeInterface.getTableKey()#,#RecipeInterface.getTableColumns()#" />
 
 	<table>
@@ -81,7 +81,7 @@
 							<td>#LSDateTimeFormat(AllRecipes[CurrentColumnName], "dd-mm-yyyy HH:nn:ss")#</td>
 						<cfelseif listFind("ingredients,instructions,description", CurrentColumnName) >
 							<td><textarea>#encodeForHTML(AllRecipes[CurrentColumnName])#</textarea>
-						<cfelse> 
+						<cfelse>
 							<td>#encodeForHTML(AllRecipes[CurrentColumnName])#</td>
 						</cfif>
 					</cfloop>

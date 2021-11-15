@@ -19,11 +19,10 @@
 		<cfset var ChangesMade = false />
 		<cfset var UserInterface = createObject("component", "Models.User") />
 
-		<cfset var UserSearch = UserInterface.getBy( 
+		<cfset var UserSearch = UserInterface.getBy(
 			columnToSearchOn="UserName",
 			searchOperator="equal to",
-			searchData=trim(arguments.newUserName),
-			datasource="#application.settings.datasource#"
+			searchData=trim(arguments.newUserName)
 		) />
 
 		<!--- If a user tries to change their username and it happens to already exist we need to inform them --->

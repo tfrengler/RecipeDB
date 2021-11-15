@@ -19,17 +19,14 @@
 
  		</cfif>
 
-		<cfset var Recipe = createObject("component", "Models.Recipe").init( 
-			ID=arguments.RecipeID,
-			Datasource=application.Settings.Datasource
-		) />
+		<cfset var Recipe = createObject("component", "Models.Recipe").init(arguments.RecipeID) />
 
 		<cfif Recipe.getCreatedByUser().getId() IS NOT session.currentUser.getId() >
 
 			<cfheader statuscode="500" />
 			<cfset returnData.statuscode = 2 />
 			<cfreturn returnData />
-			
+
 		</cfif>
 
 		<cfset Recipe.setIngredients(Data=arguments.UpdateData.ingredients) />

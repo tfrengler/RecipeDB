@@ -16,14 +16,14 @@
         <cfargument name="date" type="date" required="true" />
 
         <cfset var LocalDate = dateConvert("utc2Local", arguments.date) />
-        <cfreturn dateFormat(LocalDate, "dd-mm-yyyy") />
+        <cfreturn lsdateFormat(LocalDate, "dd-mm-yyyy") />
     </cffunction>
 
     <cffunction modifier="static" name="GetDisplayDateTime" returntype="string" access="public" output="false" >
         <cfargument name="date" type="date" required="true" />
 
         <cfset var LocalDate = dateConvert("utc2Local", arguments.date) />
-        <cfreturn dateTimeFormat(LocalDate, "dd-mm-yyyy HH:nn:ss") />
+        <cfreturn lsdateTimeFormat(LocalDate, "dd-mm-yyyy HH:nn:ss") />
     </cffunction>
 
 </cfcomponent>

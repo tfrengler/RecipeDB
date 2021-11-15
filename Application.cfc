@@ -37,44 +37,8 @@
 		<cfset var queryListOfControllers = null />
 		<cfset application.allowedAJAXControllers = null />
 
-		<!--- Set up paths based on config file --->
-		<!--- <cffile action="read" file="Application/Assets/config.xml" charset="utf-8" variable="configXML" accept="application/xml" />
-		<cfset configXML = xmlParse(configXML) />
-
-		<cfif directoryExists(configXML.envelope.files.patchnotes.xmlText) >
-			<cfset application.settings.files.patchnotes = configXML.envelope.files.patchnotes.xmlText />
-		<cfelse>
-			<cfthrow message="Error setting up the application" detail="Patchnote directory '#settings.files.patchnotes#' does not exist!" />
-		</cfif>
-
-		<cfif directoryExists(configXML.envelope.files.roadmap.xmlText) >
-			<cfset application.settings.files.roadmap = configXML.envelope.files.roadmap.xmlText />
-		<cfelse>
-			<cfthrow message="Error setting up the application" detail="Roadmap directory '#settings.files.roadmap#' does not exist!" />
-		</cfif>
-
-		<cfif directoryExists(configXML.envelope.files.recipe_pictures.xmlText) >
-			<cfset application.settings.files.recipe.standard = configXML.envelope.files.recipe_pictures.xmlText />
-		<cfelse>
-			<cfthrow message="Error setting up the application" detail="Recipe picture directory '#settings.files.recipe.standard#' does not exist!" />
-		</cfif>
-
-		<cfif directoryExists(configXML.envelope.files.recipe_thumbnails.xmlText) >
-			<cfset application.settings.files.recipe.thumbnails = configXML.envelope.files.recipe_thumbnails.xmlText />
-		<cfelse>
-			<cfthrow message="Error setting up the application" detail="Recipe thumbnail directory '#settings.files.recipe.thumbnails#' does not exist!" />
-		</cfif>
-
-		<cfif directoryExists(configXML.envelope.files.temp_folder.xmlText) >
-			<cfset application.settings.files.temp = configXML.envelope.files.temp_folder.xmlText />
-		<cfelse>
-			<cfthrow message="Error setting up the application" detail="Temp directory '#configXML.envelope.files.temp_folder.xmlText#' does not exist!" />
-		</cfif> --->
-
-		<cfset application.settings.datasource = "dev" />
-
 		<!--- Set up singletons --->
-		<cfif structKeyExists(application, "securityManager") IS false >
+		<cfif NOT structKeyExists(application, "securityManager") >
 			<cfset application.securityManager = new Components.SecurityManager() />
 		</cfif>
 
@@ -159,15 +123,11 @@
 			<cfset UserSearch = Models.User::GetBy(
 				ColumnToSearchOn="UserName",
 				SearchOperator="equal to",
-				SearchData=form.j_username,
-				Datasource="#application.Settings.Datasource#"
+				SearchData=form.j_username
 			) />
 
 			<cfif UserSearch.RecordCount IS 1 >
-				<cfset LoggedInUser = createObject("component", "Models.User").init(
-					ID=UserSearch[ Models.User::TableKey ],
-					Datasource="#application.Settings.Datasource#"
-				) />
+				<cfset LoggedInUser = createObject("component", "Models.User").init(UserSearch[ Models.User::TableKey ]) />
 
 			<cfelseif UserSearch.RecordCount IS 0 >
 				<cflocation url="Login.cfm?Reason=1" addtoken="false" />

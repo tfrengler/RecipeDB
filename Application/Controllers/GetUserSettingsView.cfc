@@ -57,7 +57,7 @@
 
 		<cfset returnData.data.username = arguments.user.getUsername() />
 		<cfset returnData.data.displayName = arguments.user.getDisplayName() />
-		<cfset returnData.data.accountCreationDate = arguments.user.getDateCreated() />
+		<cfset returnData.data.accountCreationDate = arguments.user.getDateTimeCreated() />
 		<cfset returnData.data.timesLoggedIn = arguments.user.getTimesLoggedIn() />
 		<cfset returnData.data.browserLastUsed = UserAgentStringForView />
 		<cfset returnData.data.recipeListFilter = arguments.user.getSettings().findRecipes.filter />

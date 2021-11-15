@@ -10,23 +10,20 @@
  			data: ""
  		} />
 
-		<cfset var Recipe = createObject("component", "Models.Recipe").init( 
-			ID=arguments.recipeID,
-			Datasource=application.Settings.Datasource
-		) />
+		<cfset var Recipe = createObject("component", "Models.Recipe").init(arguments.recipeID) />
 
 		<cfif Recipe.getCreatedByUser().getId() IS NOT session.currentUser.getId() >
 
 			<cfheader statuscode="500" />
 			<cfset returnData.statuscode = 1 />
 			<cfreturn returnData />
-			
+
 		</cfif>
 
 		<cfif len(Recipe.getPicture()) GT 0 >
 			<cfset application.fileManager.deleteImage(file=Recipe.getPicture() & ".png") />
 		</cfif>
-		
+
 		<cfset Recipe.delete() />
 
 		<cfreturn returnData />

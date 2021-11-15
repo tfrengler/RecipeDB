@@ -6,17 +6,14 @@
 		<cfargument name="RecipeID" type="numeric" required="true" />
 
 		<cfset var returnData = {
- 			statuscode: 0,
- 			data: ""
- 		} />
+			statuscode: 0,
+			data: ""
+		} />
 
-		<cfset var Recipe = createObject("component", "Models.Recipe").init( 
-			ID=arguments.RecipeID,
-			Datasource=application.Settings.Datasource
-		) />
+		<cfset var Recipe = createObject("component", "Models.Recipe").init(ID=arguments.RecipeID) />
 
 		<cfif Recipe.getCreatedByUser().getId() IS NOT session.currentUser.getId() >
-			
+
 			<cfheader statuscode="500" />
 			<cfset returnData.statuscode = 1 />
 			<cfreturn returnData />

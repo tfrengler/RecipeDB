@@ -24,10 +24,7 @@
 
 		</cfif>
 
-		<cfset var Recipe = createObject("component", "Models.Recipe").init(
-			ID=arguments.RecipeID,
-			Datasource=application.settings.datasource
-		) />
+		<cfset var Recipe = createObject("component", "Models.Recipe").init(arguments.RecipeID) />
 
 		<cfif Recipe.GetCreatedByUser().GetUserID() IS NOT arguments.currentUser.GetUserID() >
 			<cfif Recipe.GetPublished() IS false >
