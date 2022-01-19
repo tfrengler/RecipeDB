@@ -1,24 +1,25 @@
-<cfcomponent output="false" persistent="true" extends="Model" >
+<cfcomponent output="false" persistent="true" accessors="false" extends="Model" >
 
-	<cfproperty name="RecipeID"					type="numeric"			getter="true" setter="false" />
-	<cfproperty name="DateTimeCreated"			type="date"				getter="true" setter="false" />
-	<cfproperty name="DateTimeLastModified"		type="date"				getter="true" setter="false" />
-	<cfproperty name="CreatedByUser"			type="Models.User"		getter="true" setter="false" />
-	<cfproperty name="LastModifiedByUser"		type="Models.User"		getter="true" setter="false" />
+	<!--- INSTANCE PROPERTIES --->
 
-	<!--- <cfset variables.Comments = [] /> --->
-	<cfproperty name="Ingredients" 		type="string" 		getter="true"	setter="false" />
-	<cfproperty name="Description" 		type="string" 		getter="true"	setter="false" />
-	<cfproperty name="Picture" 			type="string" 		getter="true"	setter="false" />
-	<cfproperty name="Instructions"		type="string" 		getter="true"	setter="false" />
-	<cfproperty name="Name"				type="string" 		getter="true"	setter="false" />
-	<cfproperty name="Published"		type="boolean" 		getter="true"	setter="false" />
+	<cfproperty name="RecipeID"					type="numeric"		getter="true" setter="false" />
+	<cfproperty name="DateTimeCreated"			type="date"			getter="true" setter="false" />
+	<cfproperty name="CreatedByUser"			type="Models.User"	getter="true" setter="false" />
+	<cfproperty name="LastModifiedByUser"		type="Models.User"	getter="true" setter="false" />
+	<cfproperty name="DateTimeLastModified"		type="date"			getter="true" setter="false" />
+	<cfproperty name="Ingredients" 				type="string" 		getter="true" setter="true" />
+	<cfproperty name="Description" 				type="string" 		getter="true" setter="true" />
+	<cfproperty name="Picture" 					type="string" 		getter="true" setter="true" />
+	<cfproperty name="Instructions"				type="string" 		getter="true" setter="true" />
+	<cfproperty name="Name"						type="string" 		getter="true" setter="true" />
+	<cfproperty name="Published"				type="boolean" 		getter="true" setter="true" />
 
+	<!--- STATIC PROPERTIES --->
 	<cfscript>
 		static {
-			static.TableName	= "Recipes";
-			static.TableKey		= "RecipeID";
-			static.TableColumns	= "Name,DateTimeCreated,DateTimeLastModified,CreatedByUser,LastModifiedByUser,Ingredients,Description,Picture,Instructions,Published";
+			TableKey		= "RecipeID";
+			TableColumns	= "Name,DateTimeCreated,DateTimeLastModified,CreatedByUser,LastModifiedByUser,Ingredients,Description,Picture,Instructions,Published";
+			TableName		= "Recipes";
 		}
 	</cfscript>
 

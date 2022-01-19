@@ -24,7 +24,7 @@
     <cfquery dbtype="query" name="SQLiteSearch" >
         SELECT *
         FROM bundles
-        WHERE title = 'SQLite JDBC';
+        WHERE title LIKE '%SQLite JDBC%';
         -- AND state = 'installed'
     </cfquery>
 

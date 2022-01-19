@@ -117,6 +117,12 @@
 		},
 		{
 			"code": "METHOD_IS_TEMPORARY"
+		},
+		{
+			"code": "SQL_SELECT_STAR"
+		},
+		{
+			"code": "COMPONENT_TOO_WORDY"
 		}
 	],
 	"inheritParent": false,

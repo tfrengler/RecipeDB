@@ -37,7 +37,7 @@
 
 	<!--- Table existence check --->
 	<cftry>
-		<cfdbinfo name="CurrentTableData" type="columns" table="#CurrentTableName#" datasource="#application.Settings.Datasource#" />
+		<cfdbinfo name="CurrentTableData" type="columns" table="#CurrentTableName#" />
 		<p class="success" >Database has table by the name of <u>#CurrentTableName#</u></p>
 
 	<cfcatch type="lucee.runtime.exp.ApplicationException" >
@@ -56,7 +56,7 @@
 		FROM CurrentTableData;
 	</cfquery>
 
-	<cfloop query="#CurrentTableColumnList#" >	
+	<cfloop query="#CurrentTableColumnList#" >
 		<cfif listFindNoCase(CurrentCheckTableColumnList, CurrentTableColumnList.COLUMN_NAME) IS 0 >
 			<p><span class="error" >REDUNDANT COLUMN:</span> There's a column called <u>#CurrentTableColumnList.COLUMN_NAME#</u> in table <u>#CurrentTableName#</u> that is not in use.</p>
 			<cfset RedundantColumnError = true />

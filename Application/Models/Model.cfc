@@ -1,13 +1,12 @@
-<cfcomponent output="false" modifier="abstract" hint="This is the core component for all CFCs that model unique instances of an object" >
-	<!--- This is the core component for all CFCs that model unique instances of an object --->
+<cfcomponent output="false" modifier="abstract" persistent="true" accessors="false" hint="This is the core component for all CFCs that model unique instances of an object" >
 
 	<cfscript>
 		static {
-			static.ValidSQLOperators = ["equal to","not equal to","begins with","ends with","contains","in","greater than","less than"];
+			ValidSQLOperators = ["equal to","not equal to","begins with","ends with","contains","in","greater than","less than"];
 		}
 	</cfscript>
 
-	<!--- Static methods --->
+	<!--- STATIC--->
 
 	<cffunction modifier="static" name="GetBy" returntype="query" access="public" output="false" hint="Static method. Returns a query of objects that match your column, operator and search string." >
 		<cfargument name="columnToSearchOn" type="string" required="true" hint="The name of the column you want to search on." />
@@ -148,7 +147,7 @@
 		<cfreturn ExistenceCheck.RecordCount IS 1 />
 	</cffunction>
 
-	<!--- Instance methods --->
+	<!--- INSTANCE --->
 
 	<cffunction name="Delete" returntype="void" access="public" output="false" hint="Delete the db data belonging to this object instance" >
 
@@ -157,7 +156,7 @@
 				<cfquery>
 					DELETE
 					FROM #static.TableName#
-					WHERE #static.TableKey# = <cfqueryparam sqltype="INT" value="#variables.getID()#" />
+					WHERE #static.TableKey# = <cfqueryparam sqltype="INT" value="#variables["Get#static.TableKey#"]()#" />
 				</cfquery>
 
 				<cfset structClear(this) />

@@ -1,4 +1,3 @@
-<cfprocessingdirective pageencoding="utf-8" />
 <cftry>
 	<cfparam name="URL.Reason" type="numeric" default="0" />
 
@@ -36,12 +35,12 @@
 
 				<h3 id="Login-Header" class="form-signin-heading" >Please log in</h3>
 
-				<div class="input-group"> 
+				<div class="input-group">
 					<span class="input-group-addon olive-background-color"><i class="fa fa-user-o fa-fw"></i></span>
 					<input id="Username" name="j_username" class="form-control" type="text" placeholder="username" />
 				</div>
 
-				<div class="input-group"> 
+				<div class="input-group">
 					<span class="input-group-addon olive-background-color"><i class="fa fa-lock fa-fw"></i></span>
 					<input id="Password" name="j_password" class="form-control" type="password" />
 				</div>

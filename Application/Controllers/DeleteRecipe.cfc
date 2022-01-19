@@ -1,18 +1,17 @@
 <cfcomponent output="false" >
-<cfprocessingdirective pageEncoding="utf-8" />
 
 	<!--- AJAX METHOD --->
 	<cffunction name="main" access="public" returntype="struct" returnformat="JSON" output="false" hint="" >
 		<cfargument name="recipeID" type="numeric" required="true" />
 
 		<cfset var returnData = {
- 			statuscode: 0,
- 			data: ""
- 		} />
+			statuscode: 0,
+			data: ""
+		} />
 
-		<cfset var Recipe = createObject("component", "Models.Recipe").init(arguments.recipeID) />
+		<cfset var Recipe = new Models.Recipe(arguments.recipeID) />
 
-		<cfif Recipe.getCreatedByUser().getId() IS NOT session.currentUser.getId() >
+		<cfif Recipe.GetCreatedByUser().GetUserID() IS NOT session.currentUser.GetUserID() >
 
 			<cfheader statuscode="500" />
 			<cfset returnData.statuscode = 1 />
@@ -20,12 +19,7 @@
 
 		</cfif>
 
-		<cfif len(Recipe.getPicture()) GT 0 >
-			<cfset application.fileManager.deleteImage(file=Recipe.getPicture() & ".png") />
-		</cfif>
-
-		<cfset Recipe.delete() />
-
+		<cfset Recipe.Delete() />
 		<cfreturn returnData />
 	</cffunction>
 

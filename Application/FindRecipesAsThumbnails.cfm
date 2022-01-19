@@ -1,9 +1,8 @@
-<cfprocessingdirective pageEncoding="utf-8" />
 <!--- CONTROLLER ACTIONS --->
 <cftry>
-	<cfset controller = createObject("component", "Controllers.GetRecipeListDataSimple") />
+	<cfset controller = new Controllers.GetRecipeListDataSimple() />
 
-	<cfif structIsEmpty(FORM) IS false >
+	<cfif NOT structIsEmpty(FORM) >
 
 		<!--- This is triggered when we use the filter to look for recipes --->
 		<cfset REQUEST.filtersettings = FORM />
@@ -14,11 +13,11 @@
 
 		<cfset controllerReturnData = controller.main(filterSettings=session.currentUser.getSettings().findRecipes.filter) />
 		<cfset viewData.filter = session.currentUser.getSettings().findRecipes.filter />
-		
+
 	</cfif>
-	
+
 	<cfset viewData.recipes = controllerReturnData.data />
-	
+
 	<!DOCTYPE html>
 	<html lang="en" >
 

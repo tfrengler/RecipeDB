@@ -1,5 +1,4 @@
 <cfcomponent output="false" >
-<cfprocessingdirective pageEncoding="utf-8"  />
 
 	<cfset SecretKey = "27A19594-F01F-AF65-F844BA5EB80A5C06" />
 

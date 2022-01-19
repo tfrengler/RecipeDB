@@ -1,8 +1,7 @@
 <cfcomponent output="false" >
-<cfprocessingdirective pageEncoding="utf-8" />
 
 	<cffunction name="main" access="public" returntype="struct" output="false" hint="" >
-		<cfargument name="filterSettings" type="struct" required="false" default="#structNew()#" />
+		<cfargument name="filterSettings" type="struct" required="false" default="#{}#" />
 
 		<cfset var returnData = {
 			statuscode: 0,
@@ -12,15 +11,15 @@
 		<cfset var allRecipes = Models.Recipe::GetData() >
 		<cfset var users = Models.User::GetData(columnList="UserID,DisplayName") />
 
-		<cfset var columnNamesFromQuery = "" />
-		<cfset var currentColumnName = "" />
-		<cfset var currentRecipeData = structNew() />
-		<cfset var userDisplayName = "" />
-		<cfset var currentColumnFromCurrentRowInQuery = "" />
-		<cfset var userIDColumns = "CreatedByUser,LastModifiedByUser" />
-		<cfset var filteredRecipes = null />
+		<cfset var ColumnNamesFromQuery = "" />
+		<cfset var CurrentColumnName = "" />
+		<cfset var CurrentRecipeData = {} />
+		<cfset var UserDisplayName = "" />
+		<cfset var CurrentColumnFromCurrentRowInQuery = "" />
+		<cfset var UserIDColumns = "CreatedByUser,LastModifiedByUser" />
+		<cfset var FilteredRecipes = null />
 
-		<cfif structIsEmpty(arguments.filterSettings) IS false >
+		<cfif NOT structIsEmpty(arguments.filterSettings) >
 			<cfquery name="FilteredRecipes" dbtype="query" >
 				SELECT RecipeID,Name,DateCreated,DateTimeLastModified,CreatedByUser,Published
 				FROM allRecipes
@@ -45,11 +44,11 @@
 					AND char_length(Instructions) = 0
 				</cfif>
 
-				<cfif structKeyExists(arguments.filterSettings, "minePrivate") AND structKeyExists(arguments.filterSettings, "minePublic") IS false >
+				<cfif structKeyExists(arguments.filterSettings, "minePrivate") AND NOT structKeyExists(arguments.filterSettings, "minePublic") >
 					AND Published = false
 				</cfif>
 
-				<cfif structKeyExists(arguments.filterSettings, "minePublic") AND structKeyExists(arguments.filterSettings, "minePrivate") IS false >
+				<cfif structKeyExists(arguments.filterSettings, "minePublic") AND NOT structKeyExists(arguments.filterSettings, "minePrivate") >
 					AND Published = true
 				</cfif>
 
@@ -70,7 +69,7 @@
 		<cfloop query="FilteredRecipes" >
 
 			<cfif FilteredRecipes.CreatedByUser IS NOT session.currentUser.GetUserId() >
-				<cfif FilteredRecipes.Published IS false >
+				<cfif NOT FilteredRecipes.Published >
 					<cfcontinue />
 				</cfif>
 			</cfif>
@@ -79,7 +78,7 @@
 
 				<cfset CurrentColumnFromCurrentRowInQuery = FilteredRecipes[CurrentColumnName] />
 
-				<cfset structInsert(CurrentRecipeData, CurrentColumnName, structNew()) />
+				<cfset structInsert(CurrentRecipeData, CurrentColumnName, {}) />
 				<cfset structInsert(CurrentRecipeData[CurrentColumnName], "display", "") />
 
 				<!--- If column is empty, skip processing it --->
@@ -119,7 +118,7 @@
 			</cfloop>
 
 			<cfset arrayAppend(returnData.data, CurrentRecipeData) />
-			<cfset CurrentRecipeData = structNew() />
+			<cfset CurrentRecipeData = {} />
 
 		</cfloop>
 

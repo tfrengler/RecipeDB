@@ -1,13 +1,12 @@
 <cfcomponent output="false" hint="" >
-<cfprocessingdirective pageencoding="utf-8" />
 
-	<!--- 
-		AJAX error handling revolves around status codes. Anything that doesn't go according to plan, 
+	<!---
+		AJAX error handling revolves around status codes. Anything that doesn't go according to plan,
 		either programmatically or control wise, returns 50X and triggers jQuery's onError(), which is
 		what we react to solely on the front end (as far as AJAX goes that is)
 	--->
 
-	<cffunction name="call" returntype="struct" access="remote" returnformat="JSON" hint="Acts as a interface for frontend Javascript via ajax to call backend CFC methods, passing along argument data as well." >
+	<cffunction name="call" returntype="struct" access="remote" returnformat="JSON" output="false" hint="Acts as a interface for frontend Javascript via ajax to call backend CFC methods, passing along argument data as well." >
 		<cfargument name="Controller" type="string" required="true" hint="The name of the CFC you want to call." />
 		<cfargument name="Parameters" type="struct" required="false" default="#structNew()#" hint="A structure of key/value pairs of arguments to the method you're calling." />
 		<cfargument name="AuthKey" type="string" required="true" hint="A unique hash (512) key that is checked against an internal validator. This exists to prevent people from using this proxy remotely without authorization." />
@@ -45,14 +44,14 @@
 		<cfargument name="Controller" type="string" required="true" hint="The name of the CFC you want to call." />
 		<cfargument name="Parameters" type="string" required="false" default="#structNew()#" hint="A structure of key/value pairs of arguments to the method you're calling." />
 		<cfargument name="AuthKey" type="string" required="true" hint="A unique hash (512) key that is checked against an internal validator. This exists to prevent people from using this proxy remotely without authorization." />
-		
-		<cfset var uploadedFiles = arrayNew(1) />
+
+		<cfset var uploadedFiles = [] />
 		<cfset var returnData = {
  			statuscode: 0,
  			data: ""
  		} />
 
- 		<!--- 
+ 		<!---
  			Since the request comes in with enctype "multipart/form-data" CF believes the URL parameters are not encoded (which is true by default)
 			This causes "Parameters" to throw a cast error because it can't convert our manually encoded string to a struct, hence we need to do this
  		 --->
@@ -67,7 +66,7 @@
  				</cfcatch>
 
  			</cftry>
- 		</cfif>	
+ 		</cfif>
 
 		<cfif len(arguments.Controller) IS 0 >
 
@@ -90,7 +89,7 @@
 
 		<cfelse>
 
-			<cffile 
+			<cffile
 				action="uploadAll"
 				destination=#application.settings.files.temp#
 				attributes="readonly"

@@ -1,4 +1,4 @@
-<cfcomponent output="false" modifier="final" persistent="true" extends="Model" >
+<cfcomponent output="false" modifier="final" persistent="true" accessors="false" extends="Model" >
 
 	<cfproperty name="UserID" 					type="numeric"		getter="true"	setter="true" />
 	<cfproperty name="DateTimeCreated" 			type="date"			getter="true"	setter="true" />
@@ -25,9 +25,9 @@
 
 	<cfscript>
 		static {
-			static.TableName = "Users";
-			static.TableKey = "UserID";
-			static.TableColumns = "TempPassword,PasswordSalt,BrowserLastUsed,DisplayName,Blocked,DateTimeLastLogin,DateTimeCreated,TimesLoggedIn,Password,UserName";
+			TableName = "Users";
+			TableKey = "UserID";
+			TableColumns = "TempPassword,PasswordSalt,BrowserLastUsed,DisplayName,Blocked,DateTimeLastLogin,DateTimeCreated,TimesLoggedIn,Password,UserName";
 		};
 	</cfscript>
 

@@ -1,3 +1,11 @@
+STYLE POLICE:
+{
+    Methods are pascal case
+    Properties/attributes in CFC's are pascal cased
+    Variables in methods, functions and cfm's are pascal cased
+    Method/function arguments are camel cased
+}
+
 Consider adding a timezone setting for users that defaults to the server's location (GMT+1)
 
 Refactor the image logic to use the new structure (from db instead of disk)
@@ -6,10 +14,27 @@ Refactor the image logic to use the new structure (from db instead of disk)
 - Views/ChangeRecipePicture.cfm
 - Modules/RecipeImageDownloader.cfm
 
-Remove all datasource-arguments to model calls
-
 Replace structNew and arrayNew calls with modern versions
 
 For the datatable AJAX call make a view that parses the output from Controllers/GetRecipeListDataFull into its display state
 
 Remove all cfprocessingdirective-tags
+
+Remove createObject() calls with new
+
+Refactor FilterSettings
+- Make them their own component rather than just pasted inside User.cfc as a struct
+
+Fix FindRecipesAsThumbnails
+
+Give SecurityManager a look
+- See if we change the instance field SecretKey to NOT be hardcoded...
+
+Since controllers have no state and only have one method (main) consider making them static
+...and rename the main-method to something cooler >:)
+
+Figure out how to automagically install SQLite on application start if not already installed
+
+Long term: remove jQuery
+Longer term: refactor JS
+Long term: switch to cfscript in components

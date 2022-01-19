@@ -1,5 +1,4 @@
 <cfcomponent output="false" >
-<cfprocessingdirective pageEncoding="utf-8" />
 
 	<!--- AJAX METHOD --->
 	<cffunction name="main" access="public" returntype="struct" returnformat="JSON" output="false" hint="" >
@@ -7,21 +6,21 @@
 		<cfargument name="UpdateData" type="struct" required="true" />
 
 		<cfset var returnData = {
- 			statuscode: 0,
- 			data: ""
- 		} />
+			statuscode: 0,
+			data: ""
+		} />
 
- 		<cfif arguments.RecipeID LTE 0 >
+		<cfif arguments.RecipeID LTE 0 >
 
- 			<cfheader statuscode="500" />
- 			<cfset returnData.statuscode = 1 />
- 			<cfreturn returnData />
+			<cfheader statuscode="500" />
+			<cfset returnData.statuscode = 1 />
+			<cfreturn returnData />
 
- 		</cfif>
+		</cfif>
 
-		<cfset var Recipe = createObject("component", "Models.Recipe").init(arguments.RecipeID) />
+		<cfset var Recipe = new Models.Recipe(arguments.RecipeID) />
 
-		<cfif Recipe.getCreatedByUser().getId() IS NOT session.currentUser.getId() >
+		<cfif Recipe.GetCreatedByUser().GetUserID() IS NOT session.currentUser.GetUserID() >
 
 			<cfheader statuscode="500" />
 			<cfset returnData.statuscode = 2 />
@@ -29,16 +28,13 @@
 
 		</cfif>
 
-		<cfset Recipe.setIngredients(Data=arguments.UpdateData.ingredients) />
-		<cfset Recipe.setDescription(Data=arguments.UpdateData.description) />
-		<cfset Recipe.setInstructions(Data=arguments.UpdateData.instructions) />
-		<cfset Recipe.setName(Data=arguments.UpdateData.name) />
+		<cfset Recipe.SetIngredients(arguments.UpdateData.ingredients) />
+		<cfset Recipe.SetDescription(arguments.UpdateData.description) />
+		<cfset Recipe.SetInstructions(arguments.UpdateData.instructions) />
+		<cfset Recipe.SetName(arguments.UpdateData.name) />
 
-		<cfset Recipe.setDateTimeLastModified(Date=createODBCdatetime(now())) />
-		<cfset Recipe.setLastModifiedByUser(UserInstance=session.currentUser) />
-
-		<cfset Recipe.save() />
-		<cfset returnData.data = LSDateTimeFormat(Recipe.getDateTimeLastModified(), "dd-mm-yyyy HH:nn:ss") />
+		<cfset Recipe.save(session.currentUser.GetUserID()) />
+		<cfset returnData.data = Components.Localizer::GetDisplayDateTime(Recipe.GetDateTimeLastModified()) />
 
 		<cfreturn returnData />
 	</cffunction>

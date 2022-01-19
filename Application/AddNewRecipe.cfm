@@ -1,6 +1,5 @@
-<cfprocessingdirective pageEncoding="utf-8" />
 <cftry>
-	
+
 	<!DOCTYPE html>
 	<html lang="en" >
 

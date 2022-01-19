@@ -31,7 +31,12 @@
 
 	<cffunction name="onApplicationStart" returnType="boolean" output="false">
 
-		<cfquery>PRAGMA foreign_keys = ON;</cfquery>
+		<cftry>
+			<cfquery>PRAGMA foreign_keys = ON;</cfquery>
+
+		<cfcatch type="lucee.runtime.exp.NativeException">
+		</cfcatch>
+		</cftry>
 
 		<cfset var configXML = null />
 		<cfset var queryListOfControllers = null />
@@ -127,7 +132,7 @@
 			) />
 
 			<cfif UserSearch.RecordCount IS 1 >
-				<cfset LoggedInUser = createObject("component", "Models.User").init(UserSearch[ Models.User::TableKey ]) />
+				<cfset LoggedInUser = new Models.User(UserSearch[ Models.User::TableKey ]) />
 
 			<cfelseif UserSearch.RecordCount IS 0 >
 				<cflocation url="Login.cfm?Reason=1" addtoken="false" />
@@ -174,8 +179,8 @@
 		<cfargument name="SessionScope" required=true />
 		<cfargument name="ApplicationScope" required=false />
 
-		<cfcookie name="CFID" value="" expires="NOW" />
-		<cfcookie name="CFTOKEN" value="" expires="NOW" />
+		<cfcookie name="CFID" value="" expires="#now()#" />
+		<cfcookie name="CFTOKEN" value="" expires="#now()#" />
 		<cfset structClear(arguments.SessionScope) />
 	</cffunction>
 

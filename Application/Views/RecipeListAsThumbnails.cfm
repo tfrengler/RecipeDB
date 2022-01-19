@@ -1,5 +1,3 @@
-<cfprocessingdirective pageEncoding="utf-8" />
-
 <cfparam name="attributes.recipes" type="array" />
 <cfparam name="attributes.filter" type="struct" />
 
@@ -45,7 +43,7 @@
 	<script type="text/javascript">
 
 	<cfloop collection=#REQUEST.filtersettings# item="filterSetting" >
-	
+
 		<cfif filterSetting IS "fieldnames" >
 			<cfcontinue/>
 		<cfelse>
