@@ -1,6 +1,4 @@
 <!--- DIALOG/POP-FILE FILE --->
-<cfprocessingdirective pageEncoding="utf-8" />
-
 <script type="text/javascript" src="Assets/JS/changepicture.js" ></script>
 
 <section id="Change-Picture-Form-Wrapper" >
@@ -9,7 +7,7 @@
 		<p>
 			<input name="New-Picture" id="New-Picture" class="form-control" type="file" accept="" />
 		</p>
-		
+
 		<ul>
 			<li>You may upload files of type <b>PNG, JPEG or GIF</b></li>
 			<li>The max filesize you may upload is <b>5 mb</b></li>
@@ -17,7 +15,7 @@
 		</ul>
 
 		<input id="Upload-Picture-Button" type="button" value="UPLOAD" disabled class="disabled-input btn-block" />
-		
+
 	</form>
 </section>
 

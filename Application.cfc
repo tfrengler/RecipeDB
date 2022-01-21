@@ -3,7 +3,7 @@
 	<cfset this.name="RecipeDB" />
 	<cfset this.applicationtimeout = CreateTimeSpan(14,0,0,0) />
 	<cfset this.sessionmanagement = true />
-	<cfset this.sessiontimeout = CreateTimeSpan(0,0,35,0) />
+	<cfset this.sessiontimeout = CreateTimeSpan(0,1,0,0) />
 	<cfset this.loginstorage = "session" />
 	<cfset this.setClientCookies = true />
 	<cfset this.scriptProtect = "all" />
@@ -38,7 +38,6 @@
 		</cfcatch>
 		</cftry>
 
-		<cfset var configXML = null />
 		<cfset var queryListOfControllers = null />
 		<cfset application.allowedAJAXControllers = null />
 
@@ -46,14 +45,6 @@
 		<cfif NOT structKeyExists(application, "securityManager") >
 			<cfset application.securityManager = new Components.SecurityManager() />
 		</cfif>
-
-		<!--- <cfif structKeyExists(application, "fileManager") IS false >
-			<cfset application.fileManager = new Components.FileManager(
-					recipePicturePath = this.root & "/Temp/",
-					recipeThumbnailPath = this.root & "/Temp/",
-					tempDirectory = this.root & "/Temp/"
-			) />
-		</cfif> --->
 
 		<!--- SETTING UP ALLOWED AJAX PROXY CFC TARGETS --->
 		<cfdirectory directory="/Controllers" action="list" filter="*.cfc" type="file" listinfo="name" name="queryListOfControllers" >
@@ -75,12 +66,14 @@
 			<cfheader name="Expires" value="0" />
 		</cfif>
 
+		<cfset var BaseURI = "http#cgi.SERVER_PORT_SECURE ? "s" : ""#://#cgi.SERVER_NAME#/RecipeDB" />
+
 		<!--- For testing purposes, this nukes the session and restarts the application --->
 		<cfif structKeyExists(URL, "Restart") >
 
 			<cfset sessionInvalidate() />
 			<cfset applicationStop() />
-			<cflocation url="Login.cfm" addtoken="false" />
+			<cflocation url="#BaseURI#/Login.cfm" addtoken="false" />
 
 		</cfif>
 
@@ -104,7 +97,7 @@
 		</cfif>
 
 		<!--- LOGIN/AUTHENTICATION PROCESS --->
-		<cflogin applicationtoken="RecipeDB" idletimeout="1800" >
+		<cflogin applicationtoken="RecipeDB" idletimeout="3600" >
 			<!---
 				The body of cflogin is executed if the current user is not logged in, otherwise it's skipped completely.
 				This latter what we want to happen everytime a request is made in the system after they are logged in.
@@ -118,7 +111,7 @@
 				<cfif structKeyExists(URL, "Reason") >
 					<cfreturn true />
 				<cfelse>
-					<cflocation url="Login.cfm?Reason=5" addtoken="false" />
+					<cflocation url="#BaseURI#/Login.cfm?Reason=5" addtoken="false" />
 				</cfif>
 			</cfif>
 
@@ -135,21 +128,21 @@
 				<cfset LoggedInUser = new Models.User(UserSearch[ Models.User::TableKey ]) />
 
 			<cfelseif UserSearch.RecordCount IS 0 >
-				<cflocation url="Login.cfm?Reason=1" addtoken="false" />
+				<cflocation url="#BaseURI#/Login.cfm?Reason=1" addtoken="false" />
 				<!--- User name does not exist/is incorrect --->
 
 			<cfelseif UserSearch.RecordCount GT 1 >
-				<cflocation url="Login.cfm?Reason=2" addtoken="false" />
+				<cflocation url="#BaseURI#/Login.cfm?Reason=2" addtoken="false" />
 				<!--- There's more than one record with this username --->
 			</cfif>
 
 			<cfif LoggedInUser.validatePassword( Password=form.j_password, SecurityManager=application.securityManager ) IS false >
-				<cflocation url="Login.cfm?Reason=3" addtoken="false" />
+				<cflocation url="#BaseURI#/Login.cfm?Reason=3" addtoken="false" />
 				<!--- Password is incorrect --->
 			</cfif>
 
 			<cfif LoggedInUser.getBlocked() IS 1 >
-				<cflocation url="Login.cfm?Reason=4" addtoken="false" />
+				<cflocation url="#BaseURI#/Login.cfm?Reason=4" addtoken="false" />
 				<!--- User account is blocked --->
 			</cfif>
 
@@ -169,15 +162,15 @@
 				<cfset session.authKey = application.securityManager.generateAuthKey() />
 			</cflock>
 
-			<cflocation url="Application/index.cfm" addtoken="false" />
+			<cflocation url="#BaseURI#/Application/index.cfm" addtoken="false" />
 		</cflogin>
 
 		<cfreturn true />
 	</cffunction>
 
 	<cffunction name="onSessionEnd" returntype="void" output="false">
-		<cfargument name="SessionScope" required=true />
-		<cfargument name="ApplicationScope" required=false />
+		<cfargument name="SessionScope" type="struct" required=true />
+		<cfargument name="ApplicationScope" type="struct" required=false default="#{}#" />
 
 		<cfcookie name="CFID" value="" expires="#now()#" />
 		<cfcookie name="CFTOKEN" value="" expires="#now()#" />

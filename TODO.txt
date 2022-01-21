@@ -6,8 +6,6 @@ STYLE POLICE:
     Method/function arguments are camel cased
 }
 
-Consider adding a timezone setting for users that defaults to the server's location (GMT+1)
-
 Refactor the image logic to use the new structure (from db instead of disk)
 - Controllers/ChangeRecipePicture.cfc
 - Components/ImageManager.cfc

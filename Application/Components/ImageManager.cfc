@@ -1,31 +1,57 @@
-<cfcomponent output="false" accessors="false" persistent="true"  modifier="final" >
+<cfcomponent output="false" accessors="false" persistent="true" modifier="final" >
 
-	<cfproperty name="RecipeImageDimensions"		type="struct"	getter="false"	setter="false" />
-	<cfproperty name="RecipeThumbnailDimensions"	type="struct"	getter="false"	setter="false" />
-	<cfproperty name="MaxFileSize"					type="numeric"	getter="false"	setter="false" />
-	<cfproperty name="RecipeImagesDBTable"			type="string"	getter="false"	setter="false" />
-	<cfproperty name="ThumbnailsDBTable"			type="string"	getter="false"	setter="false" />
+	<cfscript>
+		static {
+			FullImageTableName  		= "RecipeImages";
+			ThumbnailsTableName 		= "ImageThumbnails";
+			FullImageTableKey			= "ImageID";
+			ThumbnailsTableKey			= "ID";
+			MaxFileSize 				= 5242880;
+			RecipeImageDimensions		= {
+				width: 450,
+				height: 300
+			};
+			RecipeThumbnailDimensions 	= {
+				width: 50,
+				height: 50
+			};
+		}
+	</cfscript>
 
-	<cffunction name="delete" access="public" returntype="void" output="false" hint="" >
+	<cffunction modifier="static" name="Delete" access="public" returntype="void" output="false" hint="" >
 		<cfargument name="id" type="numeric" required="true" />
 
-		<cfset var Dummy = null />
-		<cfquery name="Dummy" >
-			DELETE FROM #RecipeImagesDBTable#
-			WHERE ImageID = <cfqueryparam sqltype="INTEGER" value=#arguments.id# />
-		</cfquery>
+		<cftransaction action="begin" >
+			<cftry>
+				<cfset queryExecute(
+					"DELETE FROM #static.FullImageTableName#
+					WHERE #static.FullImageTableKey# = ?",
+					[
+						{value=arguments.id, cfsqltype="integer"}
+					]
+				) />
+
+				<cftransaction action="commit" />
+			<cfcatch>
+
+				<cftransaction action="rollback" />
+				<cfthrow object="#cfcatch#" />
+
+			</cfcatch>
+			</cftry>
+		</cftransaction>
 	</cffunction>
 
-	<cffunction name="add" access="public" returntype="numeric" output="false" hint="" >
+	<cffunction modifier="static" name="Add" access="public" returntype="numeric" output="false" hint="" >
 		<cfargument name="base64Content" type="string" required="true" />
 		<cfargument name="fileName" type="string" required="true" />
+		<cfargument name="mimeType" type="string" required="true" />
 		<cfargument name="userID" type="numeric" required="true" />
 		<cfargument name="recipeID" type="string" required="true" />
 
 		<cfset var NewRecipeImage = null />
 		<cfset var NewThumbnail = null />
-		<cfset var InsertImage = null />
-		<cfset var InsertThumbnail = null />
+		<cfset var InsertFullImageResult = null />
 
 		<cfimage name="NewRecipeImage" action="read" source=#arguments.base64Content# />
 		<cfimage name="NewThumbnail" action="read" source=#arguments.base64Content# />
@@ -38,28 +64,28 @@
 
 		<cftransaction action="begin" >
 			<cftry>
-				<cfquery name="InsertImage" >
-					INSERT INTO #RecipeImagesDBTable# (
-						ImageID
-						BelongsToRecipe
-						MimeType
-						OriginalName
-						BinaryContent
-						DateTimeCreated
-						DateTimeLastModified
+				<cfset queryExecute(
+					"INSERT INTO #static.FullImageTableName# (
+						BelongsToRecipe,
+						MimeType,
+						OriginalName,
+						Base64Content,
+						DateTimeCreated,
+						DateTimeLastModified,
+						ModifiedByUser
 					)
-					VALUES (
-						<cfqueryparam sqltype="INTEGER" value=#arguments.userID# />,	<!--- ImageID --->
-						<cfqueryparam sqltype="INTEGER" value=#arguments.recipeID# />,	<!--- BelongsToRecipe --->
-						<cfqueryparam sqltype="VARCHAR" value=#fileGetMimeType(arguments.base64Content, true)# />,	<!--- MimeType --->
-						<cfqueryparam sqltype="VARCHAR" value=#arguments.fileName# />,	<!--- OriginalName --->
-						<cfqueryparam sqltype="BLOB" value=#imageGetBlob(NewRecipeImage)# />,	<!--- BinaryContent --->
-						<cfqueryparam sqltype="TIMESTAMP" value=#now()# />,	<!--- DateTimeCreated --->
-						<cfqueryparam sqltype="TIMESTAMP" value=#now()# />	<!--- DateTimeLastModified --->
-					)
-
-					SELECT last_insert_rowid() AS "NewID";
-				</cfquery>
+					VALUES (?,?,?,?,?,?,?)",
+					[
+						{value=arguments.recipeID, cfsqltype="integer"},
+						arguments.mimeType,
+						trim(arguments.fileName),
+						toBase64(imageGetBlob(NewRecipeImage)),
+						Localizer::GetBackendDateTimeFromDate(now()),
+						Localizer::GetBackendDateTimeFromDate(now()),
+						{value=arguments.userID, cfsqltype="integer"}
+					],
+					{result="InsertFullImageResult"}
+				) />
 
 				<cftransaction action="commit" />
 			<cfcatch>
@@ -73,20 +99,13 @@
 
 		<cftransaction action="begin" >
 			<cftry>
-				<cfquery name="InsertThumbnail" >
-					INSERT INTO #RecipeImagesDBTable# (
-						ID
-						BinaryContent
-						DateTimeCreated
-						DateTimeLastModified
-					)
-					VALUES (
-						<cfqueryparam sqltype="INTEGER" value=#InsertImage.NewID# />,	<!--- ID --->
-						<cfqueryparam sqltype="BLOB" value=#imageGetBlob(NewThumbnail)# />,	<!--- BinaryContent --->
-						<cfqueryparam sqltype="TIMESTAMP" value=#now()# />,	<!--- DateTimeCreated --->
-						<cfqueryparam sqltype="TIMESTAMP" value=#now()# />	<!--- DateTimeLastModified --->
-					)
-				</cfquery>
+				<cfset queryExecute(
+					"INSERT INTO #static.ThumbnailsTableName# (ID, Base64Content) VALUES (?,?)",
+					[
+						{value=InsertFullImageResult.generatedKey, cfsqltype="integer"},
+						toBase64(imageGetBlob(NewThumbnail))
+					]
+				) />
 
 				<cftransaction action="commit" />
 			<cfcatch>
@@ -98,72 +117,58 @@
 			</cftry>
 		</cftransaction>
 
-		<cfreturn InsertImage.NewID />
+		<cfreturn InsertFullImageResult.generatedKey />
 	</cffunction>
 
-	<cffunction name="getRecipeImage" access="public" returntype="struct" output="false" hint="" >
+	<cffunction modifier="static" name="GetFull" access="public" returntype="string" output="false" hint="" >
+		<cfargument name="id" type="numeric" required="true" />
+
+		<cftransaction action="begin" >
+			<cftry>
+				<cfset var ImageQuery = queryExecute(
+					"SELECT Base64Content FROM #static.FullImageTableName#
+					WHERE #static.FullImageTableKey# = ?",
+					[
+						{value=arguments.id, cfsqltype="integer"}
+					]
+				) />
+
+				<cftransaction action="commit" />
+			<cfcatch>
+
+				<cftransaction action="rollback" />
+				<cfthrow object="#cfcatch#" />
+
+			</cfcatch>
+			</cftry>
+		</cftransaction>
+
+		<cfreturn ImageQuery.Base64Content />
+	</cffunction>
+
+	<cffunction modifier="static" name="GetThumbnail" access="public" returntype="binary" output="false" hint="" >
 		<cfargument name="ID" type="numeric" required="true" />
 
-		<cfset var RecipeImage = null />
-		<cfquery name="RecipeImage" >
-			SELECT
-				ImageID,
-				BelongsToRecipe,
-				MimeType,
-				OriginalName,
-				BinaryContent,
-				DateTimeCreated,
-				DateTimeLastModified
-			FROM #RecipeImagesDBTable#;
-		</cfquery>
+		<cftransaction action="begin" >
+			<cftry>
+				<cfset var ImageQuery = queryExecute(
+					"SELECT Base64Content FROM #static.ThumbnailsTableName#
+					WHERE #static.ThumbnailsTableKey# = ?",
+					[
+						{value=arguments.id, cfsqltype="integer"}
+					]
+				) />
 
-		<cfreturn {
-			"ImageID": RecipeImage.ImageID,
-			"BelongsToRecipe": RecipeImage.BelongsToRecipe,
-			"MimeType": RecipeImage.MimeType,
-			"OriginalName": RecipeImage.OriginalName,
-			"BinaryContent": RecipeImage.BinaryContent,
-			"DateTimeCreated": RecipeImage.DateTimeCreated,
-			"DateTimeLastModified": RecipeImage.DateTimeLastModified
-		} />
+				<cftransaction action="commit" />
+			<cfcatch>
+
+				<cftransaction action="rollback" />
+				<cfthrow object="#cfcatch#" />
+
+			</cfcatch>
+			</cftry>
+		</cftransaction>
+
+		<cfreturn ImageQuery.Base64Content />
 	</cffunction>
-
-	<cffunction name="getThumbnail" access="public" returntype="binary" output="false" hint="" >
-		<cfargument name="ID" type="numeric" required="true" />
-
-		<cfset var ThumbnailImage = null />
-		<cfquery name="ThumbnailImage" >
-			SELECT
-				ID,
-				BinaryContent,
-				DateTimeCreated,
-				DateTimeLastModified
-			FROM #ThumbnailsDBTable#;
-		</cfquery>
-
-		<cfreturn {
-			"ID": ThumbnailImage.ID,
-			"BinaryContent": ThumbnailImage.BinaryContent,
-			"DateTimeCreated": ThumbnailImage.DateTimeCreated,
-			"DateTimeLastModified": ThumbnailImage.DateTimeLastModified
-		} />
-	</cffunction>
-
-	<cffunction name="init" access="public" returntype="Components.FileManager" output="false" hint="" >
-
-		<cfset variables.RecipeImageDimensions = {
-			width: 450,
-			height: 300
-		} />
-
-		<cfset variables.RecipeThumbnailDimensions = {
-			width: 50,
-			height: 50
-		} />
-
-		<cfset variables.MaxFileSize = 5242880 />
-
-		<cfreturn this />
-	</cffunction>
-
 </cfcomponent>

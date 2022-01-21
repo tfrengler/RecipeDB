@@ -1,18 +1,28 @@
 <cfscript>
 
-test = Components.Localizer::GetBackendDateTimeFromDate(now());
+Image = fileReadBinary("C:\Temp\Siggy.png");
 
-writeOutput("<br/>");
-writeOutput(test);
+// INSERT NEW IMAGE
+// writeDump( Components.ImageManager::Add(
+//     base64Content=toBase64(image),
+//     fileName="Siggy.png",
+//     mimeType=fileGetMimeType(image, true),
+//     userID=2,
+//     recipeID=4
+// ) );
 
-test2 = dateConvert("utc2Local", test);
+// ImageData = queryExecute(
+//     "SELECT
+//         RecipeImages.Base64Content AS 'Full',
+//         ImageThumbnails.Base64Content AS 'Thumbnail'
+//     FROM RecipeImages
+//     JOIN ImageThumbnails ON RecipeImages.ImageID = ImageThumbnails.ID"
+// );
 
-writeOutput("<br/>");
-writeOutput(test2);
+// ImageData = Components.ImageManager::GetThumbnail(4);
+// cfimage(action="writeToBrowser", source=ImageData);
 
-test3 = lsDateTimeFormat(test2, "dd-mm-yyyy HH:nn:ss");
-
-writeOutput("<br/>");
-writeOutput(test3);
-
+// Components.ImageManager::Delete(6);
 </cfscript>
+
+<!--- <cfquery>PRAGMA foreign_keys = ON;</cfquery> --->

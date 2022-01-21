@@ -27,7 +27,7 @@ RecipeDB.main.onAJAXCallError = function(AjaxResponse) {
 	if (RecipeDB.main.debug) {
 		MainContentContainer.html( AjaxResponse[0].responseText );
 	} else {
-	
+
 		RecipeDB.main.removeAlertClasses(MessageBox);
 		MessageBox.removeClass("ajax-loading");
 		MessageBox.addClass("red-error-text");
@@ -98,7 +98,7 @@ RecipeDB.main.ajaxLoadIconButton = function(Enable, DOMPointer) {
 		DOMPointer.children().addClass( this.transient.ajaxLoaderIconClass );
 		this.transient.ajaxLoaderIconClass = "";
 	};
-	
+
 };
 
 RecipeDB.main.ajaxLoadInnerHTML = function(Enable, DOMPointer, Content) {
@@ -117,7 +117,7 @@ RecipeDB.main.ajaxLoadInnerHTML = function(Enable, DOMPointer, Content) {
 			this.transient.ajaxLoaderInnerHTML = "";
 		}
 	};
-	
+
 };
 
 RecipeDB.main.notifyUserOfSuccess = function(NotificationBoxPointer, Message, FadeoutTime) {
@@ -244,15 +244,7 @@ RecipeDB.main.onPictureNotLoaded = function(IMGElement) {
 	$(IMGElement).attr("src", "Assets/Pictures/Standard/ImageNotFound.jpeg");
 };
 
-RecipeDB.main.init = function() {
-	// $("a").click(RecipeDB.main.onNavigate);
-
-	/* Polyfill for Number.isNan(), which is not supported by IE */
-	if (Number.isNan === "undefined") {
-		Number.isNaN = Number.isNaN || function(value) {
-			return value !== value;
-		}
-	};
-
+RecipeDB.main.init = function ()
+{
 	console.log("Main init complete");
 };

@@ -129,7 +129,7 @@ RecipeDB.dialog.onChangeFile = function() {
 		RecipeDB.main.notifyUserOfError( $("#" + RecipeDB.dialog.constants.NOTIFICATION_BOX_ID), Message);
 		RecipeDB.dialog.disableUpload(true);
 
-	} 
+	}
 	else if (FileAccepted === true) {
 		RecipeDB.dialog.disableUpload(false)
 	}

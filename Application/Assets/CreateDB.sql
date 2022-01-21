@@ -86,12 +86,3 @@ CREATE TABLE ImageThumbnails (
                        NOT NULL,
     Base64Content BLOB
 );
-
--- Comments haven't been implemented so we aren't going to add this
-/*CREATE TABLE Comments(
-	CommentID 			INTEGER		PRIMARY KEY AUTOINCREMENT,
-	RecipeID 			INTEGER		REFERENCES Recipes(RecipeID) ON DELETE CASCADE,
-	CommentText 		TEXT,
-	UserID 				INTEGER		REFERENCES Users(UserID),
-	DateTimeCreated 	DATETIME	DEFAULT (date('now') )
-);*/
