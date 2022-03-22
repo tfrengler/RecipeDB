@@ -9,7 +9,7 @@
 	<cfproperty name="DateTimeLastModified"		type="date"			getter="true" setter="false" />
 	<cfproperty name="Ingredients" 				type="string" 		getter="true" setter="true" />
 	<cfproperty name="Description" 				type="string" 		getter="true" setter="true" />
-	<cfproperty name="Picture" 					type="string" 		getter="true" setter="true" />
+	<cfproperty name="Picture" 					type="numeric" 		getter="true" setter="true" />
 	<cfproperty name="Instructions"				type="string" 		getter="true" setter="true" />
 	<cfproperty name="Name"						type="string" 		getter="true" setter="true" />
 	<cfproperty name="Published"				type="boolean" 		getter="true" setter="true" />

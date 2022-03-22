@@ -7,6 +7,7 @@
 	<cfset this.loginstorage = "session" />
 	<cfset this.setClientCookies = true />
 	<cfset this.scriptProtect = "all" />
+	<cfset this.invokeImplicitAccessors = true />
 
 	<!--- MAPPINGS --->
 

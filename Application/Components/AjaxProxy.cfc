@@ -7,37 +7,31 @@
 	--->
 
 	<cffunction name="call" returntype="struct" access="remote" returnformat="JSON" output="false" hint="Acts as a interface for frontend Javascript via ajax to call backend CFC methods, passing along argument data as well." >
-		<cfargument name="Controller" type="string" required="true" hint="The name of the CFC you want to call." />
-		<cfargument name="Parameters" type="struct" required="false" default="#structNew()#" hint="A structure of key/value pairs of arguments to the method you're calling." />
-		<cfargument name="AuthKey" type="string" required="true" hint="A unique hash (512) key that is checked against an internal validator. This exists to prevent people from using this proxy remotely without authorization." />
+		<cfargument name="controller" type="string" required="true" hint="The name of the CFC you want to call." />
+		<cfargument name="method" type="string" required="false" default="main" hint="" />
+		<cfargument name="parameters" type="struct" required="false" default="#{}#" hint="A structure of key/value pairs of arguments to the method you're calling." />
+		<cfargument name="authKey" type="string" required="true" hint="A unique hash (512) key that is checked against an internal validator. This exists to prevent people from using this proxy remotely without authorization." />
+		<cfscript>
 
-		<cfset var returnData = {
-			statuscode: 0,
-			data: ""
-		} />
+		if (arguments.controller.len() == 0)
+			return new Models.ControllerData(101);
 
-		<cfif len(arguments.Controller) IS 0 >
+		if (arguments.method.len() == 0)
+			return new Models.ControllerData(102);
 
-			<cfset returnData.statuscode = 101 />
-			<cfreturn returnData />
+		if (session.authKey != arguments.authKey)
+			return new Models.ControllerData(103);
 
-		</cfif>
+		if (listFind(application.allowedAJAXControllers, "#trim(arguments.controller)#.cfc") IS 0)
+			return new Models.ControllerData(104);
 
-		<cfif session.AuthKey IS NOT arguments.AuthKey >
+		try {
+			return invoke("Controllers.#arguments.Controller#", arguments.method, arguments.Parameters);
+		}
+		catch (any error) {
+			return new Models.ControllerData(105);
+		}
 
-			<cfset returnData.statuscode = 102 />
-			<cfreturn returnData />
-
-		</cfif>
-
-		<cfif listFind(application.allowedAJAXControllers, "#trim(arguments.Controller)#.cfc") IS 0 >
-
-			<cfset returnData.statuscode = 103 />
-			<cfreturn returnData />
-
-		<cfelse>
-			<cfreturn invoke("Controllers.#arguments.Controller#", "main", arguments.Parameters) />
-		</cfif>
+		</cfscript>
 	</cffunction>
-
 </cfcomponent>

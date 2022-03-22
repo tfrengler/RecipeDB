@@ -44,28 +44,31 @@ var Init = function() {
 
 	/* Event handlers */
 	$(Elements.NEW_PICTURE()).change(OnChangeFile);
-	$(Elements.UPLOAD_BUTTON()).click(OnPictureUploaded);
+	Elements.UPLOAD_BUTTON().addEventListener("click", UploadPicture);
 
 	console.log("Change picture init complete");
 };
 
-var UploadPicture = function() {
+var UploadPicture = async function() {
 
-	var AjaxQueryString = "";
-	var RecipeID = parseInt($("#" + RecipeDB.page.constants.RECIPEID).val());
-	var FormToPost = new FormData(
-		document.getElementById(RecipeDB.dialog.constants.PICTURE_UPLOAD_FORM)
-	);
+	DisableUpload(true);
 
-	var ControllerArguments = {
-		recipeID: RecipeID
-	};
+	const RecipeID = parseInt(document.querySelector("#RecipeID").value) || 0;
+	const PictureInputElement = Elements.NEW_PICTURE();
+	const FileData = PictureInputElement.files[0];
 
-	if (RecipeDB.main.transient.ajaxCallInProgress === false) {
-		RecipeDB.main.transient.ajaxCallInProgress = true
-	} else {
-		return false;
-	}
+	const ControllerArguments = Object.seal({
+		recipeID: RecipeID,
+		base64content: null,
+		mimeType: FileData.type || "unknown",
+		fileName: FileData.name
+	});
+
+	ControllerArguments.base64content = await GetBase64Data(FileData);
+
+	await fetch("Components/AjaxProxy.cfc?method=call");
+
+	DisableUpload(false);
 };
 
 var OnChangeFile = function() {
@@ -143,6 +146,20 @@ var OnPictureUploaded = function(ControllerResponse) {
 		RecipeDB.main.onJavascriptError(ControllerResponse, "RecipeDB.dialog.onPictureUploaded");
 	}
 };
+
+var GetBase64Data = async function(file) {
+
+	return new Promise((resolve, _) => {
+		var Reader = new FileReader();
+
+		Reader.onload = function () {
+			let base64String = Reader.result.replace("data:", "").replace(/^.+,/, "");
+			resolve(base64String);
+		}
+
+		Reader.readAsDataURL(file);
+	});
+}
 
 Init();
 

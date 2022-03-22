@@ -1,7 +1,7 @@
 "use strict";
 
 /* Main container, a namespace for all our functionality */
-var RecipeDB = {};
+const RecipeDB = {};
 
 RecipeDB.main = {};
 RecipeDB.main.debug = false;
@@ -19,6 +19,8 @@ RecipeDB.main.constants.MAINCONTENT_CONTAINER_ID = "MainContent"
 RecipeDB.main.constants.DIALOG_ID = "Popup-Dialog";
 RecipeDB.main.constants.AJAX_TIMEOUT = 30000;
 
+const AlertClasses = Object.freeze(["red-error-text","yellow-warning-text","green-success-text"]);
+
 RecipeDB.main.onAJAXCallError = function(AjaxResponse) {
 
 	var MainContentContainer = $("#" + RecipeDB.main.constants.MAINCONTENT_CONTAINER_ID);
@@ -28,7 +30,7 @@ RecipeDB.main.onAJAXCallError = function(AjaxResponse) {
 		MainContentContainer.html( AjaxResponse[0].responseText );
 	} else {
 
-		RecipeDB.main.removeAlertClasses(MessageBox);
+		MessageBox.classList.remove(AlertClasses);
 		MessageBox.removeClass("ajax-loading");
 		MessageBox.addClass("red-error-text");
 
@@ -48,7 +50,8 @@ RecipeDB.main.onJavascriptError = function(ErrorContent, MethodName) {
 	var FriendlyErrorMessage = "Ooops, something went wrong! A team of highly trained monkeys has been dispatched to deal with the situation. If you see them tell them what you did when this happened."
 
 	if (typeof ErrorContent === "object") {
-		DebugOutput = JSON.stringify(ErrorContent);
+		// DebugOutput = structuredClone(ErrorContent);
+		console.error(ErrorContent);
 	};
 
 	if (RecipeDB.main.debug) {
@@ -169,6 +172,9 @@ RecipeDB.main.notifyUserOfWarning = function(NotificationBoxPointer, Message, Fa
  */
 RecipeDB.main.notify = function(NotificationBoxPointer, Type, Message, FadeoutTime) {
 
+	if (NotificationBoxPointer.__proto__.jquery)
+		NotificationBoxPointer = NotificationBoxPointer[0];
+
 	var CSSClassMap = {
 		success: "green-success-text",
 		error: "red-error-text",
@@ -177,11 +183,11 @@ RecipeDB.main.notify = function(NotificationBoxPointer, Type, Message, FadeoutTi
 	};
 
 	NotificationBoxPointer.classList.add("hidden");
-	this.removeAlertClasses(NotificationBoxPointer);
+	NotificationBoxPointer.classList.remove(AlertClasses);
 	NotificationBoxPointer.classList.remove("ajax-loading");
 
 	NotificationBoxPointer.classList.add( CSSClassMap[Type] );
-	NotificationBoxPointer.innerHTML(Message);
+	NotificationBoxPointer.innerHTML = Message;
 	NotificationBoxPointer.classList.remove("hidden");
 
 	// if (FadeoutTime !== undefined && FadeoutTime > 0) {
