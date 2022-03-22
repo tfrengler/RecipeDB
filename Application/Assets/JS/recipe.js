@@ -1,4 +1,10 @@
 "use strict";
+
+/* ESLint rules */
+/* global RecipeDB:readonly */
+/* global $:readonly */
+/* global tinyMCE:readonly */
+
 RecipeDB.page = {};
 RecipeDB.page.transient = {};
 
@@ -52,7 +58,7 @@ RecipeDB.page.init = function() {
 	$("#" + this.constants.PUBLISH_RECIPE_BUTTON_ID).click(this.changePublicStatus);
 	$("#" + this.constants.DELETE_RECIPE_BUTTON).click(this.deleteRecipe);
 	$("#" + this.constants.PICTURE_EDIT_ID).click(this.changePicture);
-	
+
 	$("img").error(function(){
 		RecipeDB.main.onPictureNotLoaded(this)
 	});
@@ -67,32 +73,32 @@ RecipeDB.page.onResize = function() {
 
 RecipeDB.page.setSectionDimensions = function() {
 
-	RecipeDB.page.transient.descriptionBodyHeight = parseFloat( 
-		$("#" + RecipeDB.page.constants.DESCRIPTION_BODY_ID).css("height") 
+	RecipeDB.page.transient.descriptionBodyHeight = parseFloat(
+		$("#" + RecipeDB.page.constants.DESCRIPTION_BODY_ID).css("height")
 	);
-	RecipeDB.page.transient.ingredientsBodyHeight = parseFloat( 
-		$("#" + RecipeDB.page.constants.INGREDIENTS_BODY_ID).css("height") 
+	RecipeDB.page.transient.ingredientsBodyHeight = parseFloat(
+		$("#" + RecipeDB.page.constants.INGREDIENTS_BODY_ID).css("height")
 	);
-	RecipeDB.page.transient.instructionsBodyHeight = parseFloat( 
-		$("#" + RecipeDB.page.constants.INSTRUCTIONS_BODY_ID).css("height") 
+	RecipeDB.page.transient.instructionsBodyHeight = parseFloat(
+		$("#" + RecipeDB.page.constants.INSTRUCTIONS_BODY_ID).css("height")
 	);
-	RecipeDB.page.transient.commentsBodyHeight = parseFloat( 
-		$("#" + RecipeDB.page.constants.COMMENTS_BODY_ID).css("height") 
+	RecipeDB.page.transient.commentsBodyHeight = parseFloat(
+		$("#" + RecipeDB.page.constants.COMMENTS_BODY_ID).css("height")
 	);
-	RecipeDB.page.transient.statusBodyHeight = parseFloat( 
-		$("#" + RecipeDB.page.constants.STATUS_BODY_ID).css("height") 
+	RecipeDB.page.transient.statusBodyHeight = parseFloat(
+		$("#" + RecipeDB.page.constants.STATUS_BODY_ID).css("height")
 	);
 };
 
 RecipeDB.page.setPictureEditDimensions = function() {
 
 	$('#' + RecipeDB.page.constants.PICTURE_EDIT_ID).css(
-		'height', 
+		'height',
 		$('#' + RecipeDB.page.constants.PICTURE_ID).css('height')
 	);
 
 	$('#' + RecipeDB.page.constants.PICTURE_EDIT_ID).css(
-		'width', 
+		'width',
 		$('#' + RecipeDB.page.constants.PICTURE_ID).css('width')
 	);
 };
@@ -150,7 +156,7 @@ RecipeDB.page.enableEditing = function() {
 };
 
 RecipeDB.page.disableEditing = function() {
-	
+
 	$("#" + RecipeDB.page.constants.SAVE_BUTTON_ID).hide();
 	$("#" + RecipeDB.page.constants.RECIPE_PICTURE_EDIT_ID).hide();
 	tinyMCE.remove();
@@ -217,7 +223,7 @@ RecipeDB.page.saveChanges = function() {
 			RecipeDB.main.transient.ajaxCallInProgress = false;
 			RecipeDB.main.ajaxLoadIconButton(false, $('#' + RecipeDB.page.constants.SAVE_BUTTON_ID));
 		}
-	});	
+	});
 };
 
 RecipeDB.page.onSavedChangesSuccess = function(ResponseData) {
@@ -225,7 +231,7 @@ RecipeDB.page.onSavedChangesSuccess = function(ResponseData) {
 
 	RecipeDB.main.notifyUserOfSuccess( MessageBox, "CHANGES SAVED", 2000 );
 
-	$("#" + RecipeDB.page.constants.RECIPE_TITLE_VIEW_ID).html( 
+	$("#" + RecipeDB.page.constants.RECIPE_TITLE_VIEW_ID).html(
 		$("#" + RecipeDB.page.constants.RECIPE_TITLE_EDIT_ID).val()
 	);
 	$("#" + RecipeDB.page.constants.RECIPE_DESCRIPTION_VIEW_ID).html(
@@ -283,7 +289,7 @@ RecipeDB.page.changePublicStatus = function() {
 			RecipeDB.main.transient.ajaxCallInProgress = false;
 			RecipeDB.main.ajaxLoadInnerHTML(false, $('#' + RecipeDB.page.constants.PUBLISH_RECIPE_BUTTON_ID));
 		}
-	});	
+	});
 
 };
 
@@ -298,7 +304,7 @@ RecipeDB.page.onChangedPublicStatusSuccess = function(NewStatus) {
 		PublishedStatusElement.text("no");
 		Message = "RECIPE IS NOW PRIVATE";
 
-	} 
+	}
 	else if (NewStatus === true) {
 
 		PublishedStatusElement.text("yes");
@@ -365,7 +371,7 @@ RecipeDB.page.deleteRecipe = function() {
 		beforeSend: function() {
 			RecipeDB.main.notifyUserOfLoading(MessageBox);
 		}
-	});	
+	});
 
 };
 

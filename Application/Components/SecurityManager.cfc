@@ -2,19 +2,19 @@
 
 	<cfset SecretKey = "27A19594-F01F-AF65-F844BA5EB80A5C06" />
 
-	<cffunction name="getHashedString" returntype="string" access="public" hint="" >
-		<cfargument name="StringData" type="string" required="true" hint="" />
+	<cffunction name="getHashedString" returntype="string" access="public" hint="" output="false"  >
+		<cfargument name="StringData" type="string" required="true" hint="" output="false"  />
 
 		<cfset var HashedString = hash(arguments.StringData, "SHA-512", "utf-8") />
 
 		<cfreturn HashedString />
 	</cffunction>
 
-	<cffunction name="getSaltedString" returntype="string" access="public" hint="" >
+	<cffunction name="getSaltedString" returntype="string" access="public" hint="" output="false"  >
 		<cfreturn Hash(GenerateSecretKey("AES"), "SHA-512") />
 	</cffunction>
 
-	<cffunction name="createPassword" returntype="string" access="public" hint="" >
+	<cffunction name="createPassword" returntype="string" access="public" hint="" output="false"  >
 
 		<cfset var ValidLowerCaseAlpha = "abcdefghijklmnopqrstuvwxyz" />
 		<cfset var ValidUpperCaseAlpha = UCase( ValidLowerCaseAlpha ) />
@@ -22,7 +22,7 @@
 		<cfset var ValidSpecialChars = "~!@##$%^&*" />
 
 		<cfset var AllValidChars = (ValidLowerCaseAlpha & ValidUpperCaseAlpha & ValidNumbers & ValidSpecialChars) />
-		<cfset var Password = arrayNew(1) />
+		<cfset var Password = [] />
 		<cfset var RandomPasswordValue = "" />
 
 		<cfset var Index = 0 />
@@ -41,7 +41,7 @@
 		<cfreturn Password />
 	</cffunction>
 
-	<cffunction name="generateAuthKey" returntype="string" access="public" hint="" >
+	<cffunction name="generateAuthKey" returntype="string" access="public" hint="" output="false"  >
 		<cfset var AuthKey = "" />
 
 		<cfif structKeyExists(session, "sessionid") >

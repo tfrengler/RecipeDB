@@ -160,6 +160,13 @@ RecipeDB.main.notifyUserOfWarning = function(NotificationBoxPointer, Message, Fa
 	this.notify(NotificationBoxPointer, "warning", Message, FadeoutTime);
 };
 
+/**
+ *
+ * @param {Element} NotificationBoxPointer
+ * @param {String} Type
+ * @param {String} Message
+ * @param {Number} FadeoutTime
+ */
 RecipeDB.main.notify = function(NotificationBoxPointer, Type, Message, FadeoutTime) {
 
 	var CSSClassMap = {
@@ -169,22 +176,22 @@ RecipeDB.main.notify = function(NotificationBoxPointer, Type, Message, FadeoutTi
 		ajax: "yellow-warning-text ajax-loading"
 	};
 
-	NotificationBoxPointer.hide();
+	NotificationBoxPointer.classList.add("hidden");
 	this.removeAlertClasses(NotificationBoxPointer);
-	NotificationBoxPointer.removeClass("ajax-loading");
+	NotificationBoxPointer.classList.remove("ajax-loading");
 
-	NotificationBoxPointer.addClass( CSSClassMap[Type] );
-	NotificationBoxPointer.html(Message);
-	NotificationBoxPointer.show();
+	NotificationBoxPointer.classList.add( CSSClassMap[Type] );
+	NotificationBoxPointer.innerHTML(Message);
+	NotificationBoxPointer.classList.remove("hidden");
 
-	if (FadeoutTime !== undefined && FadeoutTime > 0) {
-		setTimeout(
-			function() {
-				NotificationBoxPointer.fadeOut(1000);
-			},
-			parseInt(FadeoutTime)
-		)
-	};
+	// if (FadeoutTime !== undefined && FadeoutTime > 0) {
+	// 	setTimeout(
+	// 		function() {
+	// 			NotificationBoxPointer.fadeOut(1000);
+	// 		},
+	// 		parseInt(FadeoutTime)
+	// 	)
+	// }
 
 };
 

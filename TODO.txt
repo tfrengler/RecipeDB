@@ -30,6 +30,7 @@ Give SecurityManager a look
 
 Since controllers have no state and only have one method (main) consider making them static
 ...and rename the main-method to something cooler >:)
+...and maybe combine controllers into a CFC per model with each action a function?
 
 Figure out how to automagically install SQLite on application start if not already installed
 

@@ -1,5 +1,5 @@
 <!--- DIALOG/POP-FILE FILE --->
-<script type="text/javascript" src="Assets/JS/changepicture.js" ></script>
+<script type="text/javascript" type="module" src="Assets/JS/changepicture.js" ></script>
 
 <section id="Change-Picture-Form-Wrapper" >
 	<form id="Change-Picture-Form" class="olive-wrapper-grey-background" >
@@ -9,8 +9,8 @@
 		</p>
 
 		<ul>
-			<li>You may upload files of type <b>PNG, JPEG or GIF</b></li>
-			<li>The max filesize you may upload is <b>5 mb</b></li>
+			<li>You may upload files of type <b id="AllowedFileTypesInfo" ></b></li>
+			<li>The max filesize you may upload is <b id="AllowedFileSizeInfo"></b></li>
 			<li>If you upload large pictures, they will automatically be resized down to <b>450 by 300 pixels</b></li>
 		</ul>
 
@@ -37,9 +37,3 @@
 	</div>
 
 </section>
-
-<script type="text/javascript">
-	<cfoutput>#toScript(application.fileManager.getMaxFileSize(), "RecipeDB.dialog.constants.MAX_FILE_SIZE", false)#</cfoutput>
-	<cfoutput>#toScript(application.fileManager.getAcceptedMimeTypes(), "RecipeDB.dialog.constants.ACCEPTED_MIME_TYPES", false)#</cfoutput>
-	$(document).ready(RecipeDB.dialog.init);
-</script>
