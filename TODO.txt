@@ -37,3 +37,24 @@ Figure out how to automagically install SQLite on application start if not alrea
 Long term: remove jQuery
 Longer term: refactor JS
 Long term: switch to cfscript in components
+
+ACTIONS FOR GO-LIVE:
+
+- Make separate dev branch for ongoing/upcoming dev work
+- Get the upload image-function into a state that it's at least harmless
+- Do functional testing of the master branch:
+    - Logging in
+    - Changing settings
+    - Listing/filtering recipes
+    - Opening existing recipe
+    - Creating a new recipe
+    - Editing a recipe
+    - Deleting a recipe
+- Wipe the database on master so it's clean
+- Create import script to convert and import recipes from the old db into the new
+- Create a suite of regression tests on the dev-branch (.NET nUnit test suite)
+
+// https://cfdocs.org/security-authentication
+// https://cfdocs.org/security-session-management
+// https://www.petefreitag.com/item/901.cfm
+// https://www.petefreitag.com/item/913.cfm

@@ -53,7 +53,7 @@ var UploadPicture = async function() {
 
 	DisableUpload(true);
 
-	const RecipeID = parseInt(document.querySelector("#RecipeID").value) || 0;
+	const RecipeID = parseInt(document.querySelector("#RecipeID").value) || -1;
 	const PictureInputElement = Elements.NEW_PICTURE();
 	const FileData = PictureInputElement.files[0];
 
@@ -61,13 +61,24 @@ var UploadPicture = async function() {
 		recipeID: RecipeID,
 		base64content: null,
 		mimeType: FileData.type || "unknown",
-		fileName: FileData.name
+		fileName: FileData.name || "unknown"
 	});
 
 	ControllerArguments.base64content = await GetBase64Data(FileData);
+	const FetchOptions = {
+		method: "POST",
+		body: JSON.stringify(ControllerArguments),
+		headers: {
+			'Accept': 'application/json',
+			'Content-Type': 'application/json'
+		},
+		referrerPolicy: "same-origin",
+		mode: "no-cors",
+		redirect: "error"
+	};
 
-	await fetch("Components/AjaxProxy.cfc?method=call");
-
+	// await fetch("Components/AjaxProxy.cfc?method=call", FetchOptions);
+	window.alert("WORK IN PROGRESS!!!");
 	DisableUpload(false);
 };
 
