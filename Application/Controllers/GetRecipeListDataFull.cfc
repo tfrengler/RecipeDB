@@ -21,7 +21,7 @@
 
 		<cfif NOT structIsEmpty(arguments.filterSettings) >
 			<cfquery name="FilteredRecipes" dbtype="query" >
-				SELECT RecipeID,Name,DateCreated,DateTimeLastModified,CreatedByUser,Published
+				SELECT RecipeID,Name,DateTimeCreated,DateTimeLastModified,CreatedByUser,Published
 				FROM allRecipes
 				WHERE 1 = 1
 
@@ -32,9 +32,9 @@
 					structKeyExists(arguments.filterSettings, "minePublic") OR
 					structKeyExists(arguments.filterSettings, "mineNoPicture")
 				>
-						AND CreatedByUser = #session.currentUser.getId()#
+						AND CreatedByUser = #session.currentUser.UserID#
 					<cfelseif structKeyExists(arguments.filterSettings, "othersOnly") >
-						AND CreatedByUser != #session.currentUser.getId()#
+						AND CreatedByUser != #session.currentUser.UserID#
 					<cfelse>
 				</cfif>
 

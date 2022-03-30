@@ -1,4 +1,9 @@
 "use strict";
+
+/* ESLint rules */
+/* global RecipeDB:readonly */
+/* global $:readonly */
+
 RecipeDB.page = {};
 RecipeDB.page.constants = {};
 RecipeDB.page.transient = {};
@@ -27,6 +32,10 @@ RecipeDB.page.transient.findRecipesSettings = {
 };
 
 RecipeDB.page.init = function() {
+
+	document.querySelector("#User-Settings-Form").addEventListener("submit", event=> event.preventDefault());
+	document.querySelector("#RecipeList-Settings-Form").addEventListener("submit", event=> event.preventDefault());
+
 	$("#" + this.constants.SAVE_USER_BUTTON_ID).click(this.saveUserChanges);
 	$("#" + this.constants.SAVE_FINDRECIPES_BUTTON_ID).click(this.saveFindRecipesChanges);
 
@@ -39,7 +48,7 @@ RecipeDB.page.init = function() {
 			RecipeDB.page.transient.findRecipesSettings.listType = $(this).val()
 		}
 	});
-	
+
 	$("input[name='" + this.constants.FIND_RECIPES_SORT_ON_CHECKBOXES_NAME + "']").each(function() {
 		if ($(this).prop("checked")) {
 			RecipeDB.page.transient.findRecipesSettings.sortOnColumn = $(this).val()
@@ -67,25 +76,25 @@ RecipeDB.page.saveUserChanges = function() {
 
 	if (DisplayName.length === 0 || DisplayName === " ") {
 		NotificationMessage += "Display name is empty!";
-	};
+	}
 	if (Username.length === 0 || Username === " ") {
 		if (NotificationMessage.length > 0) {
 			NotificationMessage += "<br/>"
 		}
 		NotificationMessage += "User name is empty!";
-	};
+	}
 
 	if (NotificationMessage.length > 0) {
 
 		RecipeDB.main.notifyUserOfError( MessageBox, NotificationMessage, 2000 );
 		return false;
-	};
+	}
 
 	if (RecipeDB.main.transient.ajaxCallInProgress === false) {
 		RecipeDB.main.transient.ajaxCallInProgress = true
 	} else {
 		return false;
-	};
+	}
 
 	$.ajax({
 		type: "post",
@@ -126,14 +135,14 @@ RecipeDB.page.onUserChangesSaved = function(ControllerResponse) {
 	var MessageBox = $("#" + RecipeDB.page.constants.NOTIFICATION_BOX_ID);
 
 	if (ControllerResponse.statuscode === 0) {
-		RecipeDB.main.notifyUserOfSuccess( MessageBox, "CHANGES SAVED", 2000 );
+		RecipeDB.main.notifyUserOfSuccess( MessageBox, "CHANGES SAVED", true );
 	}
 	else if (ControllerResponse.statuscode === 2) {
-		RecipeDB.main.notifyUserOfError( MessageBox, "That username is already in use. Please choose another", 4000 );
+		RecipeDB.main.notifyUserOfError( MessageBox, "That username is already in use. Please choose another", true );
 	}
 	else if (ControllerResponse.statuscode === 1) {
 		RecipeDB.main.onJavascriptError(ControllerResponse, "RecipeDB.page.onUserChangesSaved");
-	} 
+	}
 };
 
 RecipeDB.page.saveFindRecipesChanges = function() {
@@ -168,7 +177,7 @@ RecipeDB.page.saveFindRecipesChanges = function() {
 			RecipeDB.main.onAJAXCallError(arguments);
 		},
 		success: function() {
-			RecipeDB.main.notifyUserOfSuccess( MessageBox, "CHANGES SAVED", 2000 );
+			RecipeDB.main.notifyUserOfSuccess( MessageBox, "CHANGES SAVED", true );
 		},
 		complete: function() {
 			RecipeDB.main.transient.ajaxCallInProgress = false;
@@ -185,7 +194,7 @@ RecipeDB.page.onChangeFindRecipesSetting = function() {
 
 	// Filters have more complex combinations of conditions that are allowed
 	if (checkbox.prop("name") === RecipeDB.page.constants.FIND_RECIPES_FILTER_CHECKBOXES_NAME) {
-		
+
 		// If the filter setting we clicked is mineOnly or othersOnly...
 		if (checkbox.val() === "mineOnly" || checkbox.val() === "othersOnly") {
 			// ...then deselect all other options in memory...
@@ -201,7 +210,7 @@ RecipeDB.page.onChangeFindRecipesSetting = function() {
 				checkbox.prop("checked", true)
 			};
 
-		} // And if the filter setting is NOT any of these two.. 
+		} // And if the filter setting is NOT any of these two..
 		else if (checkbox.val() !== "mineOnly" || checkbox.val() !== "othersOnly") {
 			// ...then de-select those two
 			$("[value='mineOnly']").prop("checked", false);
@@ -216,7 +225,7 @@ RecipeDB.page.onChangeFindRecipesSetting = function() {
 		RecipeDB.page.transient.findRecipesSettings.sortOnColumn = checkbox.val();
 		return true;
 	};
-	
+
 	if (checkbox.prop("name") === RecipeDB.page.constants.FIND_RECIPES_LIST_TYPE_CHECKBOXES_NAME) {
 		RecipeDB.page.transient.findRecipesSettings.listType = checkbox.val();
 		return true;

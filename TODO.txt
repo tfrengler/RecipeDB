@@ -22,6 +22,7 @@ Remove createObject() calls with new
 
 Fix applying filters to the recipe list
 Fix changing user settings (both of them)
+Put labels around checkboxes so you can click on the name
 
 Refactor FilterSettings
 - Make them their own component rather than just pasted inside User.cfc as a struct

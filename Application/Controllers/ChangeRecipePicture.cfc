@@ -50,7 +50,7 @@
 
 		<cfset var Recipe = createObject("component", "Models.Recipe").init(arguments.RecipeID) />
 
-		<cfif Recipe.getCreatedByUser().getId() IS NOT session.CurrentUser.getId() >
+		<cfif Recipe.getCreatedByUser().UserID IS NOT session.CurrentUser.UserID >
 
 			<cfheader statuscode="500" />
 			<cfset returnData.statuscode = 5 />

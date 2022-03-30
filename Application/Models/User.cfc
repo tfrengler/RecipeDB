@@ -14,14 +14,14 @@
 	<cfproperty name="Blocked" 					type="boolean"		getter="true"	setter="true" />
 	<cfproperty name="AuthKey" 					type="string"		getter="true"	setter="true" />
 
-	<cfproperty name="Settings_FindRecipes_ListType"				type="string" 	getter="false"	setter="false" />
-	<cfproperty name="Settings_FindRecipes_SortOnColumn"			type="string" 	getter="false"	setter="false" />
-	<cfproperty name="Settings_FindRecipesFilterOn_MineOnly"		type="boolean" 	getter="false"	setter="true" />
-	<cfproperty name="Settings_FindRecipesFilterOn_MinePublic"		type="boolean" 	getter="false"	setter="true" />
-	<cfproperty name="Settings_FindRecipesFilterOn_MinePrivate"		type="boolean" 	getter="false"	setter="true" />
-	<cfproperty name="Settings_FindRecipesFilterOn_MineEmpty"		type="boolean" 	getter="false"	setter="true" />
-	<cfproperty name="Settings_FindRecipesFilterOn_MineNoPicture"	type="boolean" 	getter="false"	setter="true" />
-	<cfproperty name="Settings_FindRecipesFilterOn_OtherUsersOnly"	type="boolean" 	getter="false"	setter="true" />
+	<cfproperty name="Settings_FindRecipes_ListType"				type="string" 	getter="true"	setter="true" />
+	<cfproperty name="Settings_FindRecipes_SortOnColumn"			type="string" 	getter="true"	setter="true" />
+	<cfproperty name="Settings_FindRecipesFilterOn_MineOnly"		type="boolean" 	getter="true"	setter="true" />
+	<cfproperty name="Settings_FindRecipesFilterOn_MinePublic"		type="boolean" 	getter="true"	setter="true" />
+	<cfproperty name="Settings_FindRecipesFilterOn_MinePrivate"		type="boolean" 	getter="true"	setter="true" />
+	<cfproperty name="Settings_FindRecipesFilterOn_MineEmpty"		type="boolean" 	getter="true"	setter="true" />
+	<cfproperty name="Settings_FindRecipesFilterOn_MineNoPicture"	type="boolean" 	getter="true"	setter="true" />
+	<cfproperty name="Settings_FindRecipesFilterOn_OtherUsersOnly"	type="boolean" 	getter="true"	setter="true" />
 
 	<cfscript>
 		static {
@@ -143,7 +143,7 @@
 						FindRecipesFilterOn_MinePrivate = ?,
 						FindRecipesFilterOn_MineEmpty = ?,
 						FindRecipesFilterOn_MineNoPicture = ?,
-						FindRecipesFilterOn_OtherUsersOnly = ?,
+						FindRecipesFilterOn_OtherUsersOnly = ?
 
 					WHERE BelongsToUser = ?;",
 					[

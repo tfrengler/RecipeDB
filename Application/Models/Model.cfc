@@ -76,7 +76,7 @@
 		<cfquery name="GetByObjectData" >
 
 			SELECT #Columns#
-			FROM '#variables.TableName#'
+			FROM '#static.TableName#'
 
 			<cfif	isValid("integer", arguments.SearchData)
 				OR	IsValid("date", arguments.SearchData)
