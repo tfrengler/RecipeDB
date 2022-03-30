@@ -1,4 +1,3 @@
-<cfprocessingdirective pageEncoding="utf-8" />
 <cfparam name="URL.fileName" type="string" >
 
 <cfset fileNameAndFullPath = "#application.settings.files.recipe.standard#\#URL.fileName#" />

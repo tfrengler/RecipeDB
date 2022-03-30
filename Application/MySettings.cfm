@@ -1,6 +1,6 @@
-<cfprocessingdirective pageEncoding="utf-8" />
-
 <cftry>
+	<cfmodule template="Modules/ScriptNonce.cfm" >
+
 	<cfset viewData = createObject("component", "Controllers.GetUserSettingsView").main(
 		user=session.currentUser
 	) />

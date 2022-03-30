@@ -1,5 +1,6 @@
 <!--- CONTROLLER ACTIONS --->
 <cftry>
+	<cfmodule template="Modules/ScriptNonce.cfm" >
 	<cfset controller = new Controllers.GetRecipeListDataSimple() />
 
 	<cfif NOT structIsEmpty(FORM) >

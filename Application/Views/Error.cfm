@@ -1,5 +1,8 @@
-<style type="text/css">
-	
+<cfparam name="NonceValue" type="string" default="" />
+
+<cfoutput>
+<style nonce="#NonceValue#" type="text/css">
+
 	.error-box {
 		border-style: solid;
 		border-width: 1px;
@@ -9,8 +12,8 @@
 		margin-bottom: 1em;
 		border-radius: 0.3em;
 		max-width: 60%;
-		color: #a94442;
-		background-color: #f2dede;
+		color: ##a94442;
+		background-color: ##f2dede;
 		position: fixed;
 		left: 0;
 		right: 0;
@@ -22,8 +25,6 @@
 		text-align: center;
 	}
 </style>
-
-<cfoutput>
 
 <div id="Notification-Box" class="error-box" >
 	<section>
@@ -37,7 +38,7 @@
 	</section>
 	<hr/>
 	<code>
-		
+
 		<cfif isDefined("cfcatch") >
 
 			<div><u>MESSAGE:</u> #left(cfcatch.message, 200)#</div>

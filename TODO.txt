@@ -20,17 +20,14 @@ Remove all cfprocessingdirective-tags
 
 Remove createObject() calls with new
 
+Fix applying filters to the recipe list
+Fix changing user settings (both of them)
+
 Refactor FilterSettings
 - Make them their own component rather than just pasted inside User.cfc as a struct
 
-Fix FindRecipesAsThumbnails
-
-Give SecurityManager a look
-- See if we change the instance field SecretKey to NOT be hardcoded...
-
 Since controllers have no state and only have one method (main) consider making them static
 ...and rename the main-method to something cooler >:)
-...and maybe combine controllers into a CFC per model with each action a function?
 
 Figure out how to automagically install SQLite on application start if not already installed
 
@@ -40,8 +37,6 @@ Long term: switch to cfscript in components
 
 ACTIONS FOR GO-LIVE:
 
-- Make separate dev branch for ongoing/upcoming dev work
-- Get the upload image-function into a state that it's at least harmless
 - Do functional testing of the master branch:
     - Logging in
     - Changing settings

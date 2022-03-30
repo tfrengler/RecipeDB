@@ -1,4 +1,4 @@
-<cfprocessingdirective pageEncoding="utf-8" />
+<cfparam name="NonceValue" type="string" default="" />
 <cfoutput>
 
 <cfparam name="attributes.Username" type="string" default="[unknown username]" />
@@ -32,15 +32,15 @@
 		<input id="ObscuredPassword" class="form-control" type="text" value="********" disabled="disabled" />
 		<br/>
 
-		<span id="AccountCreationDateLegend">ACCOUNT CREATED:</span> 
+		<span id="AccountCreationDateLegend">ACCOUNT CREATED:</span>
 		<input id="AccountCreationDate" class="form-control" type="text" value="#encodeForHTML( DateFormat(attributes.AccountCreationDate, "dd/mm/yyyy") )#" disabled="disabled" />
 		<br/>
 
-		<span id="TimesLoggedInLegend">TIMES LOGGED IN:</span> 
+		<span id="TimesLoggedInLegend">TIMES LOGGED IN:</span>
 		<input id="TimesLoggedIn" class="form-control" type="text" value="#encodeForHTML( attributes.TimesLoggedIn )#" disabled="disabled" />
 		<br/>
 
-		<span id="BrowserLastUsedLegend">LOGGED IN WITH:</span> 
+		<span id="BrowserLastUsedLegend">LOGGED IN WITH:</span>
 		<input id="BrowserLastUsed" class="form-control" type="text" value="#encodeForHTML( attributes.BrowserLastUsed )#" disabled="disabled" />
 		<br/>
 

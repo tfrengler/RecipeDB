@@ -2,12 +2,16 @@
 
 	<cfset this.name="RecipeDB" />
 	<cfset this.applicationtimeout = CreateTimeSpan(14,0,0,0) />
+
 	<cfset this.sessionmanagement = true />
-	<cfset this.sessiontimeout = CreateTimeSpan(0,1,0,0) />
-	<cfset this.loginstorage = "session" />
 	<cfset this.setClientCookies = true />
+	<cfset this.sessioncookie.secure = true />
+	<cfset this.sessiontimeout = CreateTimeSpan(0,1,0,0) />
+	<cfset this.sessionType = "cfml" />
+	<cfset this.loginstorage = "session" />
+
 	<cfset this.scriptProtect = "all" />
-	<cfset this.invokeImplicitAccessors = true />
+	<cfset this.invokeImplicitAccessor = true />
 
 	<!--- MAPPINGS --->
 
@@ -39,19 +43,20 @@
 		</cfcatch>
 		</cftry>
 
+		<cfset application.cookieName = '__tracker_ad_token' />
 		<cfset var queryListOfControllers = null />
 		<cfset application.allowedAJAXControllers = null />
 
 		<!--- Set up singletons --->
 		<cfif NOT structKeyExists(application, "securityManager") >
-			<cfset application.securityManager = new Components.SecurityManager() />
+			<cfset application.SecurityManager = new Components.SecurityManager() />
 		</cfif>
 
 		<!--- SETTING UP ALLOWED AJAX PROXY CFC TARGETS --->
 		<cfdirectory directory="/Controllers" action="list" filter="*.cfc" type="file" listinfo="name" name="queryListOfControllers" >
 
 		<cfloop query=#queryListOfControllers# >
-			<cfset application.allowedAJAXControllers = listAppend(application.allowedAJAXControllers, queryListOfControllers.name) />
+			<cfset application.AllowedAJAXControllers = listAppend(application.allowedAJAXControllers, queryListOfControllers.name) />
 		</cfloop>
 
 		<cfreturn true />
@@ -60,122 +65,93 @@
 	<cffunction name="onRequestStart" returnType="boolean" output="false" >
 		<cfargument type="string" name="targetPage" required="true" />
 
-		<!--- For force refreshing static content programmatically, rather than using Shift + F5 or similar means --->
-		<cfif structKeyExists(URL, "Refresh") >
-			<cfheader name="Cache-Control" value="no-cache, no-store, must-revalidate" />
-			<cfheader name="Pragma" value="no-cache" />
-			<cfheader name="Expires" value="0" />
-		</cfif>
-
 		<cfset var BaseURI = "http#cgi.SERVER_PORT_SECURE ? "s" : ""#://#cgi.SERVER_NAME#/RecipeDB" />
+		<!--- <cfset session.sessionToken = application.SecurityManager.GenerateSessionToken() /> --->
 
 		<!--- For testing purposes, this nukes the session and restarts the application --->
 		<cfif structKeyExists(URL, "Restart") >
 
-			<cfset sessionInvalidate() />
+			<cfset onSessionEnd(session, application) />
 			<cfset applicationStop() />
 			<cflocation url="#BaseURI#/Login.cfm" addtoken="false" />
 
 		</cfif>
 
-		<cfif find("/Toolbox/", arguments.targetPage) GT 0 >
+		<!---
+			LOGIN FAIL REASONS:
+			1: User name does not exist/is incorrect
+			2: There's more than one record with this username
+			3: Password is incorrect
+			4: User account is blocked
+			5: Invalid session or session expired
+			6: Password and username not in form-scope
+			7: You have been logged out
+		--->
+
+		<!--- Hitting the logout page? Fine, we log you out and and your session --->
+		<cfif find("/Logout.cfm", arguments.targetPage) >
+			<cfset onSessionEnd(session, application) />
+			<cflogout />
 			<cfreturn true />
 		</cfif>
 
 		<!---
-			Make a request, if it's targeting the login page and the form-scope is empty
-			(meaning no login request has been made), then we check if the current user
-			is already logged in. If he/she isn't then we log them out and kill their session
-			so that a new one is created. We also do a return so that cflogin does not trigger
+			Targeting the login page without passing form-values and the Toolbox gives you safe passage
+			Targeting anything but the Toolbox (index or Login) logs you out if you were logged in
 		--->
-		<cfif listFindNoCase("/Login.cfm,/index.cfm", arguments.targetPage) GT 0 AND structIsEmpty(form) >
+		<cfif
+			(find("/Login.cfm", arguments.targetPage) AND structIsEmpty(form)) OR
+			find("/RecipeDB/index.cfm", arguments.targetPage) OR
+			find("/Toolbox/", arguments.targetPage)
+		>
 
-			<cfif isUserLoggedIn() >
+			<cfif NOT find("/Toolbox/", arguments.targetPage) AND isUserLoggedIn() >
+				<cfset onSessionEnd(session, application) />
 				<cflogout />
 			</cfif>
-			<cfreturn true />
 
+			<cfreturn true />
 		</cfif>
 
-		<!--- LOGIN/AUTHENTICATION PROCESS --->
-		<cflogin applicationtoken="RecipeDB" idletimeout="3600" >
-			<!---
-				The body of cflogin is executed if the current user is not logged in, otherwise it's skipped completely.
-				This latter what we want to happen everytime a request is made in the system after they are logged in.
-			--->
-
-			<!---
-				If these keys do not exist in the form-scope it means no login attempt was made and being this far into
-				the code means it came from a request that didn't target the login-page, thus we redirect them back.
-			--->
-			<cfif NOT structKeyExists(form, "j_username") AND NOT structKeyExists(form, "j_password") >
-				<cfif structKeyExists(URL, "Reason") >
-					<cfreturn true />
-				<cfelse>
-					<cflocation url="#BaseURI#/Login.cfm?Reason=5" addtoken="false" />
-				</cfif>
+		<!--- Targeting the login page and the FORM-scope has values? Probably a login attempt --->
+		<cfif find("/Login.cfm", arguments.targetPage) AND NOT structIsEmpty(form) >
+			<!--- No username and password in form? Bye! --->
+			<cfif NOT structKeyExists(form, "username") OR NOT structKeyExists(form, "password") >
+				<cfset application.SecurityManager.NewSession(session) />
+				<cflocation url="#BaseURI#/Login.cfm?Reason=6" addtoken="false" />
 			</cfif>
 
-			<cfset var UserSearch = null />
-			<cfset var LoggedInUser = "" />
-
-			<cfset UserSearch = Models.User::GetBy(
-				ColumnToSearchOn="UserName",
-				SearchOperator="equal to",
-				SearchData=form.j_username
-			) />
-
-			<cfif UserSearch.RecordCount IS 1 >
-				<cfset LoggedInUser = new Models.User(UserSearch[ Models.User::TableKey ]) />
-
-			<cfelseif UserSearch.RecordCount IS 0 >
-				<cflocation url="#BaseURI#/Login.cfm?Reason=1" addtoken="false" />
-				<!--- User name does not exist/is incorrect --->
-
-			<cfelseif UserSearch.RecordCount GT 1 >
-				<cflocation url="#BaseURI#/Login.cfm?Reason=2" addtoken="false" />
-				<!--- There's more than one record with this username --->
+			<cfset var LoginTryResult = application.SecurityManager.TryLogIn(form.username, form.password, session) />
+			<!--- Login attempt failed (for whatever reason)? Bye! --->
+			<cfif LoginTryResult IS NOT 0 >
+				<cfset application.SecurityManager.NewSession(session) />
+				<cflocation url="#BaseURI#/Login.cfm?Reason=#LoginTryResult#" addtoken="false" />
 			</cfif>
 
-			<cfif LoggedInUser.validatePassword( Password=form.j_password, SecurityManager=application.securityManager ) IS false >
-				<cflocation url="#BaseURI#/Login.cfm?Reason=3" addtoken="false" />
-				<!--- Password is incorrect --->
-			</cfif>
-
-			<cfif LoggedInUser.getBlocked() IS 1 >
-				<cflocation url="#BaseURI#/Login.cfm?Reason=4" addtoken="false" />
-				<!--- User account is blocked --->
-			</cfif>
-
-			<cfif LoggedInUser.getUserName() IS "tfrengler" >
-				<cfloginuser name="#LoggedInUser.getUserName()#" password="#LoggedInUser.getPassword()#" roles="Admin" />
-			<cfelse>
-				<cfloginuser name="#LoggedInUser.getUserName()#" password="#LoggedInUser.getPassword()#" roles="User" />
-			</cfif>
-
-			<cfset LoggedInUser.updateLoginStats(
-				UserAgentString=cgi.http_user_agent
-			) />
-			<cfset LoggedInUser.save() />
-
-			<cflock timeout="5" scope="Session" throwontimeout="true" >
-				<cfset session.currentUser = LoggedInUser />
-				<cfset session.authKey = application.securityManager.generateAuthKey() />
-			</cflock>
-
+			<!--- Everything okay? You're logged in! Redirect to the main app --->
 			<cflocation url="#BaseURI#/Application/index.cfm" addtoken="false" />
-		</cflogin>
+		</cfif>
+
+		<cfif NOT application.SecurityManager.IsValidSession(cookie, session) >
+			<cfset application.SecurityManager.NewSession(session) />
+			<cflocation url="#BaseURI#/Login.cfm?Reason=5&t=1" addtoken="false" />
+		</cfif>
+
+		<cfif NOT isUserLoggedIn() >
+			<cfset application.SecurityManager.NewSession(session) />
+			<cflocation url="#BaseURI#/Login.cfm?Reason=5&t=2" addtoken="false" />
+		</cfif>
 
 		<cfreturn true />
 	</cffunction>
 
 	<cffunction name="onSessionEnd" returntype="void" output="false">
-		<cfargument name="SessionScope" type="struct" required=true />
-		<cfargument name="ApplicationScope" type="struct" required=false default="#{}#" />
+		<cfargument name="sessionScope" type="struct" required="true" />
+		<cfargument name="applicationScope" type="struct" required="true" />
 
-		<cfcookie name="CFID" value="" expires="#now()#" />
-		<cfcookie name="CFTOKEN" value="" expires="#now()#" />
-		<cfset structClear(arguments.SessionScope) />
+		<cfset var SessionToken = structKeyExists(arguments.sessionScope, "SessionToken") ? arguments.sessionScope.SessionToken : "NIL" />
+		<cfset application.SecurityManager.SetSessionCookie(SessionToken, true) />
+		<cfset sessionInvalidate() />
 	</cffunction>
 
 </cfcomponent>

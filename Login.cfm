@@ -1,6 +1,15 @@
-<cftry>
-	<cfparam name="URL.Reason" type="numeric" default="0" />
+<cfscript>
+	if (!application.SecurityManager.IsValidSession(cookie, session))
+	{
+		application.SecurityManager.NewSession(session);
+	}
+</cfscript>
 
+<cftry>
+	<cfset Nonce = application.SecurityManager.GenerateNonce() />
+	<cfheader name="Content-Security-Policy" value="script-src 'nonce-#Nonce#' 'strict-dynamic'; style-src 'self' https://fonts.googleapis.com" />
+
+	<cfoutput>
 	<!DOCTYPE html>
 	<html lang="en" >
 
@@ -13,9 +22,9 @@
 		<link rel="shortcut icon" href="Application/Assets/Pictures/Standard/favicon.ico" type="image/x-icon" />
 		<link rel="icon" href="Application/Assets/Pictures/Standard/favicon.ico" type="image/x-icon" />
 
-		<script type="text/javascript" src="Application/Assets/Libs/jquery-base/jquery-min.js"></script>
-		<script type="text/javascript" src="Application/Assets/JS/main.js"></script>
-		<script type="text/javascript" src="Application/Assets/JS/login.js" ></script>
+		<script nonce="#Nonce#" src="Application/Assets/Libs/jquery-base/jquery-min.js"></script>
+		<script nonce="#Nonce#" src="Application/Assets/JS/main.js"></script>
+		<script nonce="#Nonce#" type="module" src="Application/Assets/JS/login.js" ></script>
 
 		<link rel="stylesheet" type="text/css" href="Application/Assets/Libs/bootstrap/css/bootstrap.min.css" />
 		<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" />
@@ -31,18 +40,18 @@
 
 			<br/>
 
-			<form id="Login-Form" class="olive-wrapper-grey-background col-lg-2 col-lg-offset-5 col-sm-4 col-sm-offset-4 standard-box-shadow" action="Login.cfm" method="POST" onsubmit="return false" >
+			<form id="Login-Form" class="olive-wrapper-grey-background col-lg-2 col-lg-offset-5 col-sm-4 col-sm-offset-4 standard-box-shadow" action="Login.cfm" method="POST" >
 
 				<h3 id="Login-Header" class="form-signin-heading" >Please log in</h3>
 
 				<div class="input-group">
 					<span class="input-group-addon olive-background-color"><i class="fa fa-user-o fa-fw"></i></span>
-					<input id="Username" name="j_username" class="form-control" type="text" placeholder="username" />
+					<input id="Username" name="username" class="form-control" type="text" placeholder="username" />
 				</div>
 
 				<div class="input-group">
 					<span class="input-group-addon olive-background-color"><i class="fa fa-lock fa-fw"></i></span>
-					<input id="Password" name="j_password" class="form-control" type="password" />
+					<input id="Password" name="password" class="form-control" type="password" />
 				</div>
 
 				<br/>
@@ -53,27 +62,9 @@
 			<div id="Notification-Box" class="notification-box col-lg-2 col-lg-offset-5 col-sm-4 col-sm-offset-4" ></div>
 		</section>
 
-		<script type="text/javascript">
-			$(document).ready(function() {
-				RecipeDB.page.init();
-
-			<cfif structKeyExists(COOKIE, "CFID") IS false AND structKeyExists(COOKIE, "CFTOKEN") IS false >
-				RecipeDB.main.notifyUserOfError( $('#' + RecipeDB.page.constants.MESSAGEBOX_ID), "Your browser doesn't support cookies or cookies are not enabled. Cookies are required if you want to use this application" );
-			<cfelseif URL.Reason GT 0 >
-				<cfif URL.Reason IS 5 >
-				RecipeDB.main.notifyUserOfError( $('#' + RecipeDB.page.constants.MESSAGEBOX_ID), "Your session has expired. You need to log in again");
-				<cfelseif URL.Reason IS 6 >
-				RecipeDB.main.notifyUserOfSuccess( $('#' + RecipeDB.page.constants.MESSAGEBOX_ID), "You've been logged out");
-				<cfelse>
-				RecipeDB.main.notifyUserOfError( $('#' + RecipeDB.page.constants.MESSAGEBOX_ID), "Username or password is not correct");
-			</cfif>
-
-			</cfif>
-			});
-		</script>
-
 	</body>
 	</html>
+	</cfoutput>
 
 	<cfcatch>
 		<cfcontent reset="true" />

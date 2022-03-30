@@ -14,22 +14,25 @@
 		<cfscript>
 
 		if (arguments.controller.len() == 0)
-			return new Models.ControllerData(101);
+			return new Models.ControllerData(101, "");
 
 		if (arguments.method.len() == 0)
-			return new Models.ControllerData(102);
+			return new Models.ControllerData(102, "");
 
 		if (session.authKey != arguments.authKey)
-			return new Models.ControllerData(103);
+			return new Models.ControllerData(103, "");
 
 		if (listFind(application.allowedAJAXControllers, "#trim(arguments.controller)#.cfc") IS 0)
-			return new Models.ControllerData(104);
+			return new Models.ControllerData(104, "");
 
 		try {
 			return invoke("Controllers.#arguments.Controller#", arguments.method, arguments.Parameters);
 		}
 		catch (any error) {
-			return new Models.ControllerData(105);
+			if (isUserInRole("admin"))
+				rethrow;
+
+			return new Models.ControllerData(105, "");
 		}
 
 		</cfscript>

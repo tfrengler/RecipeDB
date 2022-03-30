@@ -1,3 +1,4 @@
+<cfparam name="NonceValue" type="string" default="" />
 <cfparam name="attributes.recipes" type="array" />
 <cfparam name="attributes.filter" type="struct" />
 
@@ -40,7 +41,7 @@
 </section>
 
 <cfif structKeyExists(REQUEST, "filtersettings")>
-	<script type="text/javascript">
+	<script nonce=#NonceValue# >
 
 	<cfloop collection=#REQUEST.filtersettings# item="filterSetting" >
 

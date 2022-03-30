@@ -1,20 +1,36 @@
-<cfcomponent output="false" >
+<cfcomponent output="false" persistent="true" accessors="false" modifier="final" >
 
-	<cfset SecretKey = "27A19594-F01F-AF65-F844BA5EB80A5C06" />
+	<cfproperty name="SecretKey" type="numeric" getter="false" setter="false" />
+	<cfproperty name="Encoding"  type="string"  getter="false" setter="false" />
+	<cfproperty name="HashType"  type="string"  getter="false" setter="false" />
 
-	<cffunction name="getHashedString" returntype="string" access="public" hint="" output="false"  >
-		<cfargument name="StringData" type="string" required="true" hint="" output="false"  />
+	<cffunction name="Init" returntype="SecurityManager" access="public" hint="" output="false" >
+		<cfset variables.SecretKey = generateSecretKey("AES") />
+		<cfset variables.Encoding = "UTF-8" />
+		<cfset variables.HashType = "SHA-512" />
+	</cffunction>
 
-		<cfset var HashedString = hash(arguments.StringData, "SHA-512", "utf-8") />
+	<cffunction name="GetHashedString" returntype="string" access="public" hint="" output="false"  >
+		<cfargument name="stringData" type="string" required="true" hint="" output="false" />
+
+		<cfif len(trim(arguments.stringData)) EQ 0 >
+			<cfthrow message="" detail="" />
+		</cfif>
+
+		<cfset var HashedString = hash(arguments.stringData, variables.HashType, variables.Encoding) />
 
 		<cfreturn HashedString />
 	</cffunction>
 
-	<cffunction name="getSaltedString" returntype="string" access="public" hint="" output="false"  >
-		<cfreturn Hash(GenerateSecretKey("AES"), "SHA-512") />
+	<cffunction name="GetSaltedString" returntype="string" access="public" hint="" output="false"  >
+		<cfreturn hash(generateSecretKey("AES"), variables.HashType, variables.Encoding) />
 	</cffunction>
 
-	<cffunction name="createPassword" returntype="string" access="public" hint="" output="false"  >
+	<cffunction name="GenerateNonce" returntype="string" access="public" hint="" output="false"  >
+		<cfreturn toBase64(generateSecretKey("AES", 128)) />
+	</cffunction>
+
+	<cffunction name="CreatePassword" returntype="string" access="public" hint="" output="false"  >
 
 		<cfset var ValidLowerCaseAlpha = "abcdefghijklmnopqrstuvwxyz" />
 		<cfset var ValidUpperCaseAlpha = UCase( ValidLowerCaseAlpha ) />
@@ -41,150 +57,137 @@
 		<cfreturn Password />
 	</cffunction>
 
-	<cffunction name="generateAuthKey" returntype="string" access="public" hint="" output="false"  >
-		<cfset var AuthKey = "" />
+	<cffunction name="GenerateSessionToken" returntype="string" access="public" hint="" output="false"  >
+		<cfargument name="cfSessionID" type="string" required="true" hint="" output="false"  />
 
-		<cfif structKeyExists(session, "sessionid") >
-			<cfset AuthKey = (session.sessionid & variables.SecretKey) />
-		<cfelse>
-			<cfthrow message="Error generating authkey" detail="The sessionid does not appear to exist in the session scope!" />
+		<cfif len(trim(arguments.cfSessionID)) EQ 0 >
+			<cfthrow message="Bad arguments!" detail="Argument cfSessionID is empty!" />
 		</cfif>
 
-		<cfreturn hash(AuthKey, "SHA-512") />
+		<cfreturn hash((arguments.cfSessionid & variables.SecretKey), variables.HashType, variables.Encoding) />
 	</cffunction>
 
-	<!--- <cffunction name="removeHTMLTags" returntype="string" access="private" hint="Removes HTML from a string. Will remove entire tag and its attributes (http://cflib.org/udf/stripHTML)" >
-		<cfargument name="StringData" type="string" required="true" />
-		<cfargument name="SpecialTagsOnly" type="boolean" required="false" default="false" />
+	<cffunction name="GenerateAuthKey" returntype="string" access="public" hint="" output="false"  >
+		<cfargument name="cfSessionID" type="string" required="true" hint="" output="false" />
 
-		<cfset var sSpecialTags = "style,script,noscript" />
-		<cfset var sCurrentTag = "" />
-		<cfset var ReturnData = arguments.StringData />
-
-		<cfloop list="#sSpecialTags#" index="sCurrentTag" >
-			<cfset ReturnData = reReplaceNoCase(ReturnData, "<\s*(#sCurrentTag#)[^>]*?>(.*?)</\1>","","ALL") />
-		</cfloop>
-
-		<cfif arguments.SpecialTagsOnly >
-			<cfset ReturnData = reReplaceNoCase(ReturnData, "<.*?>","","ALL") />
-			<!--- Get partial html in front --->
-			<cfset ReturnData = reReplaceNoCase(ReturnData, "^.*?>","") />
-			<!--- Get partial html at end --->
-			<cfset ReturnData = reReplaceNoCase(ReturnData, "<.*$","") />
+		<cfif len(trim(arguments.cfSessionID)) EQ 0 >
+			<cfthrow message="Bad arguments!" detail="Argument cfSessionID is empty!" />
 		</cfif>
 
-		<cfreturn trim(ReturnData) />
+		<cfreturn hash(generateSecretKey("AES") & arguments.cfSessionID, variables.HashType, variables.Encoding) />
 	</cffunction>
 
-	<cffunction name="removeIllegalHTML" returntype="string" output="false">
-		<cfargument name="htmlString" required="true" type="string">
-		<cfargument name="tagsAllowed" required="false" type="string" default="a,p,h1,h2,h3,h4,h5,h6,h7,h8,h9,b,strong,i,ol,ul,li,br,img,span">
+	<cffunction name="TryLogIn" returntype="numeric" access="public" hint="" output="false" >
+		<cfargument name="username" type="string" required="true" hint="" output="false" />
+		<cfargument name="password" type="string" required="true" hint="" output="false" />
+		<cfargument name="session" type="struct" required="true" hint="" output="false" />
 
-		<cfset var cleanedString = arguments.htmlString />
-		<cfset var tagFound = "" />
-		<cfset var stringStartPos = 0 />
-		<cfset var cleanedStringLeft = "" />
-		<cfset var cleanedStringRight = "" />
+		<cfset var UserSearch = Models.User::GetBy(
+			ColumnToSearchOn="UserName",
+			SearchOperator="equal to",
+			SearchData=arguments.username
+		) />
 
-		<!--- LOOP OVER TEXT AND FIND ALL TAGS --->
-		<cfloop condition="stringStartPos LT len(cleanedString)">
-		<!--- FIND HTML TAGS --->
-			<cfset tagFound = refindnocase("</{0,1}(.[^>]*?)>",cleanedString,stringStartPos,"true")>
+		<cfif UserSearch.RecordCount IS 1 >
+			<cfset var LoggedInUser = new Models.User(UserSearch[ Models.User::TableKey ]) />
 
-			<!--- TAGS FOUND? --->
-			<cfif tagFound.pos[1] IS 0>
-				<!--- NO TAGS FOUND -> EXIT LOOP --->
-				<cfset stringStartPos = len(arguments.htmlString) + 5>
+		<cfelseif UserSearch.RecordCount IS 0 >
+			<cfreturn 1 />
+			<!--- User name does not exist/is incorrect --->
+
+		<cfelseif UserSearch.RecordCount GT 1 >
+			<cfreturn 2 />
+			<!--- There's more than one record with this username --->
+		</cfif>
+
+		<cfif LoggedInUser.validatePassword( Password=arguments.password, SecurityManager=this ) IS false >
+			<cfreturn 3 />
+			<!--- Password is incorrect --->
+		</cfif>
+
+		<cfif LoggedInUser.getBlocked() IS 1 >
+			<cfreturn 4 />
+			<!--- User account is blocked --->
+		</cfif>
+
+		<!--- LOGIN/AUTHENTICATION PROCESS --->
+		<cflogin applicationtoken="RecipeDB" idletimeout="3600" >
+
+			<cfif LoggedInUser.getUserName() IS "tfrengler" >
+				<cfloginuser name="#LoggedInUser.getUserName()#" password="#LoggedInUser.getPassword()#" roles="Admin" />
 			<cfelse>
-				<!--- TAGS FOUND --->
-				<!--- CHECK IF TAGS MUST BE CLEARED --->
-				<cfif NOT listFindNoCase(arguments.tagsAllowed,listFirst(mid(cleanedString,tagFound.pos[2],tagFound.len[2]), '<>/ '))>
-					<!--- CLEAR TAG --->
-					<!--- CREATE NEW RETURN STRING --->
-					<cfif tagFound.pos[1] IS NOT 1 />
-						<cfset cleanedStringLeft = left(cleanedString,tagFound.pos[1]-1) />
-					<cfelse>
-						<cfset cleanedStringLeft = "" />
-					</cfif>
-
-					<cfif len(cleanedString) - (tagFound.pos[1]+tagFound.len[1])+1 GT 0 />
-						<cfset cleanedStringRight = right(cleanedString, len(cleanedString) - (tagFound.pos[1]+tagFound.len[1])+1) />
-					<cfelse>
-						<cfset cleanedStringRight = "" />
-					</cfif>
-
-					<cfset cleanedString = cleanedStringLeft & cleanedStringRight>
-				<cfelse>
-					<!--- TAG ALLOWED --->
-					<cfset stringStartPos = tagFound.pos[1] + tagFound.len[1]>
-				</cfif>
+				<cfloginuser name="#LoggedInUser.getUserName()#" password="#LoggedInUser.getPassword()#" roles="User" />
 			</cfif>
-		</cfloop>
 
-		<cfreturn trim(cleanedString)>
+			<cfset LoggedInUser.updateLoginStats(
+				UserAgentString=cgi.http_user_agent
+			) />
+			<cfset LoggedInUser.save() />
+
+			<cfset arguments.session.authKey = GenerateAuthKey(arguments.session.sessionid) />
+			<cfset arguments.session.currentUser = LoggedInUser />
+
+			<cfreturn 0 />
+		</cflogin>
 	</cffunction>
 
-	<cffunction name="removeWordCode" returntype="string" output="false" >
-		<cfargument name="string" type="string" required="true" />
-		<cfargument name="hardClean" type="boolean" required="false" default="true" />
+	<cffunction name="IsValidSession" returntype="boolean" access="public" hint="" output="false" >
+		<cfargument name="cookieScope" type="struct" required="true" hint="" output="false" />
+		<cfargument name="sessionScope" type="struct" required="true" hint="" output="false" />
+		<cfscript>
 
-		<!--- if nothing passed , return empty string --->
-		<cfif len(trim(arguments.string) IS 0 )>
-			<cfreturn "" />
-		</cfif>
+			if ( !HasValidSessionCookie(arguments.cookieScope) )
+				return false;
 
-		<!--- create a tmporary variable to cold the passed text --->
-		<cfset var CleanedText = arguments.inString />
-		<!--- remove the HTML comments --->
-		<cfset CleanedText = REReplace(CleanedText, "<!--.*-->", "", "ALL") />
-		<!--- remove most of the unwanted HTML attributes with their values --->
-		<cfset CleanedText = REReplace(CleanedText, "[ ]+(style|align|valign|dir|class|id|lang|width|height|nowrap)=""[^""]*""", "", "ALL") />
-		<!--- clean extra spaces & tabs --->
-		<cfset CleanedText = REReplace(CleanedText, "\s{2,}", " ", "ALL") />
-		<!--- remove extra spaces between tags --->
-		<cfset CleanedText = REReplace(CleanedText, ">\s{1,}<", "><", "ALL") />
-		<!--- remove any &nbsp; spaces between tags --->
-		<cfset CleanedText = REReplace(CleanedText, ">&nbsp;<", "><", "ALL") />
-		<!--- remove empty <b> empty tags --->
-		<cfset CleanedText = REReplace(CleanedText, "<b></b>", "", "ALL") />
-		<!--- remove empty <p> empty tags --->
-		<cfset CleanedText = REReplace(CleanedText, "<p></p>", "", "ALL") />
-		<!--- Remove all unwanted tags opening and closing --->
-		<cfset CleanedText = REReplace(CleanedText, "</?(span|div|o:p|p)>", "", "ALL") />
-		<!--- remove and repetition of &nbsp; and make it one only --->
-		<cfset CleanedText = REReplace(CleanedText, "(&nbsp;){2,}", "&nbsp;", "ALL") />
+			if (!structKeyExists( arguments.sessionScope, "SessionToken" ))
+				return false;
 
-		<cfif arguments.hardClean >
-			<cfset CleanedText = REReplace(CleanedText, "</?(span|div|o:p|p)>", "", "ALL") />
-		<cfelse>
-			<cfset CleanedText = REReplace(CleanedText, "</?(o:p)>", "", "ALL") />
-		</cfif>
+			if (arguments.cookieScope[application.cookieName] != arguments.sessionScope.SessionToken)
+				return false;
 
-		<cfreturn CleanedText />
+			return true;
+		</cfscript>
 	</cffunction>
 
-	<cffunction name="removeExtendedASCIIChars" access="public" returntype="string" output="no" hint="This scans through a string, finds any characters that have a higher ASCII numeric value greater than 127 and automatically convert them to a hexadecimal numeric character">
-        <cfargument name="text" type="string" required="true" />
+	<cffunction name="HasValidSessionCookie" returntype="boolean" access="public" hint="" output="false" >
+		<cfargument name="cookieScope" type="struct" required="true" hint="" output="false" />
 
-        <!--- if nothing passed , return empty string --->
-		<cfif len(trim(arguments.string) IS 0 )>
-			<cfreturn "" />
-		</cfif>
+		<cfreturn structKeyExists( arguments.cookieScope, application.cookieName ) />
+	</cffunction>
 
-        <cfscript>
-            var i = 0;
-            var tmp = '';
+	<cffunction name="NewSession" returntype="void" access="public" hint="" output="false" >
+		<cfargument name="sessionScope" type="struct" required="true" hint="" output="false" />
+		<cfscript>
 
-            while(ReFind('[^\x00-\x7F]',text,i,false))
-            {
-                i = ReFind('[^\x00-\x7F]',text,i,false); // discover high chr and save its numeric string position.
-                tmp = '&##x#FormatBaseN(Asc(Mid(text,i,1)),16)#;'; // obtain the high chr and convert it to a hex numeric chr.
-                text = Insert(tmp,text,i); // insert the new hex numeric chr into the string.
-                text = RemoveChars(text,i,1); // delete the redundant high chr from string.
-                i = i+Len(tmp); // adjust the loop scan for the new chr placement, then continue the loop.
-            }
-            return text;
-        </cfscript>
-    </cffunction> --->
+			var NewToken = GenerateSessionToken(arguments.sessionScope.sessionid);
+			arguments.sessionScope.SessionToken = NewToken;
+			SetSessionCookie(NewToken, false);
 
+		</cfscript>
+	</cffunction>
+
+	<cffunction name="SetSessionCookie" returntype="void" access="public" hint="" output="false" >
+		<cfargument name="sessionToken" type="string" required="true" hint="" output="false" />
+		<cfargument name="expired" type="boolean" required="false" default="false" hint="" output="false" />
+		<cfscript>
+
+			if (arguments.sessionToken.len() == 0)
+			{
+				throw(message="Empty arguments!", detail="Argument sessionToken is empty!");
+			}
+
+			cfcookie(
+				preserveCase="true",
+				name="#application.cookieName#",
+				value="#arguments.sessionToken#",
+				path="/",
+				domain="#listFirst(cgi.HTTP_HOST, ':')#",
+				expires="#arguments.expired ? now() : dateAdd("n", 60, now())#",
+				httpOnly="true",
+				secure="true",
+				samesite="strict"
+			);
+
+		</cfscript>
+	</cffunction>
 </cfcomponent>

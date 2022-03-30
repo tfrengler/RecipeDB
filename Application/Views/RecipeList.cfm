@@ -1,5 +1,4 @@
-<cfprocessingdirective pageEncoding="utf-8" />
-
+<cfparam name="NonceValue" type="string" default="" />
 <cfoutput>
 
 <cfparam name="attributes.sortOnColumn" type="string" default="" />
@@ -30,7 +29,7 @@
 	</div>
 </section>
 
-<script type="text/javascript">
+<script nonce=#NonceValue# >
 	#toScript(attributes.sortOnColumn, "RecipeDB.page.transient.sortOnColumn", false)#
 </script>
 

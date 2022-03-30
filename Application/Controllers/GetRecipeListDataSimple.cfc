@@ -13,7 +13,7 @@
  		<cfset var currentRecipeData = structNew() />
 		<cfset var userDisplayName = "" />
 		<cfset var filteredRecipes = queryNew("") />
-		<cfset var columnsToSelect = "RecipeID,Name,DateCreated,DateTimeLastModified,CreatedByUser,Published,Picture" />
+		<cfset var columnsToSelect = "RecipeID,Name,DateTimeCreated,DateTimeLastModified,CreatedByUser,Published,Picture" />
 
 		<cfset var allRecipes = Models.Recipe::GetData() >
 		<cfset var users = Models.User::GetData(columnList="UserID,DisplayName") />
@@ -45,9 +45,9 @@
 					structKeyExists(arguments.filterSettings, "minePublic") OR
 					structKeyExists(arguments.filterSettings, "mineNoPicture")
 				>
-						AND CreatedByUser = #session.currentUser.getId()#
+						AND CreatedByUser = #session.currentUser.UserID#
 					<cfelseif structKeyExists(arguments.filterSettings, "otherUsersOnly") >
-						AND CreatedByUser != #session.currentUser.getId()#
+						AND CreatedByUser != #session.currentUser.UserID#
 					<cfelse>
 				</cfif>
 
@@ -79,7 +79,7 @@
 
 		<cfloop query="filteredRecipes" >
 
-			<cfif FilteredRecipes.CreatedByUser IS NOT session.currentUser.getId() >
+			<cfif FilteredRecipes.CreatedByUser IS NOT session.currentUser.UserID >
 				<cfif FilteredRecipes.Published IS false >
 					<cfcontinue />
 				</cfif>
@@ -88,7 +88,7 @@
 			<cfset currentRecipeData = {
 				recipeID: FilteredRecipes.RecipeID,
 				name: FilteredRecipes.Name,
-				dateCreated: FilteredRecipes.DateCreated,
+				dateCreated: FilteredRecipes.DateTimeCreated,
 				dateTimeLastModified: FilteredRecipes.DateTimeLastModified,
 				published: FilteredRecipes.Published
 			} />

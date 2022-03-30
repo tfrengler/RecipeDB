@@ -1,6 +1,6 @@
-<cfprocessingdirective pageEncoding="utf-8" />
-
 <cftry>
+	<cfmodule template="Modules/ScriptNonce.cfm" >
+
 	<cfset viewData = createObject("component", "Controllers.GetRecipeView").main(
 		recipeID=URL.RecipeID,
 		currentUser=session.currentUser

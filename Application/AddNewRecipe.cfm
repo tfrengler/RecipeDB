@@ -1,4 +1,5 @@
 <cftry>
+	<cfmodule template="Modules/ScriptNonce.cfm" >
 
 	<!DOCTYPE html>
 	<html lang="en" >

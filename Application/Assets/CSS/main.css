@@ -191,6 +191,16 @@ a:hover {
 	display: none;
 }
 
+.visible {
+	display: initial;
+}
+
+.fadeOut {
+	visibility: hidden;
+	opacity: 0;
+	transition: visibility 0s linear 1000ms, opacity 1000ms;
+}
+
 /* Fix for jQuery dialog modal transparency that doesn't seem to work in some browser */
 .ui-widget-overlay {
 	opacity: 0.3;

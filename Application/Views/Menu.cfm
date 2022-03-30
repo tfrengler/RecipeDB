@@ -1,4 +1,5 @@
 <!--- THIS IS AN INCLUDE FILE --->
+<cfparam name="NonceValue" type="string" default="" />
 
 <nav class="side-menu" id="side-menu" >
 
@@ -24,7 +25,7 @@
 			My settings
 		</a></li>
 
-		<li><a id="Logout" href="../../Login.cfm?Reason=6" >
+		<li><a id="Logout" href="../Logout.cfm" >
 			<i class="fa fa-times fa-fw dark-green-text-color"></i>
 			Logout
 		</a></li>

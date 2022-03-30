@@ -1,5 +1,4 @@
 <cfcomponent output="false" >
-<cfprocessingdirective pageEncoding="utf-8" />
 
 	<!--- AJAX METHOD --->
 	<cffunction name="main" access="public" returntype="struct" returnformat="JSON" output="false" hint="" >
@@ -12,7 +11,7 @@
 
 		<cfset var Recipe = createObject("component", "Models.Recipe").init(ID=arguments.RecipeID) />
 
-		<cfif Recipe.getCreatedByUser().getId() IS NOT session.currentUser.getId() >
+		<cfif Recipe.getCreatedByUser().UserID IS NOT session.currentUser.UserID >
 
 			<cfheader statuscode="500" />
 			<cfset returnData.statuscode = 1 />
@@ -28,7 +27,7 @@
 			<cfset returnData.data = false />
 		</cfif>
 
-		<cfset Recipe.save() />
+		<cfset Recipe.save(session.currentUser.UserID) />
 
 		<cfreturn returnData />
 	</cffunction>

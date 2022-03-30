@@ -1,8 +1,8 @@
-<cfprocessingdirective pageEncoding="utf-8" />
 <cfparam name="URL.fromMenu" type="integer" default="1" />
 
 <!--- CONTROLLER ACTIONS --->
 <cftry>
+	<cfmodule template="Modules/ScriptNonce.cfm" >
 
 	<cfif session.currentUser.getSettings().findRecipes.listType IS "simple" AND URL.fromMenu IS 1 >
 		<cflocation url="FindRecipesAsThumbnails.cfm" addtoken="false" />

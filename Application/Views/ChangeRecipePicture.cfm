@@ -1,5 +1,6 @@
 <!--- DIALOG/POP-FILE FILE --->
-<script type="text/javascript" type="module" src="Assets/JS/changepicture.js" ></script>
+<cfparam name="NonceValue" type="string" default="" />
+<cfoutput><script nonce=#NonceValue# type="module" src="Assets/JS/changepicture.js" ></script></cfoutput>
 
 <section id="Change-Picture-Form-Wrapper" >
 	<form id="Change-Picture-Form" class="olive-wrapper-grey-background" >

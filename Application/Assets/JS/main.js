@@ -1,6 +1,8 @@
 "use strict";
 
-/* Main container, a namespace for all our functionality */
+/* ESLint rules */
+/* global $:readonly */
+
 const RecipeDB = {};
 
 RecipeDB.main = {};
@@ -36,7 +38,7 @@ RecipeDB.main.onAJAXCallError = function(AjaxResponse) {
 
 		MessageBox.html("Ooops, something went wrong. Sorry about that! A team of highly trained monkeys has been dispatched to deal with the situation. If you see them tell them what you did when this happened.");
 		MessageBox.fadeIn(1000);
-	};
+	}
 
 	console.warn("onAJAXCallError triggered");
 	console.warn(AjaxResponse[0]);
@@ -44,7 +46,7 @@ RecipeDB.main.onAJAXCallError = function(AjaxResponse) {
 
 RecipeDB.main.onJavascriptError = function(ErrorContent, MethodName) {
 
-	var MainContentContainer = $("#" + RecipeDB.main.constants.MAINCONTENT_CONTAINER_ID);
+	//var MainContentContainer = $("#" + RecipeDB.main.constants.MAINCONTENT_CONTAINER_ID);
 	var MessageBox = $("#Notification-Box");
 	var DebugOutput = "";
 	var FriendlyErrorMessage = "Ooops, something went wrong! A team of highly trained monkeys has been dispatched to deal with the situation. If you see them tell them what you did when this happened."
@@ -52,14 +54,14 @@ RecipeDB.main.onJavascriptError = function(ErrorContent, MethodName) {
 	if (typeof ErrorContent === "object") {
 		// DebugOutput = structuredClone(ErrorContent);
 		console.error(ErrorContent);
-	};
+	}
 
 	if (RecipeDB.main.debug) {
 		RecipeDB.main.notifyUserOfError( MessageBox, DebugOutput, 0 );
 
 	} else {
 		RecipeDB.main.notifyUserOfError( MessageBox, FriendlyErrorMessage, 0 );
-	};
+	}
 
 	console.warn("onJavascriptError triggered by " + MethodName);
 	console.warn(ErrorContent);
@@ -67,100 +69,110 @@ RecipeDB.main.onJavascriptError = function(ErrorContent, MethodName) {
 
 RecipeDB.main.ajaxLoadButton = function(Enable, DOMPointer, Value) {
 
+	// To be removed once jQuery is gone!
+	if (DOMPointer.__proto__.jquery)
+		DOMPointer = DOMPointer[0];
+
 	if (Enable) {
-		DOMPointer.prop("disabled", true);
-		this.transient.ajaxLoaderValue = DOMPointer.val();
-		DOMPointer.val("");
-		DOMPointer.addClass("ajax-loading");
+		DOMPointer.disabled = true;
+		this.transient.ajaxLoaderValue = DOMPointer.value;
+		DOMPointer.value = "";
+		DOMPointer.classList.add("ajax-loading");
 	}
 	else {
-		DOMPointer.prop("disabled", false);
-		DOMPointer.removeClass("ajax-loading");
+		DOMPointer.disabled = false;
+		DOMPointer.classList.remove("ajax-loading");
 
 		if (Value !== undefined && Value.length > 0) {
-			DOMPointer.val(Value.trim())
+			DOMPointer.value = Value.trim();
 		} else {
-			DOMPointer.val( this.transient.ajaxLoaderValue );
+			DOMPointer.value = this.transient.ajaxLoaderValue;
 		}
 
 		this.transient.ajaxLoaderValue = "";
-	};
+	}
 };
 
 RecipeDB.main.ajaxLoadIconButton = function(Enable, DOMPointer) {
 
+	// To be removed once jQuery is gone!
+	if (DOMPointer.__proto__.jquery)
+		DOMPointer = DOMPointer[0];
+
 	if (Enable) {
-		DOMPointer.prop("disabled", true);
-		this.transient.ajaxLoaderIconClass = DOMPointer.children().attr("class");
-		DOMPointer.children().removeClass();
-		DOMPointer.children().addClass("fa fa-cog fa-spin");
+		DOMPointer.disabled = true;
+		this.transient.ajaxLoaderIconClass = DOMPointer.children[0].className;
+		DOMPointer.children[0].className = "";
+		DOMPointer.children[0].className = "fa fa-cog fa-spin";
 	}
 	else {
-		DOMPointer.prop("disabled", false);
-		DOMPointer.children().removeClass("fa fa-cog fa-spin");
-		DOMPointer.children().addClass( this.transient.ajaxLoaderIconClass );
+		DOMPointer.disabled = false;
+		DOMPointer.children[0].className = this.transient.ajaxLoaderIconClass;
 		this.transient.ajaxLoaderIconClass = "";
-	};
+	}
 
 };
 
 RecipeDB.main.ajaxLoadInnerHTML = function(Enable, DOMPointer, Content) {
 
+	// To be removed once jQuery is gone!
+	if (DOMPointer.__proto__.jquery)
+		DOMPointer = DOMPointer[0];
+
 	if (Enable) {
-		this.transient.ajaxLoaderInnerHTML = DOMPointer.html();
-		DOMPointer.html("<span style='visibility:hidden'>" + this.transient.ajaxLoaderInnerHTML + "</span>");
-		DOMPointer.addClass("ajax-loading");
+		this.transient.ajaxLoaderInnerHTML = DOMPointer.innerHTML;
+		DOMPointer.innerHTML = ("<span style='visibility:hidden'>" + this.transient.ajaxLoaderInnerHTML + "</span>");
+		DOMPointer.classList.add("ajax-loading");
 	}
 	else {
-		DOMPointer.removeClass("ajax-loading");
+		DOMPointer.classList.remove("ajax-loading");
 		if (Content !== undefined && Content.length > 0) {
-			DOMPointer.html(Content.trim())
+			DOMPointer.innerHTML = Content.trim();
 		} else {
-			DOMPointer.html( this.transient.ajaxLoaderInnerHTML );
+			DOMPointer.innerHTML = this.transient.ajaxLoaderInnerHTML;
 			this.transient.ajaxLoaderInnerHTML = "";
 		}
-	};
+	}
 
 };
 
-RecipeDB.main.notifyUserOfSuccess = function(NotificationBoxPointer, Message, FadeoutTime) {
-	if (FadeoutTime !== undefined && FadeoutTime > 0) {
-		FadeoutTime = FadeoutTime
-	} else {
-		var FadeoutTime = 0;
-	}
-
-	this.notify(NotificationBoxPointer, "success", Message, FadeoutTime);
+/**
+ *
+ * @param {HTMLElement} NotificationBoxPointer
+ * @param {String} Message
+ * @param {Boolean} Fadeout
+ */
+RecipeDB.main.notifyUserOfSuccess = function(NotificationBoxPointer, Message, Fadeout) {
+	this.notify(NotificationBoxPointer, "success", Message, Fadeout);
 };
 
-RecipeDB.main.notifyUserOfLoading = function(NotificationBoxPointer) {
-	if (FadeoutTime !== undefined && FadeoutTime > 0) {
-		FadeoutTime = FadeoutTime
-	} else {
-		var FadeoutTime = 0;
-	}
-
-	this.notify(NotificationBoxPointer, "ajax", "", FadeoutTime);
+/**
+ *
+ * @param {HTMLElement} NotificationBoxPointer
+ * @param {Boolean} Fadeout
+ */
+RecipeDB.main.notifyUserOfLoading = function(NotificationBoxPointer, Fadeout) {
+	this.notify(NotificationBoxPointer, "ajax", "", Fadeout);
 };
 
-RecipeDB.main.notifyUserOfError = function(NotificationBoxPointer, Message, FadeoutTime) {
-	if (FadeoutTime !== undefined && FadeoutTime > 0) {
-		FadeoutTime = FadeoutTime
-	} else {
-		var FadeoutTime = 0;
-	}
-
-	this.notify(NotificationBoxPointer, "error", Message, FadeoutTime);
+/**
+ *
+ * @param {HTMLElement} NotificationBoxPointer
+ * @param {String} Message
+ * @param {Boolean} Fadeout
+ */
+RecipeDB.main.notifyUserOfError = function(NotificationBoxPointer, Message, Fadeout) {
+	this.notify(NotificationBoxPointer, "error", Message, Fadeout);
 };
 
-RecipeDB.main.notifyUserOfWarning = function(NotificationBoxPointer, Message, FadeoutTime) {
-	if (FadeoutTime !== undefined && FadeoutTime > 0) {
-		FadeoutTime = FadeoutTime
-	} else {
-		var FadeoutTime = 0;
-	}
-
-	this.notify(NotificationBoxPointer, "warning", Message, FadeoutTime);
+/**
+ *
+ * @param {HTMLElement} NotificationBoxPointer
+ * @param {String} Message
+ * @param {Boolean} Fadeout
+ */
+RecipeDB.main.notifyUserOfWarning = function(NotificationBoxPointer, Message, Fadeout) {
+	this.notify(NotificationBoxPointer, "warning", Message, Fadeout);
 };
 
 /**
@@ -170,35 +182,38 @@ RecipeDB.main.notifyUserOfWarning = function(NotificationBoxPointer, Message, Fa
  * @param {String} Message
  * @param {Number} FadeoutTime
  */
-RecipeDB.main.notify = function(NotificationBoxPointer, Type, Message, FadeoutTime) {
+RecipeDB.main.notify = function(NotificationBoxPointer, Type, Message, fadeout = true) {
 
+	if (typeof fadeout === typeof Number)
+		fadeout = true;
+
+	// To be removed once jQuery is gone!
 	if (NotificationBoxPointer.__proto__.jquery)
 		NotificationBoxPointer = NotificationBoxPointer[0];
 
 	var CSSClassMap = {
-		success: "green-success-text",
-		error: "red-error-text",
-		warning: "yellow-warning-text",
-		ajax: "yellow-warning-text ajax-loading"
+		success: ["green-success-text"],
+		error: ["red-error-text"],
+		warning: ["yellow-warning-text"],
+		ajax: ["yellow-warning-text", "ajax-loading"]
 	};
 
-	NotificationBoxPointer.classList.add("hidden");
-	NotificationBoxPointer.classList.remove(AlertClasses);
+	NotificationBoxPointer.classList.remove(...AlertClasses);
 	NotificationBoxPointer.classList.remove("ajax-loading");
+	NotificationBoxPointer.classList.remove("fadeOut");
 
-	NotificationBoxPointer.classList.add( CSSClassMap[Type] );
+	NotificationBoxPointer.classList.add( ...CSSClassMap[Type] );
+	NotificationBoxPointer.classList.add("visible");
 	NotificationBoxPointer.innerHTML = Message;
-	NotificationBoxPointer.classList.remove("hidden");
 
-	// if (FadeoutTime !== undefined && FadeoutTime > 0) {
-	// 	setTimeout(
-	// 		function() {
-	// 			NotificationBoxPointer.fadeOut(1000);
-	// 		},
-	// 		parseInt(FadeoutTime)
-	// 	)
-	// }
-
+	if (fadeout === true)
+	{
+		setTimeout(()=> NotificationBoxPointer.classList.add("fadeOut"), 2000);
+		setTimeout(()=> {
+			NotificationBoxPointer.classList.remove("fadeOut")
+			NotificationBoxPointer.classList.remove("visible");
+		}, 3050);
+	}
 };
 
 RecipeDB.main.onNavigate = function() {

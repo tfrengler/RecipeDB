@@ -1,9 +1,10 @@
 <!--- MODULE --->
-
-<cfoutput>
 <cfparam name="attributes.pageJavascript" type="string" default="" />
 <cfparam name="attributes.pageStylesheet" type="string" default="" />
 <cfparam name="attributes.includeMenu" type="boolean" default="true" />
+<cfparam name="NonceValue" type="string" default="" />
+
+<cfoutput>
 
 <head>
 	<title>RecipeDB</title>
@@ -14,19 +15,19 @@
 	<link rel="shortcut icon" href="Assets/Pictures/Standard/favicon.ico" type="image/x-icon" />
 	<link rel="icon" href="Assets/Pictures/Standard/favicon.ico" type="image/x-icon" />
 
-	<script type="text/javascript" src="Assets/Libs/jquery-base/jquery-min.js"></script>
-	<script type="text/javascript" src="Assets/Libs/jquery-ui/jquery-ui.min.js"></script>
-	<script type="text/javascript" src="Assets/Libs/tinymce/jquery.tinymce.min.js"></script>
-	<script type="text/javascript" src="Assets/Libs/tinymce/tinymce.min.js" ></script>
-	<script type="text/javascript" src="Assets/Libs/datatables/media/js/jquery.dataTables.min.js" ></script>
-	<script type="text/javascript" src="Assets/JS/main.js"></script>
+	<script nonce="#NonceValue#" src="Assets/Libs/jquery-base/jquery-min.js"></script>
+	<script nonce="#NonceValue#" src="Assets/Libs/jquery-ui/jquery-ui.min.js"></script>
+	<script nonce="#NonceValue#" src="Assets/Libs/tinymce/jquery.tinymce.min.js"></script>
+	<script nonce="#NonceValue#" src="Assets/Libs/tinymce/tinymce.min.js" ></script>
+	<script nonce="#NonceValue#" src="Assets/Libs/datatables/media/js/jquery.dataTables.min.js" ></script>
+	<script nonce="#NonceValue#" src="Assets/JS/main.js"></script>
 
 	<cfif attributes.includeMenu >
-		<script type="text/javascript" src="Assets/JS/menu.js"></script>
+		<script nonce="#NonceValue#" src="Assets/JS/menu.js"></script>
 	</cfif>
 
 	<cfif len(attributes.pageJavascript) GT 0 >
-		<script type="text/javascript" src="Assets/JS/#attributes.pageJavascript#.js"></script>
+		<script nonce="#NonceValue#" src="Assets/JS/#attributes.pageJavascript#.js"></script>
 	</cfif>
 
 	<link rel="stylesheet" type="text/css" href="Assets/Libs/bootstrap/css/bootstrap.min.css" />
@@ -43,19 +44,19 @@
 		<link rel="stylesheet" type="text/css" href="Assets/CSS/menu.css" />
 	</cfif>
 
-	<script type="text/javascript">
+	<script nonce="#NonceValue#" >
 		$(document).ready(function() {
 			RecipeDB.main.init();
 			<cfoutput>#toScript(session.AuthKey, "RecipeDB.main.constants.AUTH_KEY", false)#</cfoutput>
 			Object.freeze(RecipeDB.main.constants);
-			
+
 			if (RecipeDB.page !== undefined) {
 				RecipeDB.page.init();
 				Object.freeze(RecipeDB.page.constants);
 			} else {
 				console.log("No page JS to init");
 			};
-			
+
 			<cfif attributes.includeMenu >
 				RecipeDB.menu.init();
 			<cfelse>

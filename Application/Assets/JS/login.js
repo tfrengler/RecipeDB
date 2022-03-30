@@ -1,43 +1,68 @@
 "use strict";
-RecipeDB.page = {};
-RecipeDB.page.constants = {};
 
-RecipeDB.page.constants.MESSAGEBOX_ID = "Notification-Box";
-RecipeDB.page.constants.LOGIN_BUTTON_ID = "Login-Button";
-RecipeDB.page.constants.PASSWORD_FIELD_ID = "Password";
-RecipeDB.page.constants.USERNAME_FIELD_ID = "Username";
-RecipeDB.page.constants.LOGIN_FORM_ID = "Login-Form";
+/* ESLint rules */
+/* global RecipeDB:readonly */
 
-RecipeDB.page.init = function() {
+const Elements = Object.freeze({
 
-	if ( document.querySelector("nav#side-menu") !== null ) {
-		window.location.replace("../Login.cfm");
-		return false;
-	};
+	MESSAGEBOX 		: ()=> document.querySelector("#Notification-Box"),
+	LOGIN_BUTTON 	: ()=> document.querySelector("#Login-Button"),
+	PASSWORD_FIELD 	: ()=> document.querySelector("#Password"),
+	USERNAME_FIELD 	: ()=> document.querySelector("#Username"),
+	LOGIN_FORM 		: ()=> document.querySelector("#Login-Form")
 
-	$("#" + this.constants.LOGIN_BUTTON_ID).click(RecipeDB.page.attemptLogin);
+});
+
+const Init = function() {
+
+	// if ( document.querySelector("nav#side-menu") !== null ) {
+	// 	window.location.replace("../Login.cfm");
+	// 	return;
+	// }
+
+	Elements.LOGIN_BUTTON().addEventListener("click", AttemptLogin);
+	Elements.LOGIN_FORM().addEventListener("submit", event=> event.preventDefault());
+
+	const QueryParams = new URL(window.location).searchParams;
+
+	if (QueryParams.has("Reason"))
+	{
+		switch(parseInt(QueryParams.get("Reason")))
+		{
+			case 5:
+				RecipeDB.main.notifyUserOfError( Elements.MESSAGEBOX(), "Your session has expired. You need to log in again", false);
+				break;
+			case 7:
+				RecipeDB.main.notifyUserOfSuccess( Elements.MESSAGEBOX(), "You've been logged out", false);
+				break;
+			default:
+				RecipeDB.main.notifyUserOfError( Elements.MESSAGEBOX(), "Unknown user or credentials not correct", false);
+		}
+	}
+
+	console.log("Login init complete");
 };
 
-RecipeDB.page.attemptLogin = function() {
+const AttemptLogin = function() {
 
-	var MessageBox = $('#' + RecipeDB.page.constants.MESSAGEBOX_ID);
-	var PasswordField = $('#' + RecipeDB.page.constants.PASSWORD_FIELD_ID);
-	var UsernameField = $('#' + RecipeDB.page.constants.USERNAME_FIELD_ID);
-	var LoginButton = $('#' + RecipeDB.page.constants.LOGIN_BUTTON_ID);
+	const MessageBox = Elements.MESSAGEBOX();
+	const PasswordField = Elements.PASSWORD_FIELD();
+	const UsernameField = Elements.USERNAME_FIELD();
+	const LoginButton = Elements.LOGIN_BUTTON();
 
-	MessageBox.hide();
-
-	if ( UsernameField.val().trim().length === 0) {
+	if ( UsernameField.value.trim().length === 0) {
 
 		RecipeDB.main.notifyUserOfError(MessageBox, "Please enter a username");
-		return false;
-	};
+		return;
+	}
 
-	if ( PasswordField.val().trim().length === 0) {
+	if ( PasswordField.value.trim().length === 0) {
 		RecipeDB.main.notifyUserOfError(MessageBox, "Please enter a password");
-		return false;
-	};
+		return;
+	}
 
 	RecipeDB.main.ajaxLoadButton(true, LoginButton);
-	document.getElementById(RecipeDB.page.constants.LOGIN_FORM_ID).submit();
+	Elements.LOGIN_FORM().submit();
 };
+
+Init();

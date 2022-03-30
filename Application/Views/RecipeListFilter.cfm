@@ -1,4 +1,4 @@
-<cfprocessingdirective pageEncoding="utf-8" />
+<cfparam name="NonceValue" type="string" default="" />
 <!--- MODULE --->
 
 <cfparam name="attributes.listSwitchButtonType" type="string" default="" />

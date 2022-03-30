@@ -1,8 +1,8 @@
-<cfprocessingdirective pageEncoding="utf-8" />
+<cfparam name="NonceValue" type="string" default="" />
 <cfoutput>
 
 <section>
-	<h1 id="AddRecipe-Welcome" class="olive-text-color-center" >Add new recipe</h1>	
+	<h1 id="AddRecipe-Welcome" class="olive-text-color-center" >Add new recipe</h1>
 </section>
 
 <br/>

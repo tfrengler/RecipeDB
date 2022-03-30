@@ -1,4 +1,4 @@
-<cfprocessingdirective pageEncoding="utf-8" />
+<cfparam name="NonceValue" type="string" default="" />
 <cfoutput>
 <!--- MODULE --->
 

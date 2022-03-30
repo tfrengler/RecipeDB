@@ -1,6 +1,6 @@
 <cfcomponent output="false" modifier="final" persistent="true" accessors="false" extends="Model" >
 
-	<cfproperty name="UserID" 					type="numeric"		getter="true"	setter="true" />
+	<cfproperty name="UserID" 					type="numeric"		getter="true"	setter="false" />
 	<cfproperty name="DateTimeCreated" 			type="date"			getter="true"	setter="true" />
 	<cfproperty name="DateTimePreviousLogin" 	type="date"			getter="true"	setter="true" />
 	<cfproperty name="DateTimeLastLogin" 		type="date"			getter="true"	setter="true" />
