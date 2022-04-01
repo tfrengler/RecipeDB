@@ -40,6 +40,18 @@
 			<cfquery>PRAGMA foreign_keys = ON;</cfquery>
 
 		<cfcatch type="lucee.runtime.exp.NativeException">
+
+			<cfset var DbLibFile = "#this.Root#\Toolbox\sqlite-jdbc-3.36.0.3.jar" /> <!--- https://github.com/xerial/sqlite-jdbc --->
+			<cfset var CFMLEngine = createObject( "java", "lucee.loader.engine.CFMLEngineFactory" ).getInstance() />
+			<cfset var OSGiUtil = createObject( "java", "lucee.runtime.osgi.OSGiUtil" ) />
+			<cfset var Resource = CFMLEngine.getResourceUtil().toResourceExisting( getPageContext(), DbLibFile ) />
+
+			<cfset OSGiUtil.installBundle(
+				CFMLEngine.getBundleContext(),
+				Resource,
+				true
+			) />
+
 		</cfcatch>
 		</cftry>
 
@@ -66,7 +78,6 @@
 		<cfargument type="string" name="targetPage" required="true" />
 
 		<cfset var BaseURI = "http#cgi.SERVER_PORT_SECURE ? "s" : ""#://#cgi.SERVER_NAME#/RecipeDB" />
-		<!--- <cfset session.sessionToken = application.SecurityManager.GenerateSessionToken() /> --->
 
 		<!--- For testing purposes, this nukes the session and restarts the application --->
 		<cfif structKeyExists(URL, "Restart") >

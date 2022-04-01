@@ -36,7 +36,7 @@
         <p>SQLite appears not to be installed, attempting to do so now...</p>
 
         <cfset Root = getDirectoryFromPath( getCurrentTemplatePath() ) />
-        <cfset DbLibFile = "#Root#\sqlite-jdbc-3.36.0.3.jar" /> <!--- https://bitbucket.org/xerial/sqlite-jdbc/downloads/ --->
+        <cfset DbLibFile = "#Root#\sqlite-jdbc-3.36.0.3.jar" /> <!--- https://github.com/xerial/sqlite-jdbc --->
 
         <cfset CFMLEngine = createObject( "java", "lucee.loader.engine.CFMLEngineFactory" ).getInstance() />
         <cfset OSGiUtil = createObject( "java", "lucee.runtime.osgi.OSGiUtil" ) />

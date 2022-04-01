@@ -50,8 +50,6 @@ Temporary Items
 /WEB-INF/*
 Test.cfm
 test.cfm
-*.xml
-*.jar
 
 # Build results
 [Dd]ebug/

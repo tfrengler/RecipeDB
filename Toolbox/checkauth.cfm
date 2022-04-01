@@ -1,4 +1,4 @@
-<cffunction name="NotAuthorized" returntype="void" access="public" >
+<cffunction name="NotAuthorized" returntype="void" access="public" output="false" >
 	<cfargument name="reason" type="numeric" required="true" />
 
 	<cfcontent reset="true" />
@@ -25,7 +25,7 @@
 
 <cfset HttpHeaders = getHTTPRequestData().headers />
 
-<cfif structKeyExists(HttpHeaders, "Authorization") IS false >
+<cfif !structKeyExists(HttpHeaders, "Authorization") >
 	<cfset NotAuthorized(reason=1) />
 	<cfabort/>
 </cfif>
