@@ -1,1 +1,1 @@
-<cflocation url="Login.cfm" addtoken="false" />
+<cflocation url="#application.HostPostFix#/Login.cfm" addtoken="false" />

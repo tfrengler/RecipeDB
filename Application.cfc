@@ -52,6 +52,7 @@
 				true
 			) />
 
+			<cfquery>PRAGMA foreign_keys = ON;</cfquery>
 		</cfcatch>
 		</cftry>
 
@@ -77,14 +78,13 @@
 	<cffunction name="onRequestStart" returnType="boolean" output="false" >
 		<cfargument type="string" name="targetPage" required="true" />
 
-		<cfset var BaseURI = "http#cgi.SERVER_PORT_SECURE ? "s" : ""#://#cgi.SERVER_NAME##findOneOf(targetPage, "/RecipeDB/") ? "/RecipeDB" : ""#" />
-
+		<cfset application.HostPostFix = "/RecipeDB" />
 		<!--- For testing purposes, this nukes the session and restarts the application --->
 		<cfif structKeyExists(URL, "Restart") >
 
 			<cfset onSessionEnd(session, application) />
 			<cfset applicationStop() />
-			<cflocation url="#BaseURI#/Login.cfm" addtoken="false" />
+			<cflocation url="#application.HostPostFix#/Login.cfm" addtoken="false" />
 
 		</cfif>
 
@@ -129,28 +129,28 @@
 			<!--- No username and password in form? Bye! --->
 			<cfif NOT structKeyExists(form, "username") OR NOT structKeyExists(form, "password") >
 				<cfset application.SecurityManager.NewSession(session) />
-				<cflocation url="#BaseURI#/Login.cfm?Reason=6" addtoken="false" />
+				<cflocation url="#application.HostPostFix#/Login.cfm?Reason=6" addtoken="false" />
 			</cfif>
 
 			<cfset var LoginTryResult = application.SecurityManager.TryLogIn(form.username, form.password, session) />
 			<!--- Login attempt failed (for whatever reason)? Bye! --->
 			<cfif LoginTryResult IS NOT 0 >
 				<cfset application.SecurityManager.NewSession(session) />
-				<cflocation url="#BaseURI#/Login.cfm?Reason=#LoginTryResult#" addtoken="false" />
+				<cflocation url="#application.HostPostFix#/Login.cfm?Reason=#LoginTryResult#" addtoken="false" />
 			</cfif>
 
 			<!--- Everything okay? You're logged in! Redirect to the main app --->
-			<cflocation url="#BaseURI#/Application/index.cfm" addtoken="false" />
+			<cflocation url="#application.HostPostFix#/Application/index.cfm" addtoken="false" />
 		</cfif>
 
 		<cfif NOT application.SecurityManager.IsValidSession(cookie, session) >
 			<cfset application.SecurityManager.NewSession(session) />
-			<cflocation url="#BaseURI#/Login.cfm?Reason=5&t=1" addtoken="false" />
+			<cflocation url="#application.HostPostFix#/Login.cfm?Reason=5&t=1" addtoken="false" />
 		</cfif>
 
 		<cfif NOT isUserLoggedIn() >
 			<cfset application.SecurityManager.NewSession(session) />
-			<cflocation url="#BaseURI#/Login.cfm?Reason=5&t=2" addtoken="false" />
+			<cflocation url="#application.HostPostFix#/Login.cfm?Reason=5&t=2" addtoken="false" />
 		</cfif>
 
 		<cfreturn true />
