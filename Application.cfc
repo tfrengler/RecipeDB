@@ -77,7 +77,7 @@
 	<cffunction name="onRequestStart" returnType="boolean" output="false" >
 		<cfargument type="string" name="targetPage" required="true" />
 
-		<cfset var BaseURI = "http#cgi.SERVER_PORT_SECURE ? "s" : ""#://#cgi.SERVER_NAME#/RecipeDB" />
+		<cfset var BaseURI = "http#cgi.SERVER_PORT_SECURE ? "s" : ""#://#cgi.SERVER_NAME##findOneOf(targetPage, "/RecipeDB/") ? "/RecipeDB" : ""#" />
 
 		<!--- For testing purposes, this nukes the session and restarts the application --->
 		<cfif structKeyExists(URL, "Restart") >
